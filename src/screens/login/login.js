@@ -9,13 +9,33 @@ import ForgotPassword from "../forgotPassword/forgotPassword";
 import { ButtonTitle, ButtonTitleGoogle } from "../../components/button/buttonTitle";
 import { IconBack } from "../../components/iconBack/iconBack";
 import CreateAccount from "../createAccount/createAccount";
+import { useState } from "react";
+
+import api from "../../service/service";
 
 const Login = ({ navigation }) => {
 
-    function Login(){
-        navigation.replace("Main")
-    }
+    const [email, setEmail] = useState()
+    const [password, setPassword] = useState()
 
+    async function Login(){
+
+        try{
+            console.log('Começando método de login');
+            
+            // Chamar a api de login
+            const response = await api.post('/Login', {
+                email: email,
+                senha: password
+            })
+            
+            console.log(response);
+            
+            // navigation.replace("Main")
+        } catch(e){
+            console.log(e);
+        }
+    }
 
 
 
@@ -28,10 +48,12 @@ const Login = ({ navigation }) => {
 
             <InputContainer>
                 <Input
-                    placeholder="Usuário ou email" />
+                    placeholder="Usuário ou email"
+                    onChangeText={(txt) => setEmail(txt)}/>
                 <Input
                     placeholder="Senha..."
-                    secureTextEntry={true}
+                    // secureTextEntry={true}
+                    onChangeText={(txt) => setPassword(txt)}
                 />
 
 
