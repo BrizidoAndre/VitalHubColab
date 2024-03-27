@@ -57,7 +57,7 @@ namespace WebAPI.Controllers
 
             _medicoRepository.Cadatrar(user);
 
-            return Ok("teste");
+            return Ok("Medico cadastrado com sucesso");
             
             } catch (Exception ex)
             {

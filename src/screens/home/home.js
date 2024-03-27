@@ -2,7 +2,7 @@
 import image from "../../assets/img/Rectangle425.png"
 
 // Import do react
-import { useEffect, useState } from "react"
+import { useEffect, useReducer, useState } from "react"
 import { CalendarContainer, FlatlistContainer, HomeContainer, InputContainer, RowContainer } from "../../components/container/style"
 import { NavButtonComponent } from "../../components/navButton/navButton"
 import { ScrollView } from "react-native"
@@ -17,6 +17,7 @@ import Stethoscope from "../../components/stethoscope/stethoscope"
 
 // importando biblioteca de notificação
 import * as Notifications from 'expo-notifications'
+import { userDecodeToken } from "../../utils/auth"
 
 // para configurar o comportamento das notificações
 Notifications.setNotificationHandler({
@@ -118,7 +119,7 @@ const Home = ({ navigation }) => {
     const rawDataMedic = [
         {
             id: "imasdf",
-            name: 'Dr. Claudio',
+            name: 'Dr. Claudios',
             specialty: 'Clínico Geral',
             CRM: '15286',
             age: 22,
@@ -130,7 +131,7 @@ const Home = ({ navigation }) => {
         },
         {
             id: "imasdf",
-            name: 'Dr. Claudio',
+            name: 'sem doutor nenhum não so',
             specialty: 'Clínico Geral',
             CRM: '15286',
             age: 22,
@@ -255,8 +256,22 @@ const Home = ({ navigation }) => {
         })
     }
 
+    async function setIfMedic(){
+        const user = await userDecodeToken()
+
+        console.log(user);
+
+        if(user.role ==='Medico'){
+            setIsMedic(true)
+            return;
+        }
+        setIsMedic(false)
+
+    }
+
     useEffect(() => {
         verifyStatus()
+        setIfMedic()
     }, [])
 
 

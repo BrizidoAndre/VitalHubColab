@@ -1,39 +1,45 @@
-import { Image, Text, TouchableHighlight, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Image } from "react-native";
 import { ButtonContainer, Container, InputContainer } from "../../components/container/style";
 import { Logo } from "../../components/logo/style";
 import { Title } from "../../components/title/title";
 import { Input } from "../../components/input/input";
 import { LinkBlueSmall, LinkDescription, LinkMedium } from "../../components/links/links";
 import { Button, ButtonGoogle } from "../../components/button/button";
-import ForgotPassword from "../forgotPassword/forgotPassword";
 import { ButtonTitle, ButtonTitleGoogle } from "../../components/button/buttonTitle";
-import { IconBack } from "../../components/iconBack/iconBack";
 import CreateAccount from "../createAccount/createAccount";
 import { useState } from "react";
 
+// Importando biblioteca para armazenar o token no cell
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import api from "../../service/service";
+import { AxiosHeaders } from "axios";
 
 const Login = ({ navigation }) => {
 
-    const [email, setEmail] = useState()
-    const [password, setPassword] = useState()
+    // states para o cadastro
+    const [email, setEmail] = useState('hum@email.com')
+    const [password, setPassword] = useState('senhaPaciente')
 
-    async function Login(){
+    // state para o botão de login
+    const [loginTime, setLoginTime] = useState(false);
 
-        try{
-            console.log('Começando método de login');
-            
+    async function Login() {
+        try {
+            setLoginTime(true)
             // Chamar a api de login
             const response = await api.post('/Login', {
                 email: email,
                 senha: password
             })
-            
-            console.log(response);
-            
-            // navigation.replace("Main")
-        } catch(e){
+
+            await AsyncStorage.setItem('token', JSON.stringify(response.data))
+            navigation.replace("Main")
+            setLoginTime(false)
+        } catch (e) {
             console.log(e);
+            Alert.alert('Login incorreto!', 'Email ou senha inválidos')
+            setLoginTime(false)
         }
     }
 
@@ -49,10 +55,12 @@ const Login = ({ navigation }) => {
             <InputContainer>
                 <Input
                     placeholder="Usuário ou email"
-                    onChangeText={(txt) => setEmail(txt)}/>
+                    value={email}
+                    onChangeText={(txt) => setEmail(txt)} />
                 <Input
                     placeholder="Senha..."
-                    // secureTextEntry={true}
+                    value={password}
+                    secureTextEntry={true}
                     onChangeText={(txt) => setPassword(txt)}
                 />
 
@@ -61,8 +69,13 @@ const Login = ({ navigation }) => {
             </InputContainer>
 
 
-            <Button onPress={()=>Login()}>
-                <ButtonTitle>ENTRAR</ButtonTitle>
+            <Button onPress={() => Login()} disabled={loginTime}>
+                {
+                    !loginTime ?
+                        <ButtonTitle>ENTRAR</ButtonTitle>
+                        :
+                        <ActivityIndicator color={'#fff'}/>
+                }
             </Button>
 
 

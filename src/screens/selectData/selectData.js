@@ -35,10 +35,6 @@ const SelectData = ({ navigation }) => {
         kind: 'Tipo de teste',
     })
 
-
-
-
-
     // state para analisar o horário a ser cadastrado
     const [times, setTimes] = useState([
         '12:00',

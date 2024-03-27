@@ -7,64 +7,49 @@ import { Title } from "../../components/title/title"
 
 // import de imagens
 import image from '../../assets/img/Rectangle425.png'
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import api from "../../service/service"
 
+// importando axios para consumo da api
 
 const SelectMedic = ({ navigation }) => {
 
     const [selected, setSelected] = useState('')
+    
+    // use state para armazenar a lista de médicos
+    const [medicosLista, setMedicosLista] = useState([])
 
-    const rawData = [
-        {
-            name: 'Medico Sakamura',
-            specialty: 'Cardiologist',
-            image: image
-        },
-        {
-            name: 'Medico Despacito',
-            specialty: 'Cardiologist',
-            image: image
-        },
-        {
-            name: 'Medico Poa',
-            specialty: 'Cardiologist',
-            image: image
-        },
-        {
-            name: 'Medico Youre welcome',
-            specialty: 'Cardiologist',
-            image: image
-        },
-        {
-            name: 'Medico bananas',
-            specialty: 'Cardiologist',
-            image: image
-        },
-        {
-            name: 'Medico Peras',
-            specialty: 'Cardiologist',
-            image: image
-        },
-        {
-            name: 'Medico Sushi',
-            specialty: 'Cardiologist',
-            image: image
-        },
-    ]
+    // função para buscar a lista de médicos
+    async function loadMedics() {
+        try {
+            // instanciando a chamada de api
+            const response = await api.get('/Medicos')
+
+            const list = response.data
+
+            setMedicosLista(list)
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        loadMedics()
+    },[])
 
     return (
         <WithoutHeader>
             <Title>Selecionar Médico</Title>
 
             <FlatlistClinicCard
-                data={rawData}
-                renderItem={({ item }) =>
+                data={medicosLista}
+                keyExtractor={(item) => item.id}
+                renderItem={({item}) =>
                     <MedicCard
                         select={selected}
-                        onPress={()=>setSelected(item.name)}
-                        image={item.image}
-                        name={item.name}
-                        specialty={item.specialty}
+                        onPress={() => setSelected(item.id)}
+                        item={item}
                     />}
             />
 

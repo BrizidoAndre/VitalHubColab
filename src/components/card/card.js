@@ -3,6 +3,12 @@ import { StatusData, StatusGray, StatusGreen, StatusStar } from "../status/statu
 import { Mont12500Blue, Mont12500Red, Mont16600, Sand14400, Sand14500Gray, Sand14600 } from "../title/title"
 import { CardBox, CardBoxSelect, ClinicCardBox, ClinicCardBoxSelected, Container, ImageCard, ItemCardBox, MedicCardBox, RowCardBox, TextCardBox } from "./styles"
 
+
+// importando uma imagem mocada
+import image from '../../assets/img/Rectangle425.png'
+import { Text } from "react-native"
+
+
 const Card = ({ name, age, image, nivel, time = "14:00", status = "c", onPress = null, onPressCard }) => {
 
     const statusCheck = () => {
@@ -55,16 +61,16 @@ const Card = ({ name, age, image, nivel, time = "14:00", status = "c", onPress =
     )
 }
 
-export const ClinicCard = ({ name, location, grade, time, onPress, select }) => {
+export const ClinicCard = ({ item, grade, time, onPress, select }) => {
 
 
 
-    if (select === name) {
+    if (select === item.id) {
         return (
             <ClinicCardBoxSelected>
                 <ItemCardBox>
-                    <Mont16600>{name}</Mont16600>
-                    <Sand14600>{location}</Sand14600>
+                    <Mont16600 style={{maxWidth:200}}>{item.nomeFantasia}</Mont16600>
+                    <Sand14600>{item.endereco.logradouro} {item.endereco.numero}</Sand14600>
                 </ItemCardBox>
 
                 <ItemCardBox>
@@ -78,8 +84,8 @@ export const ClinicCard = ({ name, location, grade, time, onPress, select }) => 
         return (
             <ClinicCardBox onPress={onPress}>
                 <ItemCardBox>
-                    <Mont16600>{name}</Mont16600>
-                    <Sand14600>{location}</Sand14600>
+                    <Mont16600 style={{maxWidth:200}}>{item.nomeFantasia}</Mont16600>
+                    <Sand14600>{item.endereco.logradouro} {item.endereco.numero}</Sand14600>
                 </ItemCardBox>
 
                 <ItemCardBox>
@@ -91,16 +97,16 @@ export const ClinicCard = ({ name, location, grade, time, onPress, select }) => 
     }
 }
 
-export const MedicCard = ({ name, specialty, image, onPress, select }) => {
+export const MedicCard = ({ item, onPress, select }) => {
 
 
-    if (select ===name) {
+    if (select === item.id) {
         return (
             <CardBoxSelect>
                 <ImageCard source={image} />
                 <MedicCardBox>
-                    <Mont16600>{name}</Mont16600>
-                    <Sand14500Gray>{specialty}</Sand14500Gray>
+                    <Mont16600>{item.idNavigation.nome}</Mont16600>
+                    <Sand14500Gray>{item.especialidade.especialidade1}</Sand14500Gray>
                 </MedicCardBox>
             </CardBoxSelect>
         )
@@ -111,8 +117,8 @@ export const MedicCard = ({ name, specialty, image, onPress, select }) => {
             <CardBox onPress={onPress}>
                 <ImageCard source={image} />
                 <MedicCardBox>
-                    <Mont16600>{name}</Mont16600>
-                    <Sand14500Gray>{specialty}</Sand14500Gray>
+                    <Mont16600>{item.idNavigation.nome}</Mont16600>
+                    <Sand14500Gray>{item.especialidade.especialidade1}</Sand14500Gray>
                 </MedicCardBox>
             </CardBox>
         )

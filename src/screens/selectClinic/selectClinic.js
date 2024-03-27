@@ -6,12 +6,15 @@ import { LinkBlueSmall } from "../../components/links/links"
 import { Title } from "../../components/title/title"
 import { ClinicCard } from "../../components/card/card"
 // Use states
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import api from "../../service/service"
 
 
 const SelectClinic = ({ navigation }) => {
 
     const [selected, setSelected] = useState('')
+
+    const [listClinics, setListClinics] = useState([])
 
     const rawData = [
         {
@@ -64,6 +67,25 @@ const SelectClinic = ({ navigation }) => {
         },
     ]
 
+    async function loadClinics() {
+        try {
+            const res = await api.get('/Clinica/ListarTodas')
+
+            const data = await res.data
+
+            setListClinics(data)
+            console.log(data);
+
+        } catch (error) {
+            console.log('Erro');
+            console.log(error);
+        }
+    }
+
+    useEffect(()=>{
+        loadClinics()
+    },[])
+
 
     return (
         <WithoutHeader>
@@ -76,15 +98,14 @@ const SelectClinic = ({ navigation }) => {
 
 
             <FlatlistClinicCard
-                data={rawData}
+                data={listClinics}
                 renderItem={({ item }) =>
                     <ClinicCard
-                        onPress={()=> setSelected(item.name)}
+                        item={item}
+                        onPress={() => setSelected(item.id)}
                         select={selected}
-                        grade={item.grade}
-                        location={item.location}
-                        name={item.name}
-                        time={item.time} />}
+                        grade={4.9}
+                        time={'Seg-Sex'} />}
             />
 
 

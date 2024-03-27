@@ -11,6 +11,10 @@ margin-bottom: 15px;
 background-color: #496BBA;
 `;
 
+export const ButtonLogout = styled(Button)`
+background-color: #ACABB7;
+width: 50%;
+`
 
 export const ButtonGoogle = styled.TouchableHighlight`
 width: 90%;

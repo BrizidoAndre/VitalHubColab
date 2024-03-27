@@ -3,13 +3,47 @@ import { Container, InputContainer, LabelInputContainer, TwoInputContainer } fro
 import { ImageModal } from "../../components/modal/modal"
 import { SubTitle, Title } from "../../components/title/title"
 import { InputLabelBlack, SmallInputLabel } from "../../components/input/inputLabel"
-import { SmallButton } from "../../components/button/button"
+import { Button, ButtonLogout, SmallButton } from "../../components/button/button"
 import { ButtonTitle } from "../../components/button/buttonTitle"
 import { HeaderImage } from "../../components/headerImage/headerImage"
 import ScrollViewProfile from "../../components/scrollViewProfile/scrollViewProfile.js"
 import EditProfile from "../editProfile/editProfile.js"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { jwtDecode } from "jwt-decode"
+import { userDecodeToken } from "../../utils/auth.js"
+import { useEffect, useState } from "react"
+import api from "../../service/service.js"
 
 const Profile = ({ navigation }) => {
+
+    const [item, setItem] = useState({})
+
+    const [user, setUser] = useState({})
+
+    async function loadItem() {
+        const token = await userDecodeToken()
+
+        setItem(token)
+    }
+
+    async function loadProfile() {
+        const res = await api.get('/Pacientes/BuscarPorID?id=' + item.id)
+
+        const data = await res.data
+
+        setUser(data)
+    }
+
+
+    async function Logout() {
+        await AsyncStorage.removeItem('token')
+        navigation.navigate('Login')
+    }
+
+    useEffect(() => {
+        loadItem()
+        loadProfile()
+    }, [])
 
     return (
         <Container>
@@ -17,14 +51,26 @@ const Profile = ({ navigation }) => {
 
 
             <ScrollViewProfile>
-                <Title>Richard Kosta</Title>
-                <SubTitle>richard.kosta@email.com</SubTitle>
+                <Title>{item.name}</Title>
+                <SubTitle>{item.email}</SubTitle>
                 <Container>
 
                     <InputContainer>
-                        <InputLabelBlack title={"Data de nascimento"} placeholder={"04/10/1999"} />
-                        <InputLabelBlack title={"CPD"} placeholder={"143553660123"} />
-                        <InputLabelBlack title={"Endereço"} placeholder={"Rua dos Açores, 132"} />
+                        <InputLabelBlack
+                            title={"Data de nascimento"}
+                            value={user.dataNascimento}
+                             
+                        />
+                        <InputLabelBlack
+                            title={"CPF"}
+                            value={user.cpf}
+                             
+                        />
+                        <InputLabelBlack
+                            title={"Endereço"}
+                            value={user.enderecoId}
+                            
+                        />
 
                         <TwoInputContainer>
                             <SmallInputLabel title={"CEP"} placeholder={"XXXXXXXX"} />
@@ -39,7 +85,12 @@ const Profile = ({ navigation }) => {
                             <SmallButton onPress={() => { navigation.navigate(EditProfile) }}
                             ><ButtonTitle>EDITAR</ButtonTitle></SmallButton>
                         </TwoInputContainer>
+
                     </InputContainer>
+
+                    <ButtonLogout onPress={() => {
+                        Logout()
+                    }}><ButtonTitle>Log off</ButtonTitle></ButtonLogout>
                 </Container>
             </ScrollViewProfile>
         </Container>

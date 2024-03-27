@@ -5,13 +5,13 @@ import { BigInput, BigInputBlack, BigInputImageBlack, FlatListSelect, Input, Inp
 import { IconCamera } from "../../screens/appointment/styles";
 import notFound from '../../assets/img/iconoir_file-not-found.png'
 
-export const InputLabelBlack = ({ title, placeholder, bigInput = false, value }) => {
+export const InputLabelBlack = ({ title,  bigInput = false, value, onChangeText }) => {
     return (
         <>
             <Label>{title}</Label>
             {bigInput ?
-                <BigInputBlack placeholder={placeholder} value={value} /> :
-                <InputBlack placeholder={placeholder} value={value} />}
+                <BigInputBlack value={value}  onChangeText={(txt)=>onChangeText(txt)}/> :
+                <InputBlack value={value}  onChangeText={(txt)=>onChangeText(txt)}/>}
         </>
     )
 }
