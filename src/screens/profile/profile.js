@@ -20,18 +20,38 @@ const Profile = ({ navigation }) => {
 
     const [user, setUser] = useState({})
 
+    const [endereco, setEndereco] = useState({})
+
     async function loadItem() {
         const token = await userDecodeToken()
-
         setItem(token)
     }
 
+    async function loadAdress(){
+        try{
+            const res = await api.get('/Usuario/BuscarEndereco?id=' + user.enderecoId)
+
+            const data = await res.data
+            
+            console.log(data)
+
+            setEndereco(data)
+        } catch(e){
+            console.log(e)
+        }
+    }
+
     async function loadProfile() {
-        const res = await api.get('/Pacientes/BuscarPorID?id=' + item.id)
 
-        const data = await res.data
-
-        setUser(data)
+        try{
+            const res = await api.get('/Pacientes/BuscarPorId?id=' + item.id)
+            
+            const data = await res.data
+            console.log(data);
+            setUser(data)
+        } catch(e){
+            console.log(e)
+        }
     }
 
 
@@ -42,8 +62,15 @@ const Profile = ({ navigation }) => {
 
     useEffect(() => {
         loadItem()
-        loadProfile()
     }, [])
+    
+    useEffect(() => {
+        loadProfile()
+    }, [item])
+    
+    useEffect(() => {
+        loadAdress()
+    }, [user])
 
     return (
         <Container>
@@ -73,20 +100,14 @@ const Profile = ({ navigation }) => {
                         />
 
                         <TwoInputContainer>
-                            <SmallInputLabel title={"CEP"} placeholder={"XXXXXXXX"} />
-                            <SmallInputLabel title={"CIDADE"} placeholder={"Ex: SP"} />
+                            <SmallInputLabel title={"CEP"} placeholder={"XXXXXXXX"} value={endereco.cep} />
+                            <SmallInputLabel title={"CIDADE"} placeholder={"Ex: SP"} value={endereco.cidade} />
                         </TwoInputContainer>
 
                     </InputContainer>
 
-                    <InputContainer>
-                        <TwoInputContainer>
-                            <SmallButton><ButtonTitle>SALVAR</ButtonTitle></SmallButton>
-                            <SmallButton onPress={() => { navigation.navigate(EditProfile) }}
-                            ><ButtonTitle>EDITAR</ButtonTitle></SmallButton>
-                        </TwoInputContainer>
+                            <Button><ButtonTitle>SALVAR</ButtonTitle></Button>
 
-                    </InputContainer>
 
                     <ButtonLogout onPress={() => {
                         Logout()
