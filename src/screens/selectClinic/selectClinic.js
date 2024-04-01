@@ -10,9 +10,11 @@ import { useEffect, useState } from "react"
 import api from "../../service/service"
 
 
-const SelectClinic = ({ navigation }) => {
+const SelectClinic = ({ route,navigation }) => {
 
     const [selected, setSelected] = useState('')
+
+    const {appointmentLevel} = route.params
 
     const [listClinics, setListClinics] = useState([])
 
@@ -84,6 +86,8 @@ const SelectClinic = ({ navigation }) => {
 
     useEffect(()=>{
         loadClinics()
+
+        console.log(appointmentLevel)
     },[])
 
 

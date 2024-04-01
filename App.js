@@ -23,7 +23,6 @@ import CheckEmail from './src/screens/checkEmail/checkEmail';
 import RedefinePassword from './src/screens/redefinePassword/redefinePassword';
 import CreateAccount from './src/screens/createAccount/createAccount';
 import Profile from './src/screens/profile/profile';
-import EditProfile from './src/screens/editProfile/editProfile';
 import Appointment from './src/screens/appointment/appointment';
 import EditAppointment from './src/screens/editAppointment/editAppointment';
 import Home from './src/screens/home/home';
@@ -139,12 +138,6 @@ export default function App() {
           name='EditAppointment'
           component={EditAppointment}
           options={{ title: "EditAppointment" }}
-        />
-
-        <Stack.Screen
-          name='EditProfile'
-          component={EditProfile}
-          options={{ title: "Edit Profile" }}
         />
 
         <Stack.Screen

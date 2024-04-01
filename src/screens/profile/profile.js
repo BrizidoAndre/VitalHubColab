@@ -7,7 +7,6 @@ import { Button, ButtonLogout, SmallButton } from "../../components/button/butto
 import { ButtonTitle } from "../../components/button/buttonTitle"
 import { HeaderImage } from "../../components/headerImage/headerImage"
 import ScrollViewProfile from "../../components/scrollViewProfile/scrollViewProfile.js"
-import EditProfile from "../editProfile/editProfile.js"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { jwtDecode } from "jwt-decode"
 import { userDecodeToken } from "../../utils/auth.js"
@@ -47,8 +46,10 @@ const Profile = ({ navigation }) => {
             const res = await api.get('/Pacientes/BuscarPorId?id=' + item.id)
             
             const data = await res.data
-            console.log(data);
+            data.dataNascimento = await data.dataNascimento.split(['T'])[0]
+            console.log(data)
             setUser(data)
+
         } catch(e){
             console.log(e)
         }
@@ -85,7 +86,7 @@ const Profile = ({ navigation }) => {
                     <InputContainer>
                         <InputLabelBlack
                             title={"Data de nascimento"}
-                            value={user.dataNascimento}
+                            value={ user.dataNascimento}
                              
                         />
                         <InputLabelBlack
@@ -95,7 +96,7 @@ const Profile = ({ navigation }) => {
                         />
                         <InputLabelBlack
                             title={"Endereço"}
-                            value={user.enderecoId}
+                            value={endereco.logradouro + ' ' + endereco.numero}
                             
                         />
 

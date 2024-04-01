@@ -367,10 +367,12 @@ const Home = ({ navigation }) => {
                 onPressNavigate={() => { navigation.navigate("Appointment") }}
             />
 
+            
+
             <CreateAppointment
                 hideModal={modal.setAppointment}
                 onPressCancel={() => setModal({ setAppointment: false })}
-                onPress={() => { navigation.navigate("SelectClinic"); setModal({ setAppointment: false }) }} />
+                navigation={navigation} />
 
             <DoctorAppointment
                 hideModal={modal.doctorAppointment}

@@ -13,7 +13,7 @@ import { Camera } from "expo-camera";
 import { Ionicons, Entypo } from "@expo/vector-icons";
 
 
-export const CancelAppointment = ({ hideModal = false, onPressCancel = null, onPress=null }) => {
+export const CancelAppointment = ({ hideModal = false, onPressCancel = null, onPress = null }) => {
 
 
     if (!hideModal) {
@@ -65,10 +65,10 @@ export const ShowRecord = ({ item = null, hideModal = false, onPressCancel = nul
 }
 
 
-export const CreateAppointment = ({ hideModal, onPressCancel, onPress }) => {
+export const CreateAppointment = ({ hideModal, onPressCancel, navigation }) => {
 
 
-
+    const [appointmentLevel, setAppointmentLevel] = useState('')
 
 
     if (!hideModal) {
@@ -84,7 +84,7 @@ export const CreateAppointment = ({ hideModal, onPressCancel, onPress }) => {
                 <Container>
                     <Title>Agendar Consulta</Title>
                     <InputContainer>
-                        <AppointmentLevel />
+                        <AppointmentLevel appointmentLevel={appointmentLevel} setAppointmentLevel={setAppointmentLevel} />
 
                         <InputLabel
                             title={'Informe a localização desejada'}
@@ -92,7 +92,12 @@ export const CreateAppointment = ({ hideModal, onPressCancel, onPress }) => {
                     </InputContainer>
 
                     <BottomCancelContainer>
-                        <Button onPress={onPress}><ButtonTitle>CONTINUAR</ButtonTitle></Button>
+                        <Button onPress={() => navigation.navigate('SelectClinic', {
+                            appointmentLevel
+                        }
+
+                        )}
+                        ><ButtonTitle>CONTINUAR</ButtonTitle></Button>
                         <LinkBlueSmall onPress={onPressCancel}>Cancelar</LinkBlueSmall>
                     </BottomCancelContainer>
                 </Container>
@@ -102,32 +107,28 @@ export const CreateAppointment = ({ hideModal, onPressCancel, onPress }) => {
     )
 }
 
-export const AppointmentLevel = ({ selectedInput = null }) => {
+export const AppointmentLevel = ({ selectedInput = null, appointmentLevel, setAppointmentLevel }) => {
 
-    const [appointmentLevel, setAppointmentLevel] = useState({
-        exam: false,
-        urgent: false,
-        routine: false
-    })
+
 
     return (
         <>
             <Label>Qual o nível da consulta</Label>
             <RowContainer>
                 <AppointmentButton
-                    selected={appointmentLevel.routine}
+                    selected={appointmentLevel==='Rotina'}
                     buttonTitle={'Rotina'}
-                    onPress={() => setAppointmentLevel({ routine: true })} />
+                    onPress={() => setAppointmentLevel('Rotina')} />
 
                 <AppointmentButton
-                    selected={appointmentLevel.exam}
+                    selected={appointmentLevel === 'Exame'}
                     buttonTitle={'Exame'}
-                    onPress={() => setAppointmentLevel({ exam: true })} />
+                    onPress={() => setAppointmentLevel('Exame')} />
 
                 <AppointmentButton
-                    selected={appointmentLevel.urgent}
+                    selected={appointmentLevel === 'Urgência'}
                     buttonTitle={'Urgência'}
-                    onPress={() => setAppointmentLevel({ urgent: true })} />
+                    onPress={() => setAppointmentLevel('Urgência')} />
             </RowContainer>
         </>
     )
@@ -220,7 +221,7 @@ export const CameraModal = ({ openModal, setOpenModal, cameraRef, capturePhoto }
                 ratio={'16:9'}
                 ref={cameraRef} />
             <BottomRowButtonContainer>
-                <Entypo name="arrow-with-circle-left" size={48} color="white" onPress={()=> setOpenModal(false)} />
+                <Entypo name="arrow-with-circle-left" size={48} color="white" onPress={() => setOpenModal(false)} />
                 <Entypo name="circle" size={48} color="white" onPress={() => capturePhoto()} />
             </BottomRowButtonContainer>
 
