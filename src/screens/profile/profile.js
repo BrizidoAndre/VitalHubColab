@@ -32,7 +32,6 @@ const Profile = ({ navigation }) => {
 
             const data = await res.data
             
-            console.log(data)
 
             setEndereco(data)
         } catch(e){
@@ -47,7 +46,6 @@ const Profile = ({ navigation }) => {
             
             const data = await res.data
             data.dataNascimento = await data.dataNascimento.split(['T'])[0]
-            console.log(data)
             setUser(data)
 
         } catch(e){

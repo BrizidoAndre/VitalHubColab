@@ -259,8 +259,6 @@ const Home = ({ navigation }) => {
     async function setIfMedic(){
         const user = await userDecodeToken()
 
-        console.log(user);
-
         if(user.role ==='Medico'){
             setIsMedic(true)
             return;

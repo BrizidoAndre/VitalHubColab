@@ -14,60 +14,22 @@ const SelectClinic = ({ route,navigation }) => {
 
     const [selected, setSelected] = useState('')
 
+    // criando um state para a criação de uma consulta
+    const [newAppointment, setNewAppointment] = useState({
+        situacaoId:"",
+        pacienteId:"",
+        medicoClinicaId:"",
+        receitaId:"",
+        prioridadeId:"",
+        dataConsulta:"",
+        descricao:"",
+        diagnostico:"",
+      })
+
     const {appointmentLevel} = route.params
 
     const [listClinics, setListClinics] = useState([])
 
-    const rawData = [
-        {
-            name: 'Senai Paulo Skaf',
-            location: 'São Caetano do Sul, SP',
-            time: 'Seg-Sex',
-            grade: "4.5"
-        },
-        {
-            name: 'Binanas',
-            location: 'Leprechaum',
-            time: 'Seg-Sex',
-            grade: "4.5"
-        },
-        {
-            name: 'Senai Ipiranga',
-            location: 'Mooca, SP',
-            time: 'Seg-Sex',
-            grade: "4.5"
-        },
-        {
-            name: 'Leucócitos',
-            location: 'Corrente sanguínea, Humano',
-            time: 'Seg-Sex',
-            grade: "4.5"
-        },
-        {
-            name: 'Mariachi',
-            location: 'México, Velho México',
-            time: 'Seg-Sex',
-            grade: "4.5"
-        },
-        {
-            name: 'Black Betty',
-            location: 'Bam ba nam',
-            time: 'Seg-Sex',
-            grade: "4.5"
-        },
-        {
-            name: 'I dont play video games',
-            location: 'No more SP',
-            time: 'Seg-Sex',
-            grade: "4.5"
-        },
-        {
-            name: 'Natura',
-            location: 'Datebayo, Vila secreta da folha',
-            time: 'Seg-Sex',
-            grade: "4.5"
-        },
-    ]
 
     async function loadClinics() {
         try {
@@ -76,8 +38,6 @@ const SelectClinic = ({ route,navigation }) => {
             const data = await res.data
 
             setListClinics(data)
-            console.log(data);
-
         } catch (error) {
             console.log('Erro');
             console.log(error);
@@ -86,7 +46,10 @@ const SelectClinic = ({ route,navigation }) => {
 
     useEffect(()=>{
         loadClinics()
+        setNewAppointment({
+            ...newAppointment,
 
+        })
         console.log(appointmentLevel)
     },[])
 
@@ -94,12 +57,6 @@ const SelectClinic = ({ route,navigation }) => {
     return (
         <WithoutHeader>
             <Title>Selecionar clínica</Title>
-
-
-
-
-
-
 
             <FlatlistClinicCard
                 data={listClinics}
