@@ -1,7 +1,6 @@
-import { FlatList } from "react-native"
 import { Button } from "../../components/button/button"
 import { ButtonTitle } from "../../components/button/buttonTitle"
-import { Container, FlatlistClinicCard, WithoutHeader } from "../../components/container/style"
+import { FlatlistClinicCard, WithoutHeader } from "../../components/container/style"
 import { LinkBlueSmall } from "../../components/links/links"
 import { Title } from "../../components/title/title"
 import { ClinicCard } from "../../components/card/card"
@@ -10,23 +9,15 @@ import { useEffect, useState } from "react"
 import api from "../../service/service"
 
 
-const SelectClinic = ({ route,navigation }) => {
+const SelectClinic = ({ route, navigation }) => {
 
     const [selected, setSelected] = useState('')
 
     // criando um state para a criação de uma consulta
     const [newAppointment, setNewAppointment] = useState({
-        situacaoId:"",
-        pacienteId:"",
-        medicoClinicaId:"",
-        receitaId:"",
-        prioridadeId:"",
-        dataConsulta:"",
-        descricao:"",
-        diagnostico:"",
-      })
+    })
 
-    const {appointmentLevel} = route.params
+    const { appointmentLevel } = route.params
 
     const [listClinics, setListClinics] = useState([])
 
@@ -44,14 +35,38 @@ const SelectClinic = ({ route,navigation }) => {
         }
     }
 
-    useEffect(()=>{
-        loadClinics()
-        setNewAppointment({
-            ...newAppointment,
+    function correctLevel() {
+        let levelId = '';
+        switch (appointmentLevel) {
+            case 'Rotina':
+                levelId = 'BE7F28CD-232F-4906-9FB8-41018D6099B1';
+                break;
+            case 'Exame':
+                levelId = '24AAC772-78A6-4A12-8CB8-FAF0A9DCF6F9';
+                break;
+            case 'Urgência':
+                levelId = '4D388964-CB39-4F99-9DD9-704B48F6FC86';
+                break;
+        }
 
-        })
-        console.log(appointmentLevel)
-    },[])
+        setNewAppointment({
+            situacaoId:  '',
+            pacienteId: "",
+            medicoClinicaId: "",
+            medicoId:'',
+            clinicaId:'',
+            receitaId: "",
+            prioridadeId: levelId,
+            dataConsulta: "",
+            descricao: "",
+            diagnostico: "",
+        })        
+    }
+
+    useEffect(() => {
+        loadClinics()
+        correctLevel()
+    }, [])
 
 
     return (
@@ -63,7 +78,13 @@ const SelectClinic = ({ route,navigation }) => {
                 renderItem={({ item }) =>
                     <ClinicCard
                         item={item}
-                        onPress={() => setSelected(item.id)}
+                        onPress={() => {
+                            setSelected(item.id)
+                            setNewAppointment({
+                                ...newAppointment,
+                                clinicaId:item.id
+                            })
+                        }}
                         select={selected}
                         grade={4.9}
                         time={'Seg-Sex'} />}
@@ -74,7 +95,7 @@ const SelectClinic = ({ route,navigation }) => {
 
 
 
-            <Button onPress={() => navigation.navigate("SelectMedic")}><ButtonTitle>CONTINUAR</ButtonTitle></Button>
+            <Button onPress={() => navigation.navigate("SelectMedic", { newAppointment })}><ButtonTitle>CONTINUAR</ButtonTitle></Button>
             <LinkBlueSmall onPress={() => navigation.goBack()}>Cancelar</LinkBlueSmall>
         </WithoutHeader >
     )

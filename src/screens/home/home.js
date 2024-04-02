@@ -256,15 +256,23 @@ const Home = ({ navigation }) => {
         })
     }
 
-    async function setIfMedic(){
+    async function setIfMedic() {
         const user = await userDecodeToken()
 
-        if(user.role ==='Medico'){
+        if (user.role === 'Medico') {
             setIsMedic(true)
             return;
         }
         setIsMedic(false)
 
+    }
+
+    async function listarConsultas() {
+        try {
+
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     useEffect(() => {
@@ -284,33 +292,39 @@ const Home = ({ navigation }) => {
                         <RowContainer>
                             <ProduceDate
                                 i={0}
-                                selected={dateSelected.a}
-                                onPress={() => { setDateSelected({ a: true }) }} />
+                                selected={dateSelected}
+                                setSelected={setDateSelected}
+                            />
 
                             <ProduceDate
                                 i={1}
-                                selected={dateSelected.b}
-                                onPress={() => { setDateSelected({ b: true }) }} />
+                                selected={dateSelected}
+                                setSelected={setDateSelected}
+                            />
 
                             <ProduceDate
                                 i={2}
-                                selected={dateSelected.c}
-                                onPress={() => { setDateSelected({ c: true }) }} />
+                                selected={dateSelected}
+                                setSelected={setDateSelected}
+                            />
 
                             <ProduceDate
                                 i={3}
-                                selected={dateSelected.d}
-                                onPress={() => { setDateSelected({ d: true }) }} />
+                                selected={dateSelected}
+                                setSelected={setDateSelected}
+                            />
 
                             <ProduceDate
                                 i={4}
-                                selected={dateSelected.e}
-                                onPress={() => { setDateSelected({ e: true }) }} />
+                                selected={dateSelected}
+                                setSelected={setDateSelected}
+                            />
 
                             <ProduceDate
                                 i={5}
-                                selected={dateSelected.f}
-                                onPress={() => { setDateSelected({ f: true }) }} />
+                                selected={dateSelected}
+                                setSelected={setDateSelected}
+                            />
 
                             <ProduceDate
                                 i={6}
@@ -355,7 +369,7 @@ const Home = ({ navigation }) => {
             <CancelAppointment
                 hideModal={modal.cancel}
                 onPressCancel={() => setModal({ cancel: false })}
-                onPress={() => {notificationCancel(); setModal({ cancel: false})}}
+                onPress={() => { notificationCancel(); setModal({ cancel: false }) }}
             />
 
             <ShowRecord
@@ -365,7 +379,7 @@ const Home = ({ navigation }) => {
                 onPressNavigate={() => { navigation.navigate("Appointment") }}
             />
 
-            
+
 
             <CreateAppointment
                 hideModal={modal.setAppointment}

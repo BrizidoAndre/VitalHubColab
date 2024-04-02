@@ -12,9 +12,13 @@ import api from "../../service/service"
 
 // importando axios para consumo da api
 
-const SelectMedic = ({ navigation }) => {
+const SelectMedic = ({ route, navigation }) => {
 
     const [selected, setSelected] = useState('')
+
+    const [newContinueAppointment, setNewAppointment] = useState({})
+
+    const { newAppointment } = route.params
     
     // use state para armazenar a lista de médicos
     const [medicosLista, setMedicosLista] = useState([])
@@ -36,6 +40,7 @@ const SelectMedic = ({ navigation }) => {
 
     useEffect(() => {
         loadMedics()
+        setNewAppointment(newAppointment)
     },[])
 
     return (
@@ -48,13 +53,19 @@ const SelectMedic = ({ navigation }) => {
                 renderItem={({item}) =>
                     <MedicCard
                         select={selected}
-                        onPress={() => setSelected(item.id)}
+                        onPress={() => {
+                            setSelected(item.id)
+                            setNewAppointment({
+                                ...newContinueAppointment,
+                                medicoId:item.id
+                            })
+                        }}
                         item={item}
                     />}
             />
 
 
-            <Button onPress={() => navigation.navigate("SelectData")}><ButtonTitle>CONTINUAR</ButtonTitle></Button>
+            <Button onPress={() => navigation.navigate("SelectData", {newContinueAppointment} )}><ButtonTitle>CONTINUAR</ButtonTitle></Button>
             <LinkBlueSmall onPress={() => navigation.goBack()}>Cancelar</LinkBlueSmall>
         </WithoutHeader >
     )

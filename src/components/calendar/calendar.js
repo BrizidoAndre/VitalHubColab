@@ -2,10 +2,11 @@
 import { Mont20600Gray, Sand12600, Sand16500Date, Sand16500DateSelected } from "../title/title";
 import { CalendarRowContainer, CalendarRowNumberContainer, DateBox, DateSelectedBox, NumberDateContainer, NumberDateContainerPosition, TextDate, TextDateSelected, TextNumberDate, TextNumberDateSelected } from "./style";
 import { CalendarContainer } from "../container/style";
+import { useEffect } from "react";
 
 const today = new Date();
 
-export const ProduceDate = ({ i, selected = false, onPress = null }) => {
+export const ProduceDate = ({ i, selected = false, setSelected = null }) => {
     
     var data = new Date()
     data.setDate(today.getDate() + i)
@@ -16,7 +17,7 @@ export const ProduceDate = ({ i, selected = false, onPress = null }) => {
     dataWeek = dataWeek.slice(0, -1)
 
 
-    if (selected === true) {
+    if (selected == dataNumber) {
         return (
             <DateSelectedBox >
                 <TextDateSelected>{dataWeek}</TextDateSelected>
@@ -27,7 +28,7 @@ export const ProduceDate = ({ i, selected = false, onPress = null }) => {
     }
     else {
         return (
-            <DateBox onPress={onPress}>
+            <DateBox onPress={()=>{ setSelected(dataNumber) }}>
                 <TextDate>{dataWeek}</TextDate>
                 <TextNumberDate>{dataNumber}</TextNumberDate>
             </DateBox>
@@ -69,12 +70,10 @@ export const AllCalendar = ({ selected, onPress }) => {
     let daysIndex = [];
 
     const getAllDays = () => {
-        
-
         for (let i = 0; i < 35; i++) {
 
             days.push(
-                <Sand16500Date onPress={() => {onPress(i)}}>{getNumberDay(i)}</Sand16500Date>
+                <Sand16500Date onPress={() => onPress(i)}>{getNumberDay(i)}</Sand16500Date>
             )
             daysIndex.push(getNumberDay(i));
         }
@@ -96,6 +95,7 @@ export const AllCalendar = ({ selected, onPress }) => {
     return (
         <CalendarContainer>
             <Mont20600Gray>{dateMonth}  {dateYear}</Mont20600Gray>
+            {/* coluna para obter os dias da semana em extenso */}
             <CalendarRowContainer>
                 <Sand12600>{getWeekDay(0)}</Sand12600>
                 <Sand12600>{getWeekDay(1)}</Sand12600>
@@ -105,6 +105,9 @@ export const AllCalendar = ({ selected, onPress }) => {
                 <Sand12600>{getWeekDay(5)}</Sand12600>
                 <Sand12600>{getWeekDay(6)}</Sand12600>
             </CalendarRowContainer>
+
+
+            {/* aqui está os dias mesmo */}
             <CalendarRowNumberContainer>
                 {getAllDays()}
                 {replace()}

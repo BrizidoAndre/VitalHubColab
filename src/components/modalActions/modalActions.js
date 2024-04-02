@@ -68,7 +68,7 @@ export const ShowRecord = ({ item = null, hideModal = false, onPressCancel = nul
 export const CreateAppointment = ({ hideModal, onPressCancel, navigation }) => {
 
 
-    const [appointmentLevel, setAppointmentLevel] = useState('')
+    const [appointmentLevel, setAppointmentLevel] = useState('Rotina')
 
 
     if (!hideModal) {

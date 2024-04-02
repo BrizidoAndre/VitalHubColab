@@ -9,8 +9,13 @@ import { Title } from "../../components/title/title"
 import { ConfirmAppointment } from "../../components/modalActions/modalActions"
 
 
-const SelectData = ({ navigation }) => {
+const SelectData = ({route, navigation }) => {
 
+    // obtendo os parametros da página anterior
+    const {newContinueAppointment} = route.params
+
+    // useState para confirmação e criar uma nova consulta
+    const [newAppointment, setNewAppointment] = useState({})
 
 
     // state do modal de confirmação
@@ -43,6 +48,23 @@ const SelectData = ({ navigation }) => {
         '16:30',
     ])
 
+    function prepareData(){
+        let data = new Date()
+        
+        data.setDate(data.getDate() + selected)
+
+        return data;
+    }
+
+    useEffect(()=>{
+        setNewAppointment({
+            ...newContinueAppointment,
+            dataConsulta: prepareData()
+        })
+        console.log(newAppointment)
+        console.log(prepareData())
+    },[selected])
+
     return (
         <>
             <WithoutHeader>
@@ -71,7 +93,7 @@ const SelectData = ({ navigation }) => {
 
 
             <ConfirmAppointment
-                item={item}
+                item={newAppointment}
                 hideModal={hideModal}
                 setHideModal={setHideModal}
                 navigation={navigation}
