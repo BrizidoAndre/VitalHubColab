@@ -18,6 +18,7 @@ import Stethoscope from "../../components/stethoscope/stethoscope"
 // importando biblioteca de notificação
 import * as Notifications from 'expo-notifications'
 import { userDecodeToken } from "../../utils/auth"
+import api from "../../service/service"
 
 // para configurar o comportamento das notificações
 Notifications.setNotificationHandler({
@@ -264,6 +265,17 @@ const Home = ({ navigation }) => {
 
     async function listarConsultas() {
         try {
+            console.log(dateSelected);
+            let dateSelect = new Date()
+            const date = {
+            }
+
+            // const dateString = dateYear + '-' + dateMonth + '-' dateDay
+
+            const res = await api.get('/Pacientes/BuscarPorData?data=2024-04-03&id=2A751A43-9DC2-44F6-8779-B669F813F81D')
+
+            const data = await res.data
+
 
         } catch (error) {
             console.log(error)
@@ -274,6 +286,10 @@ const Home = ({ navigation }) => {
         verifyStatus()
         setIfMedic()
     }, [])
+
+    useEffect(() => {
+        listarConsultas()
+    }, [dateSelected])
 
 
 
@@ -323,8 +339,8 @@ const Home = ({ navigation }) => {
 
                             <ProduceDate
                                 i={6}
-                                selected={dateSelected.g}
-                                onPress={() => { setDateSelected({ g: true }) }} />
+                                selected={dateSelected}
+                                setSelected={setDateSelected} />
 
                         </RowContainer>
                     </ScrollView>
