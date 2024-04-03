@@ -55,8 +55,9 @@ const SelectClinic = ({ route, navigation }) => {
             medicoClinicaId: "",
             medicoId:'',
             clinicaId:'',
-            receitaId: "",
+            receitaId: null,
             prioridadeId: levelId,
+            prioridade:appointmentLevel,
             dataConsulta: "",
             descricao: "",
             diagnostico: "",
@@ -82,7 +83,8 @@ const SelectClinic = ({ route, navigation }) => {
                             setSelected(item.id)
                             setNewAppointment({
                                 ...newAppointment,
-                                clinicaId:item.id
+                                clinicaId:item.id,
+                                clinica:item
                             })
                         }}
                         select={selected}

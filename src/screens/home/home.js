@@ -180,11 +180,6 @@ const Home = ({ navigation }) => {
     })
 
 
-    // Dados mocados para teste do flatlist
-    // Dador mocados para mostragem do perfil
-    const profile = {
-        name: 'Richard Rasmusse'
-    }
 
     // função de filtragem dos dados 
     const checkStatus = (data) => {
@@ -284,7 +279,7 @@ const Home = ({ navigation }) => {
 
     return (
         <>
-            <Header item={profile} navigation={navigation} />
+            <Header navigation={navigation} />
             <HomeContainer>
                 <CalendarContainer>
                     <Mont20600>{getToday()}</Mont20600>

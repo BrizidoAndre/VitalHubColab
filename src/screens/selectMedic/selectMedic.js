@@ -57,7 +57,8 @@ const SelectMedic = ({ route, navigation }) => {
                             setSelected(item.id)
                             setNewAppointment({
                                 ...newContinueAppointment,
-                                medicoId:item.id
+                                medicoId:item.id,
+                                medico:item
                             })
                         }}
                         item={item}

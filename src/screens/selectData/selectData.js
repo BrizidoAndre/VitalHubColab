@@ -29,16 +29,6 @@ const SelectData = ({route, navigation }) => {
 
     // state para verificar qual data está sendo usada
     const [selected, setSelected] = useState(0)
-    // State para verificar como o cadastro de consulta foi realizado
-    const [item, setItem] = useState({
-        data: 'teste',
-        doctor: {
-            name: 'Doutora Alessandra',
-            specialty: 'Dermatóloga, Esteticista'
-        },
-        location: 'Lugar de teste',
-        kind: 'Tipo de teste',
-    })
 
     // state para analisar o horário a ser cadastrado
     const [times, setTimes] = useState([
@@ -61,8 +51,6 @@ const SelectData = ({route, navigation }) => {
             ...newContinueAppointment,
             dataConsulta: prepareData()
         })
-        console.log(newAppointment)
-        console.log(prepareData())
     },[selected])
 
     return (
@@ -94,6 +82,7 @@ const SelectData = ({route, navigation }) => {
 
             <ConfirmAppointment
                 item={newAppointment}
+                setItem={setNewAppointment}
                 hideModal={hideModal}
                 setHideModal={setHideModal}
                 navigation={navigation}

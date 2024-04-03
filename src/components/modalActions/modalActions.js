@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../button/button";
 import { ButtonTitle } from "../button/buttonTitle";
 import { ModalContainer, RowContainer, Container, InputContainer, BottomCancelContainer, BottomRowButtonContainer } from "../container/style";
@@ -11,6 +11,10 @@ import { AppointmentButton } from "../navButton/navButton";
 // import das bibliotecas
 import { Camera } from "expo-camera";
 import { Ionicons, Entypo } from "@expo/vector-icons";
+
+// import do axios
+import api from "../../service/service";
+import { userDecodeToken } from "../../utils/auth";
 
 
 export const CancelAppointment = ({ hideModal = false, onPressCancel = null, onPress = null }) => {
@@ -116,7 +120,7 @@ export const AppointmentLevel = ({ selectedInput = null, appointmentLevel, setAp
             <Label>Qual o nível da consulta</Label>
             <RowContainer>
                 <AppointmentButton
-                    selected={appointmentLevel==='Rotina'}
+                    selected={appointmentLevel === 'Rotina'}
                     buttonTitle={'Rotina'}
                     onPress={() => setAppointmentLevel('Rotina')} />
 
@@ -162,14 +166,78 @@ export const DoctorAppointment = ({ item = null, hideModal = false, onPressCance
     )
 }
 
-export const ConfirmAppointment = ({ item, hideModal, setHideModal = null, navigation }) => {
+export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = null, navigation }) => {
+
+    // Criando um state para a todas as informações da nova consulta
+    const [itemShow, setItemShow] = useState({})
+
+    const [newConsulta, setNewConsulta] = useState({})
+    // useState para as informações do usuário atual
+    const [token, setToken] = useState({})
+
+
+
+
+    function prepareData(date) {
+        return date.toLocaleDateString('default', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        })
+    }
+
+    async function loadMedicClinic() {
+        try {
+
+            const res = await api.get('/Consultas/BuscarMedicoClinica?idMedico=' + item.medicoId + '&idClinica=' + item.clinicaId)
+
+            const data = await res.data
+
+            setItem({
+                ...item,
+                medicoClinicaId: data.id
+            })
+
+
+        } catch (e) {
+            console.log('Erro na api');
+            console.log(e)
+        }
+    }
+
+    async function cadastrarConsulta() {
+        try {
+            let user = await userDecodeToken()
+
+            const res = await api.post('/Consultas/Cadastrar', {
+                situacaoId: "6B4217A2-4D62-4F85-AB4D-3AFB24BFBE04",
+                pacienteId: user.id,
+                medicoClinicaId: item.medicoClinicaId,
+                receitaId: null,
+                prioridadeId: item.prioridadeId,
+                dataConsulta: item.dataConsulta,
+                descricao: "Novo médico",
+                diagnostico: "string",
+            })
+
+            const data = await res.data;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        if (hideModal) {
+            loadMedicClinic()
+        }
+    }, [hideModal])
+
 
     if (!hideModal) {
         return (
             <></>
         )
     }
-
     return (
         <GrayBackground>
             <ModalConfirmAppointment>
@@ -180,17 +248,20 @@ export const ConfirmAppointment = ({ item, hideModal, setHideModal = null, navig
 
                     <InputContainer>
                         <Sand16600>Data da Consulta</Sand16600>
-                        <Sand14500Gray>{item.data}</Sand14500Gray>
+                        <Sand14500Gray>{prepareData(item.dataConsulta)}</Sand14500Gray>
                         <Sand16600>Médico da consulta</Sand16600>
-                        <Sand14500Gray>{item.doctor.name}</Sand14500Gray>
-                        <Sand14500Gray>{item.doctor.specialty}</Sand14500Gray>
-                        <Sand16600>Data da Consulta</Sand16600>
-                        <Sand14500Gray>{item.location}</Sand14500Gray>
-                        <Sand16600>Data da Consulta</Sand16600>
-                        <Sand14500Gray>{item.kind}</Sand14500Gray>
+                        <Sand14500Gray>{item.medico.idNavigation.nome}</Sand14500Gray>
+                        <Sand14500Gray>{item.medico.especialidade.especialidade1}</Sand14500Gray>
+                        <Sand16600>Local da Consulta</Sand16600>
+                        <Sand14500Gray>{item.clinica.endereco.numero} {item.clinica.endereco.logradouro}, {item.clinica.endereco.cidade}</Sand14500Gray>
+                        <Sand16600>Tipo da Consulta</Sand16600>
+                        <Sand14500Gray>{item.prioridade}</Sand14500Gray>
                     </InputContainer>
 
-                    <Button onPress={() => navigation.navigate("Home")} >
+                    <Button onPress={() => {
+                        cadastrarConsulta()
+                        navigation.navigate("Home")
+                    }} >
                         <ButtonTitle>CONFIRMAR</ButtonTitle>
                     </Button>
                     <LinkBlueSmall onPress={() => setHideModal(false)}>Cancelar</LinkBlueSmall>

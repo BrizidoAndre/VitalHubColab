@@ -20,10 +20,12 @@ export const userDecodeToken = async () => {
     if(token === null){
         return null
     }
-    
+
     // desciptografando o token
     const decoded = jwtDecode(token)
 
+    console.log(decoded)
+    
     return {
         role: decoded.role,
         name: decoded.name,
