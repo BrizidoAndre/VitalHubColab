@@ -31,7 +31,6 @@ const Profile = ({ navigation }) => {
 
             const data = await res.data
             
-            console.log(data)
 
             setEndereco(data)
         } catch(e){
@@ -45,8 +44,9 @@ const Profile = ({ navigation }) => {
             const res = await api.get('/Pacientes/BuscarPorId?id=' + item.id)
             
             const data = await res.data
-            data.dataNascimento = await data.dataNascimento.split([''])[0]
-            console.log(data)
+
+            
+            data.dataNascimento = await data.dataNascimento.split(['T'])[0]
             setUser(data)
 
         } catch(e){
