@@ -1,4 +1,3 @@
-
 import { Container, InputContainer, LabelInputContainer, TwoInputContainer } from "../../components/container/style"
 import { ImageModal } from "../../components/modal/modal"
 import { SubTitle, Title } from "../../components/title/title"
@@ -46,7 +45,7 @@ const Profile = ({ navigation }) => {
             const res = await api.get('/Pacientes/BuscarPorId?id=' + item.id)
             
             const data = await res.data
-            data.dataNascimento = await data.dataNascimento.split(['T'])[0]
+            data.dataNascimento = await data.dataNascimento.split([''])[0]
             console.log(data)
             setUser(data)
 
@@ -86,7 +85,7 @@ const Profile = ({ navigation }) => {
                     <InputContainer>
                         <InputLabelBlack
                             title={"Data de nascimento"}
-                            value={ user.dataNascimento}
+                            value={ user.dataNascimento }
                              
                         />
                         <InputLabelBlack
@@ -120,4 +119,4 @@ const Profile = ({ navigation }) => {
 
 }
 
-export default Profile
+export default Profile;
