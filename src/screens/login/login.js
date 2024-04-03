@@ -28,10 +28,12 @@ const Login = ({ navigation }) => {
         try {
             setLoginTime(true)
             // Chamar a api de login
-            const response = await api.post('/Login', {
+            const response = await api.post('http://172.16.39.79:4466/api/Login', {
                 email: email,
                 senha: password
             })
+
+            console.log(response);
 
             await AsyncStorage.setItem('token', JSON.stringify(response.data))
             navigation.replace("Main")
