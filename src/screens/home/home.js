@@ -34,44 +34,6 @@ Notifications.setNotificationHandler({
 
 const Home = ({ navigation }) => {
 
-    const rawDataMedic = [
-        {
-            id: "imasdf",
-            name: 'Dr. Claudios',
-            specialty: 'Clínico Geral',
-            CRM: '15286',
-            age: 22,
-            image: image,
-            nivel: 'Rotina',
-            email: 'emaildoe@email.com',
-            time: "14:00",
-            status: "a"
-        },
-        {
-            id: "imasdf",
-            name: 'sem doutor nenhum não so',
-            specialty: 'Clínico Geral',
-            CRM: '15286',
-            age: 22,
-            image: image,
-            nivel: 'Rotina',
-            email: 'emaildoe@email.com',
-            time: "14:00",
-            status: "r"
-        },
-        {
-            id: "imasdf",
-            name: 'Dr. Claudio',
-            specialty: 'Clínico Geral',
-            CRM: '15286',
-            age: 22,
-            image: image,
-            nivel: 'Rotina',
-            email: 'emaildoe@email.com',
-            time: "14:00",
-            status: "c"
-        },
-    ]
 
     // state de lista das consultas
     const [listAppointment, setListAppointment] = useState([])
