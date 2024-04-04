@@ -9,38 +9,55 @@ import image from '../../assets/img/Rectangle425.png'
 import { Text } from "react-native"
 
 
-const Card = ({ name, age, image, nivel, time = "14:00", status = "c", onPress = null, onPressCard }) => {
+const Card = ({ name, age=null, CRM=null, image, nivel, time = "14:00", status = "c", onPress = null, onPressCard, isMedic }) => {
 
     const statusCheck = () => {
-        if (status === "a") {
+        if (status === "Pendentes") {
             return (
 
                 <RowCardBox>
-                    <StatusGreen time={time} />
+                    <StatusGreen time={time.substring(11,16)} />
                     <Center>
                         <Mont12500Red onPress={onPress}>Cancelar</Mont12500Red>
                     </Center>
                 </RowCardBox>
             )
-        } else if (status === "r") {
+        } else if (status === "Pendentes") {
             return (
                 <RowCardBox>
-                    <StatusGray time={time} />
+                    <StatusGray time={time.substring(11,16)} />
                     <Center>
                         <Mont12500Blue onPress={onPress}>Ver Prontuário</Mont12500Blue>
                     </Center>
                 </RowCardBox>
             )
 
-        } else if (status === "c") {
+        } else if (status === "Cancelados") {
             return (
                 <RowCardBox>
-                    <StatusGray time={time} />
+                    <StatusGray time={time.substring(11,16)} />
                     <Center>
                     </Center>
                 </RowCardBox>
             )
 
+        }
+    }
+
+    function priorityCheck(){
+        switch (nivel) {
+            case 1:
+                return 'Rotina'
+                break;
+            case 2:
+                return 'Exame'
+                break;
+            case 3:
+                return 'Urgência'
+                break;
+        
+            default:
+                break;
         }
     }
 
@@ -51,7 +68,8 @@ const Card = ({ name, age, image, nivel, time = "14:00", status = "c", onPress =
 
                 <TextCardBox>
                     <Mont16600>{name}</Mont16600>
-                    <Sand14400>{age} anos · {nivel}</Sand14400>
+                    {isMedic ?<Sand14400>CRM {CRM} . {priorityCheck()}</Sand14400> : <Sand14400>{age} anos · {priorityCheck()}</Sand14400>}
+                    
                 </TextCardBox>
 
 

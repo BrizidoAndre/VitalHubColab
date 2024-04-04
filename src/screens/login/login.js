@@ -33,8 +33,6 @@ const Login = ({ navigation }) => {
                 senha: password
             })
 
-            console.log(response);
-
             await AsyncStorage.setItem('token', JSON.stringify(response.data))
             navigation.replace("Main")
             setLoginTime(false)

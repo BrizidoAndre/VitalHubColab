@@ -34,89 +34,6 @@ Notifications.setNotificationHandler({
 
 const Home = ({ navigation }) => {
 
-    const rawData = [
-        {
-            id: "imasdf",
-            name: 'Richard comedouro',
-            age: 22,
-            nivel: 'Rotina',
-            image: image,
-            email: 'emaildoe@email.com',
-            time: "14:00",
-            status: "a"
-        },
-        {
-            id: "imasdf132443",
-            name: 'Richard lirineu',
-            age: 22,
-            nivel: 'Rotina',
-            image: image,
-            email: 'emaildoe@email.com',
-            time: "14:00",
-            status: "a"
-        },
-        {
-            id: "imasdfd",
-            name: 'Richard paylera',
-            age: 22,
-            nivel: 'Urgencia',
-            image: image,
-            email: 'emaildoe@email.com',
-            time: "14:00",
-            status: "r"
-        },
-        {
-            id: "imasdfs",
-            name: 'Richard paylerado',
-            age: 22,
-            nivel: 'Exame',
-            image: image,
-            email: 'emaildoe@email.com',
-            time: "14:00",
-            status: "r"
-        },
-        {
-            id: "imasdfasd",
-            name: 'Richard Rasmussem',
-            age: 22,
-            nivel: 'Exame',
-            image: image,
-            email: 'emaildoe@email.com',
-            time: "14:00",
-            status: "a"
-        },
-        {
-            id: "imasdfqwe",
-            name: 'Richard Rasmussem',
-            age: 22,
-            nivel: 'Exame',
-            image: image,
-            email: 'emaildoe@email.com',
-            time: "14:00",
-            status: "c"
-        },
-        {
-            id: "imasdfzxc",
-            name: 'Richard Rasmussem',
-            age: 22,
-            nivel: 'Urgencia',
-            image: image,
-            email: 'emaildoe@email.com',
-            time: "14:00",
-            status: "c"
-        },
-        {
-            id: "imasdffghhg",
-            name: 'Richard Rasmussem',
-            age: 22,
-            nivel: 'Rotina',
-            image: image,
-            email: 'emaildoe@email.com',
-            time: "14:00",
-            status: "a"
-        },
-    ]
-
     const rawDataMedic = [
         {
             id: "imasdf",
@@ -156,6 +73,10 @@ const Home = ({ navigation }) => {
         },
     ]
 
+    // state de lista das consultas
+    const [listAppointment, setListAppointment] = useState([])
+
+    
     //! VER SE O USUÁRIO É UM MÉDICO
     const [isMedic, setIsMedic] = useState(false);
 
@@ -176,36 +97,24 @@ const Home = ({ navigation }) => {
     // Use state para o modal do prontuário
     const [objModalRecord, setObjModalRecord] = useState({})
 
-    const [dateSelected, setDateSelected] = useState({
-        a: true
-    })
+    // state para a data que está sendo selecionada para o usuário
+    // eu estou setando a data como hoje no useEffect
+    const [dateSelected, setDateSelected] = useState(parseInt(new Date().toLocaleDateString('default',{day:'numeric'}))) 
 
 
 
     // função de filtragem dos dados 
-    const checkStatus = (data) => {
-        if (data.status === "a" && selected.agendadas === true) {
+    const filterByStatus = (data) => {
+        if (data.situacao.situacao === "Pendentes" && selected.agendadas) {
             return data
         }
-        else if (data.status === "r" && selected.realizadas === true) {
+        else if (data.situacao.situacao === "Realizadas" && selected.realizadas) {
             return data
         }
-        else if (data.status === "c" && selected.canceladas === true) {
+        else if (data.situacao.situacao === "Cancelados" && selected.canceladas) {
             return data
         }
     }
-
-    const verifyMedic = () => {
-        if (isMedic) {
-            return rawData.filter(checkStatus)
-        }
-        else {
-            return rawDataMedic.filter(checkStatus)
-        }
-    }
-
-    //? AQUI ESTÁ OS DADOS
-    const data = verifyMedic();
 
 
 
@@ -235,7 +144,6 @@ const Home = ({ navigation }) => {
     // função para verificar se o usuário deu permissões para usar notificações
     async function verifyStatus() {
         const { status } = await Notifications.getPermissionsAsync();
-
         if (status !== 'granted') {
             Notifications.requestPermissionsAsync();
         }
@@ -265,19 +173,28 @@ const Home = ({ navigation }) => {
 
     async function listarConsultas() {
         try {
-            console.log(dateSelected);
-            let dateSelect = new Date()
+
+            const user = await userDecodeToken()
+
+            let dateNow = new Date()
             const date = {
+                year: dateNow.toLocaleDateString('default',{year:'numeric'}),
+                month: dateNow.toLocaleDateString('default',{month:"numeric"}),
             }
 
-            // const dateString = dateYear + '-' + dateMonth + '-' dateDay
+            const dateString = date.year + '-' + date.month + '-' + dateSelected
+            
 
-            const res = await api.get('/Pacientes/BuscarPorData?data=2024-04-03&id=2A751A43-9DC2-44F6-8779-B669F813F81D')
+            const res = await api.get('/Pacientes/BuscarPorData?data='+dateString+'&id=' + user.id)
 
             const data = await res.data
 
+            setListAppointment(data)
+
+            console.log(data);
 
         } catch (error) {
+            console.log('Erro na api');
             console.log(error)
         }
     }
@@ -350,7 +267,7 @@ const Home = ({ navigation }) => {
                     <NavButtonComponent
                         onPress={() => { setSelected({ agendadas: true }) }}
                         selected={selected.agendadas}
-                        buttonTitle={'Agendadas'} />
+                        buttonTitle={'Pendentes'} />
                     <NavButtonComponent
                         onPress={() => { setSelected({ realizadas: true }) }}
                         selected={selected.realizadas}
@@ -365,17 +282,20 @@ const Home = ({ navigation }) => {
 
 
             <FlatlistContainer
-                data={data}
+                data={listAppointment.filter(filterByStatus)}
                 renderItem={({ item }) =>
                     <Card
-                        name={item.name}
+                        name={item.medicoClinica.medico.idNavigation.nome}
                         age={item.age}
-                        image={item.image}
-                        status={item.status}
-                        time={item.time}
-                        nivel={item.nivel}
+                        image={image}
+                        status={item.situacao.situacao}
+                        time={item.dataConsulta}
+                        nivel={item.prioridade.prioridade}
                         onPress={() => showRightModal(item)}
-                        onPressCard={() => showRightCardModal(item)} />} />
+                        onPressCard={() => showRightCardModal(item)} 
+                        isMedic={true}
+                        CRM={item.medicoClinica.medico.crm}/>} 
+                        />
 
             <CancelAppointment
                 hideModal={modal.cancel}
