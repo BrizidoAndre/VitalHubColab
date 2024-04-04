@@ -12,7 +12,7 @@ const apiUrlLocal = `http://${ip}:${portaApi}/api`
 
 //Configurar o axios
 const api = axios.create({
-     // baseURL: apiUrlLocal
+     baseURL: apiUrlLocal
 })
 
 

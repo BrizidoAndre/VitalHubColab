@@ -12,14 +12,6 @@ import { Alert } from "react-native";
 import api from "../../service/service";
 
 const CreateAccount = ({ navigation }) => {
-    const [rg, setRg] = useState('')
-    const [cpf, setCpf] = useState('')
-    const [dataNascimento, setDataNascimento] = useState('')
-    const [cep, setCep] = useState('')
-    const [logradouro, setLogradouro] = useState('')
-    const [numero, setNumero] = useState('')
-    const [cidade, setCidade] = useState('')
-    const [nome, setNome] = useState('')
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
     const [confirmarSenha, setConfirmarSenha] = useState('')
@@ -33,62 +25,56 @@ const CreateAccount = ({ navigation }) => {
       
         try {
             const response = await api.post('http://172.16.39.79:4466/api/Pacientes', {
-                rg: rg,
-                cpf: cpf,
-                dataNascimento: dataNascimento,
-                cep: cep,
-                logradouro: logradouro,
-                numero: numero,
-                cidade: cidade,
-                nome: nome,
                 email: email,
                 senha: senha,
                 idTipoUsuario: idTipoUsuario
             })
-      
-          if (!response.ok) {
-            const data = await response();
-            setError(data.error);
-          } else {
-            setRg("");
-            setCpf("");
-            setDataNascimento("");
-            setCep("");
-            setLogradouro("");
-            setNumero("");
-            setCidade("");
-            setNome("");
+
+            if (!response.ok) {
+              const data = await response.json();
+              Alert.alert(data.error);
+            } else  {
             setEmail("");
             setSenha("");
             setConfirmarSenha("");
             setIdTipoUsuario("");
             setError("");
+            console.log(e.Alert);
+            Alert.alert("Conta criada");
 
             navigation.navigate("Login");
           }
         } catch (e) {
             console.log(e);
-            Alert.alert('Erro ao criar conta')
+            Alert.alert('SUCESSOOOOO')
         }
       };
 
     return (
         <Container>
 
+            <Logo source={require("../../assets/img/VitalHubLogo.png")} />
+
+            <Title>Criar conta</Title>
+
+            <SubTitle>Insira seu endereço de e-mail e senha para realizar seu cadastro.</SubTitle>
 
             <InputContainer>
-                <Input placeholder={"rg"}/>
-                <Input placeholder={"cpf"}/>
-                <Input placeholder={"dataNascimento"}/>
-                <Input placeholder={"cep"}/>
-                <Input placeholder={"logradouro"}/>
-                <Input placeholder={"numero"}/>
-                <Input placeholder={"cidade"}/>
-                <Input placeholder={"nome"}/>
-                <Input placeholder={"E-mail"}/>
-                <Input placeholder={"Senha"}/>
-                <Input placeholder={"Confirmar senha"}/>
-
+                <Input 
+                  placeholder={"E-mail"}
+                  value={email}
+                  onChangeText={(txt) => setEmail(txt)}
+                />
+                <Input 
+                  placeholder={"Senha"}
+                  value={senha}
+                  onChangeText={(txt) => setSenha(txt)}
+                />
+                <Input 
+                  placeholder={"Confirmar senha"}
+                  value={confirmarSenha}
+                  onChangeText={(txt) => setConfirmarSenha(txt)}
+                />
             </InputContainer>
 
             <Button>
