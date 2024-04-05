@@ -7,7 +7,7 @@ import { Button } from "../../components/button/button";
 import { ButtonTitle } from "../../components/button/buttonTitle";
 import { LinkBlueSmall } from "../../components/links/links";
 import Login from "../login/login";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import api from "../../service/service";
 
@@ -17,6 +17,13 @@ const CreateAccount = ({ navigation }) => {
     const [confirmarSenha, setConfirmarSenha] = useState('')
     const [idTipoUsuario, setIdTipoUsuario] = useState("A4FD73A0-9F0B-4462-A9CF-E3460CAC328A")
 
+    const [cadastro, setCadastro] = useState('')
+
+    useEffect((navigation) => {
+      const { Cadastro } = navigation.navigate;
+      setCadastro(Cadastro)
+    }, []);
+
     const Cadastrar = async () => {
         if (senha !== confirmarSenha) {
           setError("Senhas devem ser iguais");
@@ -25,9 +32,10 @@ const CreateAccount = ({ navigation }) => {
       
         try {
             const response = await api.post('http://172.16.39.79:4466/api/Pacientes', {
-                email: email,
-                senha: senha,
-                idTipoUsuario: idTipoUsuario
+              email: email,
+              senha: senha,
+              
+              cadastro: cadastro,
             })
 
             if (!response.ok) {
@@ -38,15 +46,15 @@ const CreateAccount = ({ navigation }) => {
             setSenha("");
             setConfirmarSenha("");
             setIdTipoUsuario("");
-            setError("");
+            setCadastro("");
+
             console.log(e.Alert);
             Alert.alert("Conta criada");
-
             navigation.navigate("Login");
           }
         } catch (e) {
             console.log(e);
-            Alert.alert('SUCESSOOOOO')
+            Alert.alert('ERROx')
         }
       };
 

@@ -88,7 +88,7 @@ const Login = ({ navigation }) => {
 
             <ButtonContainer>
                 <LinkDescription>Não tem uma conta! </LinkDescription>
-                <LinkBlueSmall onPress={() => { navigation.navigate(CreateAccount) }}>Crie uma conta agora</LinkBlueSmall>
+                <LinkBlueSmall onPress={() => { navigation.navigate('CreateAccountInfo') }}>Crie uma conta agora</LinkBlueSmall>
             </ButtonContainer>
 
         </Container>

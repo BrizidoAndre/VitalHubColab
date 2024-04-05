@@ -6,6 +6,7 @@ import { Button } from "../../components/button/button";
 import { ButtonTitle } from "../../components/button/buttonTitle";
 import { LinkBlueSmall } from "../../components/links/links";
 import Login from "../login/login";
+import { useState } from "react";
 
 const CreateAccountInfo = ({ navigation }) => {
     const [rg, setRg] = useState('')
@@ -18,13 +19,9 @@ const CreateAccountInfo = ({ navigation }) => {
     const [nome, setNome] = useState('')
 
     const Cadastro = async () => {
-        if (senha !== confirmarSenha) {
-          setError("Senhas devem ser iguais");
-          return;
-        }
-      
+
         try {
-            const response = await api.post('http://172.16.39.79:4466/api/Pacientes', {
+            const response = await {
                 rg: rg,
                 cpf: cpf,
                 dataNascimento: dataNascimento,
@@ -33,25 +30,27 @@ const CreateAccountInfo = ({ navigation }) => {
                 numero: numero,
                 cidade: cidade,
                 nome: nome,
-            })
+            }
 
             if (!response.ok) {
               const data = await response.json();
               Alert.alert(data.error);
-            } else  {
-            setRg("");
-            setCpf("");
-            setDataNascimento("");
-            setCep("");
-            setLogradouro("");
-            setNumero("");
-            setCidade("");
-            setNome("");
-            setError("");
-            console.log(e.Alert);
-            Alert.alert("Conta criada");
+            } 
+            
+            else  {
+              setRg("");
+              setCpf("");
+              setDataNascimento("");
+              setCep("");
+              setLogradouro("");
+              setNumero("");
+              setCidade("");
+              setNome("");
+              console.log(e.Alert);
+              Alert.alert("Conta criada");
 
-            navigation.navigate("Login");
+              navigation.navigate("Login");
+              setError("");
           }
         } catch (e) {
             console.log(e);
@@ -61,7 +60,6 @@ const CreateAccountInfo = ({ navigation }) => {
 
     return (
         <Container>
-            <Logo source={require("../../assets/img/VitalHubLogo.png")} />
 
             <Title>Criar conta</Title>
 
@@ -110,8 +108,8 @@ const CreateAccountInfo = ({ navigation }) => {
                 />
             </InputContainer>
 
-            <Button onPress={() => {navigation.navigate(CreateAccount)}}>
-                <ButtonTitle>PRÓXIMO</ButtonTitle>
+            <Button onPress={() => {navigation.navigate('CreateAccount', { Cadastro })}}>
+            <ButtonTitle>PRÓXIMO</ButtonTitle>
             </Button>
 
             <LinkBlueSmall onPress={() => {navigation.navigate(Login)}}>Cancelar</LinkBlueSmall>
