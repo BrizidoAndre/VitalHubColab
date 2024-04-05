@@ -70,7 +70,7 @@ export const SelectCard = ({ time, onPress, setHideSelect }) => {
 
     return (
         <SelectRow onPress={() => { onPress(time); setHideSelect(false) }}>
-            <Mont14600Green>{time}</Mont14600Green>
+            <Mont14600Green>{time.time}</Mont14600Green>
         </SelectRow>
     )
 }
