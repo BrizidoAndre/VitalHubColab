@@ -148,10 +148,10 @@ const Home = ({ navigation }) => {
                 month: dateNow.toLocaleDateString('default',{month:"numeric"}),
             }
 
+            // constante para definir a data de hoje usando a seleção de data da home
             const dateString = date.year + '-' + date.month + '-' + dateSelected
-            
 
-            const res = await api.get('/Pacientes/BuscarPorData?data='+dateString+'&id=' + user.id)
+            const res = await api.get( (user.role === 'Medico' ? '/Medicos' : '/Pacientes') +'/BuscarPorData?data=' + dateString + '&id=' + user.id)
 
             const data = await res.data
 
