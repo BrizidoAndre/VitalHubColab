@@ -120,15 +120,6 @@ export default function App() {
 
         <Stack.Screen
 
-        name='CreateAccountInfo'
-
-        component={CreateAccountInfo}
-
-        options={{ title: "CreateAccountInfo" }}
-        />
-
-        <Stack.Screen
-
           name='CreateAccount'
 
           component={CreateAccount}

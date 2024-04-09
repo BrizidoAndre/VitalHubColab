@@ -10,19 +10,14 @@ import Login from "../login/login";
 import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import api from "../../service/service";
+import Profile from "../profile/profile";
 
 const CreateAccount = ({ navigation }) => {
-    const [email, setEmail] = useState('')
-    const [senha, setSenha] = useState('')
-    const [confirmarSenha, setConfirmarSenha] = useState('')
-    const [idTipoUsuario, setIdTipoUsuario] = useState("A4FD73A0-9F0B-4462-A9CF-E3460CAC328A")
-
-    const [cadastro, setCadastro] = useState('')
-
-    useEffect((navigation) => {
-      const { Cadastro } = navigation.navigate;
-      setCadastro(Cadastro)
-    }, []);
+  const [nome, setNome] = useState('')
+  const [email, setEmail] = useState('')
+  const [senha, setSenha] = useState('')
+  const [confirmarSenha, setConfirmarSenha] = useState('')
+  const [idTipoUsuario, setIdTipoUsuario] = useState("A4FD73A0-9F0B-4462-A9CF-E3460CAC328A")
 
     const Cadastrar = async () => {
         if (senha !== confirmarSenha) {
@@ -31,11 +26,9 @@ const CreateAccount = ({ navigation }) => {
         }
       
         try {
-            const response = await api.post('http://172.16.39.79:4466/api/Pacientes', {
+            const response = await api.post('http://192.168.19.134:4466/api/Pacientes', {
               email: email,
               senha: senha,
-              
-              cadastro: cadastro,
             })
 
             if (!response.ok) {
@@ -69,6 +62,11 @@ const CreateAccount = ({ navigation }) => {
 
             <InputContainer>
                 <Input 
+                  placeholder={"Nome"}
+                  value={nome}
+                  onChangeText={(txt) => setNome(txt)}
+                />
+                <Input 
                   placeholder={"E-mail"}
                   value={email}
                   onChangeText={(txt) => setEmail(txt)}
@@ -85,8 +83,8 @@ const CreateAccount = ({ navigation }) => {
                 />
             </InputContainer>
 
-            <Button>
-                <ButtonTitle onPress={Cadastrar}>CADASTRAR</ButtonTitle>
+            <Button onPress={() => navigation.navigate('Profile')}>
+                <ButtonTitle>CADASTRAR</ButtonTitle>
             </Button>
 
             <LinkBlueSmall onPress={() => {navigation.navigate(Login)}}>Cancelar</LinkBlueSmall>

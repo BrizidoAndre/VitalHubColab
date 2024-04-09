@@ -28,7 +28,7 @@ const Login = ({ navigation }) => {
         try {
             setLoginTime(true)
             // Chamar a api de login
-            const response = await api.post('http://172.16.39.79:4466/api/Login', {
+            const response = await api.post('/Login', {
                 email: email,
                 senha: password
             })
@@ -88,7 +88,7 @@ const Login = ({ navigation }) => {
 
             <ButtonContainer>
                 <LinkDescription>Não tem uma conta! </LinkDescription>
-                <LinkBlueSmall onPress={() => { navigation.navigate('CreateAccountInfo') }}>Crie uma conta agora</LinkBlueSmall>
+                <LinkBlueSmall onPress={() => { navigation.navigate('CreateAccount') }}>Crie uma conta agora</LinkBlueSmall>
             </ButtonContainer>
 
         </Container>
