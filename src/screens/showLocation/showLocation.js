@@ -9,15 +9,19 @@ import { LocationAccuracy, getCurrentPositionAsync, requestForegroundPermissions
 import MapViewDirections from "react-native-maps-directions";
 import { mapsKey } from "../../../Utils";
 import { HeaderContainer } from "../../components/header/styles";
+import api from "../../service/service";
 
 
-const ShowLocation = ({ }) => {
+const ShowLocation = ({ route }) => {
     const mapReference = useRef(null)
     const [initialPosition, setInitialPosition] = useState(null)
     const [finalPosition, setFinalPosition] = useState({
         latitude: -23.5612,
         longitude: -46.6557,
     });
+
+
+    const {objModalRecord } = route.params
 
     // funcao para pedir acesso ao usuário a obter sua localização
     async function capturarLocalizacao() {
@@ -33,9 +37,19 @@ const ShowLocation = ({ }) => {
 
     }
 
+    async function getClinic(){
+        const res = await api.get('/Clinica/BuscarPorId?id=' + objModalRecord.enderecoId)
+
+        const data = await res.data
+
+        console.log("Informação do endereço")
+        console.log(data)
+    }
+
 
 
     useEffect(() => {
+        console.log(objModalRecord.medicoClinica.clinica)
         capturarLocalizacao()
 
         // Função para obter a posição do usuário a cada instante
@@ -60,6 +74,10 @@ const ShowLocation = ({ }) => {
     useEffect(() => {
         recarregarVisualizacaoMapa()
     }, [initialPosition])
+
+    useEffect(()=>{
+        getClinic()
+    },[])
 
     // função para mostrar o ponto central entre os dois marcadores que definimos
     async function recarregarVisualizacaoMapa() {

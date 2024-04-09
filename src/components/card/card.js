@@ -9,14 +9,33 @@ import image from '../../assets/img/Rectangle425.png'
 import { Text } from "react-native"
 
 
-const Card = ({ name, age=null, CRM=null, image, nivel, time = "14:00", status = "c", onPress = null, onPressCard, isMedic }) => {
+const Card = ({item, image, onPress = null, onPressCard, isMedic }) => {
+
+    const status = item.situacao.situacao;
+    const nivel = item.prioridade.prioridade;
+
+
+    function calculateAge(){
+
+        const yearNow = new Date()
+        
+        const birth = new Date(item.paciente.dataNascimento)
+        const diff_ms = Date.now() - birth.getTime()
+
+
+        var age_dt = new Date(diff_ms); 
+
+        result =  Math.abs(age_dt.getUTCFullYear() - yearNow.getFullYear());
+
+        return yearNow.getFullYear()
+    }
 
     const statusCheck = () => {
         if (status === "Pendentes") {
             return (
 
                 <RowCardBox>
-                    <StatusGreen time={time.substring(11,16)} />
+                    <StatusGreen time={item.dataConsulta.substring(11,16)} />
                     <Center>
                         <Mont12500Red onPress={onPress}>Cancelar</Mont12500Red>
                     </Center>
@@ -25,7 +44,7 @@ const Card = ({ name, age=null, CRM=null, image, nivel, time = "14:00", status =
         } else if (status === "Realizados") {
             return (
                 <RowCardBox>
-                    <StatusGray time={time.substring(11,16)} />
+                    <StatusGray time={item.dataConsulta.substring(11,16)} />
                     <Center>
                         <Mont12500Blue onPress={onPress}>Ver Prontuário</Mont12500Blue>
                     </Center>
@@ -35,7 +54,7 @@ const Card = ({ name, age=null, CRM=null, image, nivel, time = "14:00", status =
         } else if (status === "Cancelados") {
             return (
                 <RowCardBox>
-                    <StatusGray time={time.substring(11,16)} />
+                    <StatusGray time={item.dataConsulta.substring(11,16)} />
                     <Center>
                     </Center>
                 </RowCardBox>
@@ -67,8 +86,8 @@ const Card = ({ name, age=null, CRM=null, image, nivel, time = "14:00", status =
             <Container>
 
                 <TextCardBox>
-                    <Mont16600>{name}</Mont16600>
-                    {isMedic ?<Sand14400>CRM {CRM} . {priorityCheck()}</Sand14400> : <Sand14400>{age} anos · {priorityCheck()}</Sand14400>}
+                    {!isMedic ?<Mont16600>{item.medicoClinica.medico.idNavigation.nome}</Mont16600> : <Mont16600>{item.paciente.idNavigation.nome}</Mont16600>}
+                    {!isMedic ?<Sand14400>CRM {item.medicoClinica.medico.crm} . {priorityCheck()}</Sand14400> : <Sand14400>{calculateAge()} anos · {priorityCheck()}</Sand14400>}
                     
                 </TextCardBox>
 

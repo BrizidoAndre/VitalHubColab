@@ -155,6 +155,8 @@ const Home = ({ navigation }) => {
 
             const data = await res.data
 
+            console.log(data)
+
             setListAppointment(data)
 
         } catch (error) {
@@ -275,15 +277,11 @@ const Home = ({ navigation }) => {
                 data={listAppointment.filter(filterByStatus)}
                 renderItem={({ item }) =>
                     <Card
-                        name={item.medicoClinica.medico.idNavigation.nome}
-                        age={item.age}
+                        item={item}
                         image={image}
-                        status={item.situacao.situacao}
-                        time={item.dataConsulta}
-                        nivel={item.prioridade.prioridade}
                         onPress={() => showRightModal(item)}
                         onPressCard={() => showRightCardModal(item)} 
-                        isMedic={true}
+                        isMedic={isMedic}
                         CRM={item.medicoClinica.medico.crm}/>} 
                         />
 
@@ -294,10 +292,10 @@ const Home = ({ navigation }) => {
             />
 
             <ShowRecord
-                item={objModalRecord}
                 hideModal={modal.record}
                 onPressCancel={() => { setModal({ record: false }) }}
                 onPressNavigate={() => { navigation.navigate("Appointment") }}
+                item={objModalRecord}
             />
 
 
@@ -310,8 +308,11 @@ const Home = ({ navigation }) => {
             <DoctorAppointment
                 hideModal={modal.doctorAppointment}
                 item={objModalRecord}
-                onPressCancel={() => setModal({ doctorAppointment: false })}
-                onPressNavigate={() => navigation.navigate('ShowLocation')}
+                onPressCancel={() => resetModal()}
+                onPressNavigate={() => {
+                    resetModal()
+                    navigation.navigate('ShowLocation', { objModalRecord })
+                }}
             />
 
             {isMedic ? <></> : <Stethoscope onPress={() => setModal({ setAppointment: true })} />}

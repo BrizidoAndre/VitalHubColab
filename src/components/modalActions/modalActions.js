@@ -150,10 +150,10 @@ export const DoctorAppointment = ({ item = null, hideModal = false, onPressCance
             <ModalMedRecord>
                 <ModalContainer>
                     <ImageProfile source={item.image} />
-                    <Mont20600>{item.name}</Mont20600>
+                    <Mont20600>{item.medicoClinica.medico.idNavigation.nome}</Mont20600>
                     <RowContainer>
-                        <Sand16500>{item.specialty}</Sand16500>
-                        <Sand16500>CRM-{item.CRM}</Sand16500>
+                        <Sand16500>{item.medicoClinica.medico.especialidade.especialidade1}</Sand16500>
+                        <Sand16500>CRM-{item.medicoClinica.medico.crm}</Sand16500>
                     </RowContainer>
                     <Button onPress={onPressNavigate}>
                         <ButtonTitle>VER LOCAL DA CONSULTA</ButtonTitle>
