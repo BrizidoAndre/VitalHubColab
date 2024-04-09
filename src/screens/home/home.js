@@ -5,7 +5,7 @@ import image from "../../assets/img/Rectangle425.png"
 import { useEffect, useReducer, useState } from "react"
 import { CalendarContainer, FlatlistContainer, HomeContainer, InputContainer, RowContainer } from "../../components/container/style"
 import { NavButtonComponent } from "../../components/navButton/navButton"
-import { ScrollView } from "react-native"
+import { Alert, ScrollView } from "react-native"
 import Header from "../../components/header/header"
 import Card from "../../components/card/card"
 import { CancelAppointment, CreateAppointment, DoctorAppointment, ShowRecord } from "../../components/modalActions/modalActions"
@@ -34,14 +34,11 @@ Notifications.setNotificationHandler({
 
 const Home = ({ navigation }) => {
 
-
     // state de lista das consultas
     const [listAppointment, setListAppointment] = useState([])
 
-    
     //! VER SE O USUÁRIO É UM MÉDICO
     const [isMedic, setIsMedic] = useState(false);
-
 
     // use states para os agendados realizado e cancelado
     const [selected, setSelected] = useState({
@@ -63,6 +60,8 @@ const Home = ({ navigation }) => {
     // eu estou setando a data como hoje no useEffect
     const [dateSelected, setDateSelected] = useState(parseInt(new Date().toLocaleDateString('default',{day:'numeric'}))) 
 
+    // useState das consultas a serem usadas pelos modais
+    const [itemForModal, setItemForModal] = useState()
 
 
     // função de filtragem dos dados 
@@ -78,29 +77,32 @@ const Home = ({ navigation }) => {
         }
     }
 
-
-
-
-    const showRightModal = (obj) => {
-        if (obj.status === "a") {
+    const showRightModal = (item) => {
+        if (item.situacao.situacao === 'Pendentes') {
             setModal({ cancel: true })
+            setItemForModal(item.id)
         }
-        else if (obj.status === 'r' && isMedic) {
+        else if (item.situacao.situacao === 'Realizados') {
             setModal({ record: true })
-            setObjModalRecord(obj)
+            setObjModalRecord(item)
         }
     }
 
     const showRightCardModal = (item) => {
-        if (item.status === 'a' && !isMedic) {
+        if (item.situacao.situacao === 'Pendentes' && !isMedic) {
             setModal({ doctorAppointment: true })
             setObjModalRecord(item)
-        } else if (item.status === 'r' && !isMedic) {
+        } else if (item.situacao.situacao === 'Realizados' && !isMedic) {
             navigation.navigate("Appointment")
-        } else if (item.status === 'a' && isMedic) {
+        } else if (item.situacao.situacao === 'Cancelados' && isMedic) {
             setModal({ record: true })
             setObjModalRecord(item)
         }
+    }
+
+    function resetModal(){
+        setModal({})
+        setItemForModal('')
     }
 
     // função para verificar se o usuário deu permissões para usar notificações
@@ -111,6 +113,8 @@ const Home = ({ navigation }) => {
         }
     }
 
+    
+    //? As funções a partir daqui serão voltadas para o consumo da api 
     // função para criar a notificação de cancelar
     async function notificationCancel() {
         await Notifications.scheduleNotificationAsync({
@@ -144,22 +148,46 @@ const Home = ({ navigation }) => {
                 month: dateNow.toLocaleDateString('default',{month:"numeric"}),
             }
 
+            // constante para definir a data de hoje usando a seleção de data da home
             const dateString = date.year + '-' + date.month + '-' + dateSelected
-            
 
-            const res = await api.get('/Pacientes/BuscarPorData?data='+dateString+'&id=' + user.id)
+            const res = await api.get( (user.role === 'Medico' ? '/Medicos' : '/Pacientes') +'/BuscarPorData?data=' + dateString + '&id=' + user.id)
 
             const data = await res.data
 
             setListAppointment(data)
-
-            console.log(data);
 
         } catch (error) {
             console.log('Erro na api');
             console.log(error)
         }
     }
+
+    async function changeAppointmentToCancel(){
+        try {
+
+            const res = await api.put('/Consultas/Status',{
+                id:itemForModal,
+                situacaoId:"15396370-4412-4DE0-A22F-95A6FA3DEDC2"
+            })
+
+            if(res.status === 200){
+                notificationCancel();
+                resetModal()
+                listarConsultas()
+            }
+            else{
+                resetModal()
+                Alert("Erro","Algum erro inesperado aconteceu!!!")
+            }
+
+            
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    
 
     useEffect(() => {
         verifyStatus()
@@ -233,11 +261,11 @@ const Home = ({ navigation }) => {
                     <NavButtonComponent
                         onPress={() => { setSelected({ realizadas: true }) }}
                         selected={selected.realizadas}
-                        buttonTitle={'Realizadas'} />
+                        buttonTitle={'Realizados'} />
                     <NavButtonComponent
                         onPress={() => { setSelected({ canceladas: true }) }}
                         selected={selected.canceladas}
-                        buttonTitle={'Canceladas'} />
+                        buttonTitle={'Cancelados'} />
                 </RowContainer>
             </HomeContainer>
 
@@ -261,8 +289,8 @@ const Home = ({ navigation }) => {
 
             <CancelAppointment
                 hideModal={modal.cancel}
-                onPressCancel={() => setModal({ cancel: false })}
-                onPress={() => { notificationCancel(); setModal({ cancel: false }) }}
+                onPressCancel={() => resetModal()}
+                onPress={() => {  changeAppointmentToCancel() }}
             />
 
             <ShowRecord
@@ -276,7 +304,7 @@ const Home = ({ navigation }) => {
 
             <CreateAppointment
                 hideModal={modal.setAppointment}
-                onPressCancel={() => setModal({ setAppointment: false })}
+                onPressCancel={() => resetModal()}
                 navigation={navigation} />
 
             <DoctorAppointment

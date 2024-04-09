@@ -24,24 +24,44 @@ const SelectData = ({route, navigation }) => {
     // states para o select
     // booleano para mostrar ou não o select
     const [hideSelect, setHideSelect] = useState(false)
-    // useState para configurar o placeholder
-    const [timeAvailable, setTimeAvailable] = useState('Selecionar horário')
 
     // state para verificar qual data está sendo usada
     const [selected, setSelected] = useState(0)
+    
+    // useState para o item selecionado
+    const [timeAvailable, setTimeAvailable] = useState({
+        time: '09:00',
+        value: 9
+    })
 
     // state para analisar o horário a ser cadastrado
-    const [times, setTimes] = useState([
-        '12:00',
-        '15:00',
-        '09:00',
-        '16:30',
-    ])
+    const times = [
+        {
+            time: '09:00',
+            value: 9
+        },
+        {
+            time: '12:00',
+            value: 12
+        },
+        {
+            time: '14:00',
+            value: 14
+        },
+        {
+            time: '16:00',
+            value: 16
+        }
+    ]
 
     function prepareData(){
         let data = new Date()
         
         data.setDate(data.getDate() + selected)
+
+        data.setHours(timeAvailable.value - 3)
+
+        data.setMinutes(0,0,0)
 
         return data;
     }
@@ -51,7 +71,7 @@ const SelectData = ({route, navigation }) => {
             ...newContinueAppointment,
             dataConsulta: prepareData()
         })
-    },[selected])
+    },[selected, timeAvailable])
 
     return (
         <>
@@ -64,7 +84,7 @@ const SelectData = ({route, navigation }) => {
                     <AllCalendar onPress={setSelected} selected={selected} />
 
                     <SelectLabel
-                        placeholder={timeAvailable}
+                        placeholder={timeAvailable.time}
                         title={"Selecione um horário disponível"}
                         hideSelect={hideSelect}
                         setHideSelect={() => setHideSelect(!hideSelect)}

@@ -168,15 +168,6 @@ export const DoctorAppointment = ({ item = null, hideModal = false, onPressCance
 
 export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = null, navigation }) => {
 
-    // Criando um state para a todas as informações da nova consulta
-    const [itemShow, setItemShow] = useState({})
-
-    const [newConsulta, setNewConsulta] = useState({})
-    // useState para as informações do usuário atual
-    const [token, setToken] = useState({})
-
-
-
 
     function prepareData(date) {
         return date.toLocaleDateString('default', {
@@ -184,6 +175,20 @@ export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = nu
             month: 'long',
             year: 'numeric'
         })
+    }
+
+    // função para preparar o tempo da consulta para mostrar de maneira correta para o usuário
+    function prepareTime(date){
+        const time = date.toString(date)
+
+        const rightText = time.substring(18,21)
+        let rightHour = parseInt(time.substring(16,18)) + 3
+        if(rightHour < 10){
+            rightHour = '0' + rightHour
+        }
+
+
+        return rightHour + rightText
     }
 
     async function loadMedicClinic() {
@@ -230,6 +235,8 @@ export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = nu
         if (hideModal) {
             loadMedicClinic()
         }
+
+        console.log(item.dataConsulta);
     }, [hideModal])
 
 
@@ -248,7 +255,7 @@ export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = nu
 
                     <InputContainer>
                         <Sand16600>Data da Consulta</Sand16600>
-                        <Sand14500Gray>{prepareData(item.dataConsulta)}</Sand14500Gray>
+                        <Sand14500Gray>{prepareData(item.dataConsulta)} - {prepareTime(item.dataConsulta)}</Sand14500Gray>
                         <Sand16600>Médico da consulta</Sand16600>
                         <Sand14500Gray>{item.medico.idNavigation.nome}</Sand14500Gray>
                         <Sand14500Gray>{item.medico.especialidade.especialidade1}</Sand14500Gray>

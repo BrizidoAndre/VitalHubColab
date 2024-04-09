@@ -22,7 +22,7 @@ const Card = ({ name, age=null, CRM=null, image, nivel, time = "14:00", status =
                     </Center>
                 </RowCardBox>
             )
-        } else if (status === "Pendentes") {
+        } else if (status === "Realizados") {
             return (
                 <RowCardBox>
                     <StatusGray time={time.substring(11,16)} />
