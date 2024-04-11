@@ -7,7 +7,7 @@ import { useEffect } from "react";
 const today = new Date();
 
 export const ProduceDate = ({ i, selected = false, setSelected = null }) => {
-    
+
     var data = new Date()
     data.setDate(today.getDate() + i)
 
@@ -28,7 +28,7 @@ export const ProduceDate = ({ i, selected = false, setSelected = null }) => {
     }
     else {
         return (
-            <DateBox onPress={()=>{ setSelected(dataNumber) }}>
+            <DateBox onPress={() => { setSelected(dataNumber) }}>
                 <TextDate>{dataWeek}</TextDate>
                 <TextNumberDate>{dataNumber}</TextNumberDate>
             </DateBox>
@@ -47,6 +47,8 @@ export const AllCalendar = ({ selected, onPress }) => {
     // Obtendo o ano
     const dateYear = today.toLocaleDateString('default', { year: 'numeric' })
 
+
+    // função para pegar o dia da semana e colocá-la em Pascal Case
     const getWeekDay = (day) => {
         let dateNow = new Date();
         dateNow.setDate(dateNow.getDate() + day)
@@ -56,12 +58,13 @@ export const AllCalendar = ({ selected, onPress }) => {
         return dateWeek
     }
 
+    // função para obter o número dos dias
     const getNumberDay = (day) => {
         let today = new Date();
         let varDay = new Date();
 
         varDay.setDate(today.getDate() + day)
-        
+
         let numeric = varDay.toLocaleDateString('default', { day: '2-digit' })
         return numeric
     }
@@ -69,6 +72,7 @@ export const AllCalendar = ({ selected, onPress }) => {
     let days = [];
     let daysIndex = [];
 
+    // função para prencher um array auxiliar com os dias do mês de hoje até daqui a 35 dias
     const getAllDays = () => {
         for (let i = 0; i < 35; i++) {
 
@@ -79,8 +83,8 @@ export const AllCalendar = ({ selected, onPress }) => {
         }
     }
 
+    // função para substituir a data selecionada com um ícone na frente para mostrar ao usuário qual data está selecionada
     const replace = () => {
-
         days[selected] =
             <NumberDateContainer>
                 <NumberDateContainerPosition>
@@ -91,12 +95,23 @@ export const AllCalendar = ({ selected, onPress }) => {
             </NumberDateContainer>
     }
 
+    const weekDays = [
+        [<Sand12600>{getWeekDay(0)}</Sand12600>],
+        [<Sand12600>{getWeekDay(1)}</Sand12600>],
+        [<Sand12600>{getWeekDay(2)}</Sand12600>],
+        [<Sand12600>{getWeekDay(3)}</Sand12600>],
+        [<Sand12600>{getWeekDay(4)}</Sand12600>],
+        [<Sand12600>{getWeekDay(5)}</Sand12600>],
+        [<Sand12600>{getWeekDay(6)}</Sand12600>]
+    ]
+
 
     return (
         <CalendarContainer>
             <Mont20600Gray>{dateMonth}  {dateYear}</Mont20600Gray>
             {/* coluna para obter os dias da semana em extenso */}
             <CalendarRowContainer>
+
                 <Sand12600>{getWeekDay(0)}</Sand12600>
                 <Sand12600>{getWeekDay(1)}</Sand12600>
                 <Sand12600>{getWeekDay(2)}</Sand12600>
@@ -104,13 +119,15 @@ export const AllCalendar = ({ selected, onPress }) => {
                 <Sand12600>{getWeekDay(4)}</Sand12600>
                 <Sand12600>{getWeekDay(5)}</Sand12600>
                 <Sand12600>{getWeekDay(6)}</Sand12600>
+
             </CalendarRowContainer>
 
-
-            {/* aqui está os dias mesmo */}
             <CalendarRowNumberContainer>
+                {/* atualizando as datas no array de dias*/}
                 {getAllDays()}
+                {/* colocando o componente na frente da data selecionada */}
                 {replace()}
+                {/* renderizando os dias com as datas atualizadas*/}
                 {days}
             </CalendarRowNumberContainer>
         </CalendarContainer>
