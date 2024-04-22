@@ -151,11 +151,11 @@ const Home = ({ navigation }) => {
             // constante para definir a data de hoje usando a seleção de data da home
             const dateString = date.year + '-' + date.month + '-' + dateSelected
 
+            console.log((user.role === 'Medico' ? '/Medicos' : '/Pacientes') +'/BuscarPorData?data=' + dateString + '&id=' + user.id);
+
             const res = await api.get( (user.role === 'Medico' ? '/Medicos' : '/Pacientes') +'/BuscarPorData?data=' + dateString + '&id=' + user.id)
 
             const data = await res.data
-
-            console.log(data)
 
             setListAppointment(data)
 
@@ -165,13 +165,11 @@ const Home = ({ navigation }) => {
         }
     }
 
+    // função para mudar uma consulta para cancelado
     async function changeAppointmentToCancel(){
         try {
 
-            const res = await api.put('/Consultas/Status',{
-                id:itemForModal,
-                situacaoId:"15396370-4412-4DE0-A22F-95A6FA3DEDC2"
-            })
+            const res = await api.put('/Consultas/Status?idConsulta=' + itemForModal + '&status=Cancelados')
 
             if(res.status === 200){
                 notificationCancel();

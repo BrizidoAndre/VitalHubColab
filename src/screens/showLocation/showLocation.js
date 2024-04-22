@@ -10,18 +10,21 @@ import MapViewDirections from "react-native-maps-directions";
 import { mapsKey } from "../../../Utils";
 import { HeaderContainer } from "../../components/header/styles";
 import api from "../../service/service";
+import { LinkBlueSmall } from "../../components/links/links";
 
 
-const ShowLocation = ({ route }) => {
+
+const ShowLocation = ({ route, navigation }) => {
     const mapReference = useRef(null)
+
+    // useState das posições de referência para o mapa 
     const [initialPosition, setInitialPosition] = useState(null)
-    const [finalPosition, setFinalPosition] = useState({
-        latitude: -23.5612,
-        longitude: -46.6557,
-    });
+    const [finalPosition, setFinalPosition] = useState({});
 
+    // useState para salvar as informações do endereco
+    const [address, setAddress] = useState({})
 
-    const {objModalRecord } = route.params
+    const {objModalRecord} = route.params
 
     // funcao para pedir acesso ao usuário a obter sua localização
     async function capturarLocalizacao() {
@@ -32,24 +35,27 @@ const ShowLocation = ({ route }) => {
         if (granted) {
             const captureLocation = await getCurrentPositionAsync();
             setInitialPosition(captureLocation)
-
         }
 
     }
 
     async function getClinic(){
-        const res = await api.get('/Clinica/BuscarPorId?id=' + objModalRecord.enderecoId)
+        const res = await api.get('/Clinica/BuscarPorId?id=' + objModalRecord.medicoClinica.medicoId)
 
         const data = await res.data
 
-        console.log("Informação do endereço")
-        console.log(data)
+        setFinalPosition({
+            latitude: data.endereco.latitude,
+            longitude: data.endereco.longitude
+        })
+        setAddress(data)
+
+        console.log(data);
     }
 
 
 
     useEffect(() => {
-        console.log(objModalRecord.medicoClinica.clinica)
         capturarLocalizacao()
 
         // Função para obter a posição do usuário a cada instante
@@ -371,17 +377,20 @@ const ShowLocation = ({ route }) => {
 
                     </MapView>
                     <CalendarContainer>
-                        <Title>CLinicaNatureh</Title>
-                        <Sand14600>Teste</Sand14600>
+                        <Title>{address.nomeFantasia}</Title>
+                        <Sand14600>{address.endereco.cidade}</Sand14600>
                         <InputContainer>
-                            <InputLabelBlack title={"Endereço"} text={'Rua Exemplo Nº'} />
+                            <InputLabelBlack title={"Endereço"} text={address.endereco.logradouro} />
                         </InputContainer>
                         <RowContainer>
-                            <SmallInputLabel title={'Número'} text={143} />
-                            <SmallInputLabel title={'Bairro'} text={'Moema-SP'} />
+                            <SmallInputLabel title={'Número'} text={address.endereco.numero} />
+                            <SmallInputLabel title={'Bairro'} text={address.endereco.cidade} />
                         </RowContainer>
+                        <LinkBlueSmall onPress={()=> navigation.goBack()}>Voltar</LinkBlueSmall>
                     </CalendarContainer>
-                </> : <HeaderContainer>
+                </> 
+                : 
+                <HeaderContainer>
 
                     <Text>Carregando localização</Text>
                     <ActivityIndicator />

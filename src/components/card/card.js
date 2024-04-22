@@ -6,7 +6,6 @@ import { CardBox, CardBoxSelect, ClinicCardBox, ClinicCardBoxSelected, Container
 
 // importando uma imagem mocada
 import image from '../../assets/img/Rectangle425.png'
-import { Text } from "react-native"
 
 
 const Card = ({item, image, onPress = null, onPressCard, isMedic }) => {

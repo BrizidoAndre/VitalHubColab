@@ -9,6 +9,7 @@ import { Title } from "../../components/title/title"
 import image from '../../assets/img/Rectangle425.png'
 import { useEffect, useState } from "react"
 import api from "../../service/service"
+import { Alert } from "react-native"
 
 // importando axios para consumo da api
 
@@ -35,6 +36,17 @@ const SelectMedic = ({ route, navigation }) => {
 
         } catch (error) {
             console.log(error);
+        }
+    }
+
+
+    function nextPage(){
+        if(selected){
+            navigation.navigate("SelectData", {newContinueAppointment} )
+            setSelected()
+        }
+        else{
+            Alert.alert("Erro ao cadastrar consulta", "Você ainda não selecionou um médico para sua consulta!")
         }
     }
 
@@ -66,7 +78,7 @@ const SelectMedic = ({ route, navigation }) => {
             />
 
 
-            <Button onPress={() => navigation.navigate("SelectData", {newContinueAppointment} )}><ButtonTitle>CONTINUAR</ButtonTitle></Button>
+            <Button onPress={() => nextPage()}><ButtonTitle>CONTINUAR</ButtonTitle></Button>
             <LinkBlueSmall onPress={() => navigation.goBack()}>Cancelar</LinkBlueSmall>
         </WithoutHeader >
     )

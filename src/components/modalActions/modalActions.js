@@ -225,6 +225,7 @@ export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = nu
                 diagnostico: "string",
             })
 
+
             const data = await res.data;
         } catch (error) {
             console.log(error);

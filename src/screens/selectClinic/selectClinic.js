@@ -7,6 +7,7 @@ import { ClinicCard } from "../../components/card/card"
 // Use states
 import { useEffect, useState } from "react"
 import api from "../../service/service"
+import { Alert } from "react-native"
 
 
 const SelectClinic = ({ route, navigation }) => {
@@ -50,18 +51,31 @@ const SelectClinic = ({ route, navigation }) => {
         }
 
         setNewAppointment({
-            situacaoId:  '',
+            situacaoId: '',
             pacienteId: "",
             medicoClinicaId: "",
-            medicoId:'',
-            clinicaId:'',
+            medicoId: '',
+            clinicaId: '',
             receitaId: null,
             prioridadeId: levelId,
-            prioridade:appointmentLevel,
+            prioridade: appointmentLevel,
             dataConsulta: "",
             descricao: "",
             diagnostico: "",
-        })        
+        })
+    }
+
+
+    function nextPage() {
+
+        if (selected) {
+            navigation.navigate("SelectMedic", { newAppointment })
+            setSelected()
+        }
+        else {
+            Alert.alert("Erro ao passar de página", 'Nenhuma clinica foi selecionada')
+        }
+
     }
 
     useEffect(() => {
@@ -83,8 +97,8 @@ const SelectClinic = ({ route, navigation }) => {
                             setSelected(item.id)
                             setNewAppointment({
                                 ...newAppointment,
-                                clinicaId:item.id,
-                                clinica:item
+                                clinicaId: item.id,
+                                clinica: item
                             })
                         }}
                         select={selected}
@@ -97,7 +111,7 @@ const SelectClinic = ({ route, navigation }) => {
 
 
 
-            <Button onPress={() => navigation.navigate("SelectMedic", { newAppointment })}><ButtonTitle>CONTINUAR</ButtonTitle></Button>
+            <Button onPress={() => nextPage()}><ButtonTitle>CONTINUAR</ButtonTitle></Button>
             <LinkBlueSmall onPress={() => navigation.goBack()}>Cancelar</LinkBlueSmall>
         </WithoutHeader >
     )
