@@ -13,108 +13,143 @@ import { useEffect, useState } from "react"
 import api from "../../service/service.js"
 
 const Profile = ({ navigation }) => {
-
-    const [item, setItem] = useState({})
-
-    const [user, setUser] = useState({})
-
-    const [endereco, setEndereco] = useState({})
-
-    async function loadItem() {
-        const token = await userDecodeToken()
-        setItem(token)
-    }
-
-    async function loadAdress(){
-        try{
-            const res = await api.get('/Usuario/BuscarEndereco?id=' + user.enderecoId)
-
-            const data = await res.data
-            
-
-            setEndereco(data)
-        } catch(e){
-            console.log(e)
+    const [userData, setUserData] = useState({
+      nome: '',
+      email: '',
+      dataNascimento: '',
+      cpf: '',
+      endereco: '',
+      cep: '',
+      cidade: '',
+    });
+  
+    const loadProfile = async () => {
+      try {
+        const token = await userDecodeToken();
+        if (token) {
+          const res = await api.get('/Pacientes/BuscarPorId?id=' + token.id);
+          const data = await res.data;
+          data.dataNascimento = await data.dataNascimento.split(['T'])[0];
+          setUserData(data);
         }
-    }
-
-    async function loadProfile() {
-
-        try{
-            const res = await api.get('/Pacientes/BuscarPorId?id=' + item.id)
-            
-            const data = await res.data
-            data.dataNascimento = await data.dataNascimento.split(['T'])[0]
-            setUser(data)
-
-        } catch(e){
-            console.log(e)
-        }
-    }
-
-
-    async function Logout() {
-        await AsyncStorage.removeItem('token')
-        navigation.navigate('Login')
-    }
-
+      } catch (e) {
+        console.log(e);
+      }
+    };
+  
     useEffect(() => {
-        loadItem()
-    }, [])
-    
-    useEffect(() => {
-        loadProfile()
-    }, [item])
-    
-    useEffect(() => {
-        loadAdress()
-    }, [user])
+      loadProfile();
+    }, []);
 
+    const saveData = async () => {
+      try {
+        await api.setItem('userData', JSON.stringify(userData));
+        navigation.navigate('Home');
+      } 
+      catch (error) {
+        console.log(error);
+      }
+    };
+  
     return (
-        <Container>
-            <HeaderImage requireImage={require("../../assets/img/Rectangle425.png")} />
+      <Container>
+	<HeaderImage requireImage={require("../../assets/img/Rectangle425.png")} />
 
-
-            <ScrollViewProfile>
-                <Title>{item.name}</Title>
-                <SubTitle>{item.email}</SubTitle>
-                <Container>
-
-                    <InputContainer>
-                        <InputLabelBlack
-                            title={"Data de nascimento"}
-                            value={ user.dataNascimento }
-                             
-                        />
-                        <InputLabelBlack
-                            title={"CPF"}
-                            value={user.cpf}
-                             
-                        />
-                        <InputLabelBlack
-                            title={"Endereço"}
-                            value={endereco.logradouro + ' ' + endereco.numero}
-                            
-                        />
-
-                        <TwoInputContainer>
-                            <SmallInputLabel title={"CEP"} placeholder={"XXXXXXXX"} value={endereco.cep} />
-                            <SmallInputLabel title={"CIDADE"} placeholder={"Ex: SP"} value={endereco.cidade} />
-                        </TwoInputContainer>
-
-                    </InputContainer>
-
-                            <Button><ButtonTitle>SALVAR</ButtonTitle></Button>
-
-
-                    <ButtonLogout onPress={() => {
-                        Logout()
-                    }}><ButtonTitle>Log off</ButtonTitle></ButtonLogout>
-                </Container>
-            </ScrollViewProfile>
-        </Container>
-    )
-
-}
+        <ScrollViewProfile>
+          <Container>
+            {userData.nome? (
+              <>
+                <Title>{userData.nome}</Title>
+                <SubTitle>{userData.email}</SubTitle>
+                <InputContainer>
+                <InputLabelBlack
+                    title={"Data de nascimento"}
+                    value={userData.dataNascimento}
+                    onChangeText={text => setUserData({...userData, dataNascimento: text})}
+                    name="dataNascimento"
+                  />
+                  <InputLabelBlack
+                    title={"CPF"}
+                    value={userData.cpf}
+                    onChangeText={text => setUserData({...userData, cpf: text})}
+                    name="cpf"
+                  />
+                  <InputLabelBlack
+                    title={"Endereço"}
+                    value={userData.endereco}
+                    onChangeText={text => setUserData({...userData, endereco: text})}
+                    name="endereco"
+                  />
+                  <TwoInputContainer>
+                    <SmallInputLabel
+                      title={"CEP"}
+                      value={userData.cep}
+                      onChangeText={text => setUserData({...userData, cep: text})}
+                      name="cep"
+                    />
+                    <SmallInputLabel
+                      title={"CIDADE"}
+                      value={userData.cidade}
+                      onChangeText={text => setUserData({...userData, cidade: text})}
+                      name="cidade"
+                    />
+                  </TwoInputContainer>
+                </InputContainer>
+                <Button onPress={() => saveData(navigation.navigate('Home')) }>
+                  <ButtonTitle>SALVAR</ButtonTitle>
+                </Button>
+              </>
+            ) : (
+              <>
+                <InputContainer>
+                  <InputLabelBlack
+                    title={"Email"}
+                    value={userData.email}
+                    onChangeText={text => setUserData({...userData, email: text})}
+                    name="email"
+                  />
+                  <InputLabelBlack
+                    title={"Data de nascimento"}
+                    value={userData.dataNascimento}
+                    onChangeText={text => setUserData({...userData, dataNascimento: text})}
+                    name="dataNascimento"
+                  />
+                  <InputLabelBlack
+                    title={"CPF"}
+                    value={userData.cpf}
+                    onChangeText={text => setUserData({...userData, cpf: text})}
+                    name="cpf"
+                  />
+                  <InputLabelBlack
+                    title={"Endereço"}
+                    value={userData.endereco}
+                    onChangeText={text => setUserData({...userData, endereco: text})}
+                    name="endereco"
+                  />
+                  <TwoInputContainer>
+                    <SmallInputLabel
+                      title={"CEP"}
+                      value={userData.cep}
+                      onChangeText={text => setUserData({...userData, cep: text})}
+                      name="cep"
+                    />
+                    <SmallInputLabel
+                      title={"CIDADE"}
+                      value={userData.cidade}
+                      onChangeText={text => setUserData({...userData, cidade: text})}
+                      name="cidade"
+                    />
+                  </TwoInputContainer>
+                </InputContainer>
+                <Button onPress={() => saveData(navigation.navigate('Home')) }>
+                  <ButtonTitle>SALVAR</ButtonTitle>
+                </Button>
+              </>
+            )}
+          </Container>
+        </ScrollViewProfile>
+      </Container>
+    );
+  };
 
 export default Profile;

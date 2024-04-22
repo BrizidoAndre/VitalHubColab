@@ -9,8 +9,21 @@ import CheckEmail from "../checkEmail/checkEmail";
 import Login from "../login/login";
 import { TouchableHighlight } from "react-native";
 import { IconReturn } from "../../components/navigationIcons/navigationIcons";
+import { useState } from "react";
+import api from "../../service/service";
 
 const ForgotPassword = ({navigation}) => {
+    const [email, setEmail] = useState('');
+
+    async function EnviarEmail(){
+        await api.post(`/RecuperarSenha?email=${email}`)
+        .then( () => {
+            navigation.replace("CheckEmail", { emailRecuperacao : email });
+        }). catch(error => {
+            console.log(error)
+        })
+    }
+
     return(
         <Container>
 
@@ -23,13 +36,13 @@ const ForgotPassword = ({navigation}) => {
             <SubTitle>Digite abaixo seu email cadastrado que enviaremos um link para recuperação de senha </SubTitle>
 
             <InputContainer>
-            <Input placeholder={"Usuário ou E-mail"} />
+            <Input placeholder={"Usuário ou E-mail"} 
+            value={email}
+            onChangeText={(txt) => setEmail(txt)}/>
             </InputContainer>
 
-            <Button>
-                <ButtonTitle 
-                onPress={() => navigation.navigate("CheckEmail")}
-                >CONTINUAR</ButtonTitle>
+            <Button onPress={()=> EnviarEmail()}>
+                <ButtonTitle>CONTINUAR</ButtonTitle>
             </Button>
 
         </Container>

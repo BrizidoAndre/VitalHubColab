@@ -22,7 +22,6 @@ import {
 import CheckEmail from './src/screens/checkEmail/checkEmail';
 import RedefinePassword from './src/screens/redefinePassword/redefinePassword';
 import CreateAccount from './src/screens/createAccount/createAccount';
-import CreateAccountInfo from './src/screens/createAccountInfo/createAccountInfo';
 import Profile from './src/screens/profile/profile';
 import Appointment from './src/screens/appointment/appointment';
 import EditAppointment from './src/screens/editAppointment/editAppointment';
