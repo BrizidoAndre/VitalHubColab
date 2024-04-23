@@ -173,3 +173,13 @@ export const BottomRowButtonContainer = styled.View`
     align-self:center;
     ;
 `
+
+export const Container11 = styled.View`
+    width: 100%;
+    heigth: 280px;
+    margin-bottom: 20px;
+
+    position: relative;
+    align-Items: center;
+    justify-Content: flex-start;
+`

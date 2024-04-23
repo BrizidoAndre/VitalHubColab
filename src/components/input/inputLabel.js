@@ -16,7 +16,7 @@ import {
 import { IconCamera } from "../../screens/appointment/styles";
 import notFound from '../../assets/img/iconoir_file-not-found.png'
 
-export const InputLabelBlack = ({ title, bigInput = false, value, onChangeText }) => {
+export const InputLabelBlack = ({ title,  bigInput = false, value, onChangeText, name=null }) => {
     return (
         <>
             <Label>{title}</Label>
@@ -65,11 +65,11 @@ export const InputLabel = ({ title, placeholder, bigInput = false, value }) => {
     )
 }
 
-export const SmallInputLabel = ({ title, placeholder, value }) => {
+export const SmallInputLabel = ({ title, placeholder, value, onChangeText }) => {
     return (
         <SmallInputLabelContainer>
             <Label>{title}</Label>
-            <InputBlack placeholder={placeholder} value={value} />
+            <InputBlack placeholder={placeholder} value={value} onChangeText={(txt)=>onChangeText(txt)} />
         </SmallInputLabelContainer>
     )
 }
