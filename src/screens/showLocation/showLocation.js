@@ -40,7 +40,7 @@ const ShowLocation = ({ route, navigation }) => {
     }
 
     async function getClinic(){
-        const res = await api.get('/Clinica/BuscarPorId?id=' + objModalRecord.medicoClinica.medicoId)
+        const res = await api.get('/Clinica/BuscarPorId?id=' + objModalRecord.medicoClinica.clinicaId)
 
         const data = await res.data
 
@@ -49,8 +49,6 @@ const ShowLocation = ({ route, navigation }) => {
             longitude: data.endereco.longitude
         })
         setAddress(data)
-
-        console.log(data);
     }
 
 

@@ -134,14 +134,6 @@ export default function App() {
           options={{ title: "Profile" }}
         />
 
-
-
-        <Stack.Screen
-          name='EditAppointment'
-          component={EditAppointment}
-          options={{ title: "EditAppointment" }}
-        />
-
         <Stack.Screen
           name='Home'
           component={Home}

@@ -83,9 +83,33 @@ export const InputBlack = styled.TextInput.attrs({
     font-size:14px;
 `
 
+export const InputBlackText = styled.Text`
+    width: 100%;
+    height: 55px;
+    border-radius: 5px;
+    background-color:#e5e3e3;
+    padding: 16px;
+
+    font-family: MontserratAlternates_500Medium;
+    font-size:14px;
+`
+
 export const BigInputBlack = styled.TextInput.attrs({
     placeholderTextColor: "#000000"
 })`
+    width: 100%;
+    height: 170px;
+    padding:16px;
+    text-align:justify;
+    text-align-vertical:top;
+    border-radius: 5px;
+    background-color:#e5e3e3;
+
+    font-family: MontserratAlternates_500Medium;
+    font-size:14px;
+`
+
+export const BigInputBlackText = styled.Text`
     width: 100%;
     height: 170px;
     padding:16px;

@@ -69,7 +69,7 @@ const Home = ({ navigation }) => {
         if (data.situacao.situacao === "Pendentes" && selected.agendadas) {
             return data
         }
-        else if (data.situacao.situacao === "Realizadas" && selected.realizadas) {
+        else if (data.situacao.situacao === "Realizados" && selected.realizadas) {
             return data
         }
         else if (data.situacao.situacao === "Cancelados" && selected.canceladas) {
@@ -151,11 +151,13 @@ const Home = ({ navigation }) => {
             // constante para definir a data de hoje usando a seleção de data da home
             const dateString = date.year + '-' + date.month + '-' + dateSelected
 
-            console.log((user.role === 'Medico' ? '/Medicos' : '/Pacientes') +'/BuscarPorData?data=' + dateString + '&id=' + user.id);
 
             const res = await api.get( (user.role === 'Medico' ? '/Medicos' : '/Pacientes') +'/BuscarPorData?data=' + dateString + '&id=' + user.id)
 
             const data = await res.data
+
+
+            console.log(data);
 
             setListAppointment(data)
 
@@ -279,8 +281,7 @@ const Home = ({ navigation }) => {
                         image={image}
                         onPress={() => showRightModal(item)}
                         onPressCard={() => showRightCardModal(item)} 
-                        isMedic={isMedic}
-                        CRM={item.medicoClinica.medico.crm}/>} 
+                        isMedic={isMedic}/>} 
                         />
 
             <CancelAppointment
@@ -292,7 +293,7 @@ const Home = ({ navigation }) => {
             <ShowRecord
                 hideModal={modal.record}
                 onPressCancel={() => { setModal({ record: false }) }}
-                onPressNavigate={() => { navigation.navigate("Appointment") }}
+                onPressNavigate={() => { navigation.navigate("Appointment",{objModalRecord, isMedic}) }}
                 item={objModalRecord}
             />
 

@@ -15,6 +15,7 @@ import { Ionicons, Entypo } from "@expo/vector-icons";
 // import do axios
 import api from "../../service/service";
 import { userDecodeToken } from "../../utils/auth";
+import { prepareAge } from "../../utils/dateFunctions";
 
 
 export const CancelAppointment = ({ hideModal = false, onPressCancel = null, onPress = null }) => {
@@ -47,15 +48,20 @@ export const ShowRecord = ({ item = null, hideModal = false, onPressCancel = nul
         return (<>
         </>)
     }
+
+    useEffect(()=>{
+        console.log(item)
+    },[])
+    
     return (
         <GrayBackground>
             <ModalMedRecord>
                 <ModalContainer>
                     <ImageProfile source={item.image} />
-                    <Mont20600>{item.name}</Mont20600>
+                    <Mont20600>{item.paciente.idNavigation.nome}</Mont20600>
                     <RowContainer>
-                        <Sand16500>{item.age} anos</Sand16500>
-                        <Sand16500>{item.email}</Sand16500>
+                        <Sand16500>{ prepareAge(item.paciente.dataNascimento)} anos</Sand16500>
+                        <Sand16500>{item.paciente.idNavigation.email}</Sand16500>
                     </RowContainer>
                     <Button onPress={onPressNavigate}>
                         <ButtonTitle>INSERIR PRONTUÁRIO</ButtonTitle>

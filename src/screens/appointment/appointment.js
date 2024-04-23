@@ -3,12 +3,12 @@ import { Camera } from "expo-camera"
 import * as MediaLibrary from 'expo-media-library'
 
 // Importando componentes
-import { Button, SmallButtonGreen, SmallButtonTransparentContainer } from "../../components/button/button"
+import { Button, SmallButton, SmallButtonGreen, SmallButtonTransparentContainer } from "../../components/button/button"
 import { ButtonTitle } from "../../components/button/buttonTitle"
-import { Container, InputContainer, RowAlign, RowFullContainer } from "../../components/container/style"
+import { Container, InputContainer, RowAlign, RowFullContainer, TwoInputContainer } from "../../components/container/style"
 import { HeaderImage } from "../../components/headerImage/headerImage"
 import { BigInputBlack } from "../../components/input/input"
-import { InputLabelBlack, InputLabelImageBlack } from "../../components/input/inputLabel"
+import { InputLabel, InputLabelBlack, InputLabelBlackText, InputLabelImageBlack } from "../../components/input/inputLabel"
 import { IconReturn } from "../../components/navigationIcons/navigationIcons"
 import ScrollViewProfile from "../../components/scrollViewProfile/scrollViewProfile"
 import { Mont12500Red, Mont14600White, Sand14500Gray, SubTitle, Title } from "../../components/title/title"
@@ -18,28 +18,43 @@ import { IconCamera, Line, LinkReturn } from "./styles"
 import cameraImage from '../../assets/img/mdi_camera-plus-outline.png'
 
 // Importando React
-import { Alert, Modal } from "react-native"
 import { useEffect, useRef, useState } from "react"
 import { CameraModal } from "../../components/modalActions/modalActions"
+import { TextInput } from "react-native"
 
 
 // VARIÁVEL NA PÁGINA PARA VERIFICAR SE O USUÁRIO É MÉDICO OU NÃO
-const Appointment = ({ navigation, medic = true }) => {
+const Appointment = ({ navigation, route }) => {
 
-    // constante para referências
+    // constante para verificar se o usuário é ou não médico
+    const [medic, setMedic] = useState(false);
+
+    // constante para referências da câmera
     const cameraRef = useRef(null)
     // constante para a imagem ficar salva
     const [photo, setPhoto] = useState(null)
     // Use state para o tipo da camera
     const [camera, setCamera] = useState(Camera.Constants.Type.back)
-
     // Use state para os modais
     const [openModal, setOpenModal] = useState(false)
+// verificação se o usuário está editando ou não os detalhes da consulta
+    const [isEdit, setIsEdit] = useState(false)
+
+    const [appointmentObj, setAppointmentObj] = useState({
+        consultaId: "",
+        medicamento: "",
+        descricao: "",
+        diagnostico: ""
+      });
+
+
+    // obtendo o objeto passado para a página
+    const { objModalRecord, isMedic } = route.params;
 
 
 
-    async function capturePhoto(){
-        if(cameraRef){
+    async function capturePhoto() {
+        if (cameraRef) {
             const image = await cameraRef.current.takePictureAsync();
 
             console.log(image.uri);
@@ -52,7 +67,7 @@ const Appointment = ({ navigation, medic = true }) => {
         // }
     }
 
-    async function savePhoto(){
+    async function savePhoto() {
         
     }
 
@@ -62,20 +77,76 @@ const Appointment = ({ navigation, medic = true }) => {
     // Use effect para a requisição das permissões
     useEffect(() => {
         (async () => {
-
             const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
             const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
 
         })()
 
+        // quando carrega a página verifica se usuário é médico
+        setMedic(isMedic);
+        setAppointmentObj({
+            ...appointmentObj,
+            consultaId: objModalRecord.id
+        })
     }, [])
-
-
 
 
     return (
         <Container>
             {medic ?
+                <>
+                    <IconReturn navigation={navigation} />
+
+                    <HeaderImage requireImage={require("../../assets/img/Rectangle425.png")} />
+
+                    <ScrollViewProfile>
+                        <Title>Richard Kosta</Title>
+                        <SubTitle>22 anos   richard.kosta@email.com</SubTitle>
+
+
+                        <Container>
+                            {isEdit
+                                ?
+                                <>
+                                    <InputContainer>
+                                        <InputLabel
+                                            bigInput={true}
+                                            title={"Descrição da consulta"}
+                                            placeholder={"Descrição"}
+                                            value={appointmentObj.descricao}
+                                        />
+                                        <InputLabel
+                                            title={"Diagnóstico do paciente"}
+                                            placeholder={"Diagnóstico"}
+                                            value={appointmentObj.diagnostico}
+                                        />
+                                        <InputLabel
+                                            bigInput={true}
+                                            title={"Preescrição Médica"}
+                                            placeholder={"Preescrição Médica"}
+                                            value={appointmentObj.medicamento}
+                                        />
+                                        <TwoInputContainer>
+                                            <SmallButton onPress={() => setIsEdit(false)}><ButtonTitle>CANCELAR</ButtonTitle></SmallButton>
+                                            <SmallButton><ButtonTitle>SALVAR</ButtonTitle></SmallButton>
+                                        </TwoInputContainer>
+                                    </InputContainer>
+                                </>
+                                :
+                                <>
+                                    <InputContainer>
+                                        <InputLabelBlackText bigInput={true} title={"Descrição da consulta"} text={"Descrição"} />
+                                        <InputLabelBlackText title={"Diagnóstico do paciente"} text={"Diagnóstico"} />
+                                        <InputLabelBlackText bigInput={true} title={"Preescrição Médica"} text={"Preescrição Médica"} />
+
+                                    </InputContainer>
+
+                                    <Button onPress={() => { setIsEdit(true) }}><ButtonTitle>EDITAR</ButtonTitle></Button>
+                                </>}
+                        </Container>
+                    </ScrollViewProfile>
+                </>
+                :
                 <>
                     <IconReturn navigation={navigation} />
 
@@ -122,39 +193,16 @@ const Appointment = ({ navigation, medic = true }) => {
                                 <BigInputBlack />
                             </InputContainer>
 
-
                             <LinkReturn onPress={() => { navigation.goBack() }}>Voltar</LinkReturn>
                         </Container>
                     </ScrollViewProfile>
 
-
-                    <CameraModal openModal={openModal} setOpenModal={setOpenModal} cameraRef={cameraRef} capturePhoto={() => capturePhoto()} />
+                    <CameraModal
+                        openModal={openModal}
+                        setOpenModal={setOpenModal}
+                        cameraRef={cameraRef}
+                        capturePhoto={() => capturePhoto()} />
                 </>
-                :
-                <>
-
-                    <IconReturn navigation={navigation} />
-
-                    <HeaderImage requireImage={require("../../assets/img/Rectangle425.png")} />
-
-                    <ScrollViewProfile>
-                        <Title>Richard Kosta</Title>
-                        <SubTitle>22 anos   richard.kosta@email.com</SubTitle>
-
-
-                        <Container>
-                            <InputContainer>
-                                <InputLabelBlack bigInput={true} title={"Descrição da consulta"} placeholder={"Descrição"} />
-                                <InputLabelBlack title={"Diagnóstico do paciente"} placeholder={"Diagnóstico"} />
-                                <InputLabelBlack bigInput={true} title={"Preescrição Médica"} placeholder={"Preescrição Médica"} />
-
-                            </InputContainer>
-
-                            <Button onPress={() => { navigation.navigate("EditAppointment") }}><ButtonTitle>EDITAR</ButtonTitle></Button>
-                        </Container>
-                    </ScrollViewProfile>
-                </>
-
             }
 
 
