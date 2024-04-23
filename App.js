@@ -54,6 +54,13 @@ export default function App() {
     return null;
   }
 
+  //solicitar o acesso a camera
+  async function requestGaleria() {
+    await MediaLibrary.requestPermissionsAsync();
+
+    await ImagePicker.requestMediaLibraryPermissionAsync();
+  }
+
   return (
     // Criando nossa navegação personalizada
 

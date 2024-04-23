@@ -128,7 +128,10 @@ const Appointment = ({ navigation, medic = true }) => {
                     </ScrollViewProfile>
 
 
-                    <CameraModal openModal={openModal} setOpenModal={setOpenModal} cameraRef={cameraRef} capturePhoto={() => capturePhoto()} />
+                    <CameraModal 
+                    openModal={openModal} 
+                    setOpenModal={setOpenModal} 
+                    cameraRef={cameraRef} capturePhoto={() => capturePhoto()} />
                 </>
                 :
                 <>
