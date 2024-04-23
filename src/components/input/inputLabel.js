@@ -1,17 +1,39 @@
 import { SmallInputLabelContainer } from "../container/style"
 import { IconWatch } from "../status/styles"
 import { Label, Mont14500Gray, Mont14600Green, Sand14600 } from "../title/title"
-import { BigInput, BigInputBlack, BigInputImageBlack, FlatListSelect, Input, InputBlack, Select, SelectRow, SmallInput } from "./input"
+import {
+    BigInput,
+    BigInputBlack,
+    BigInputBlackText,
+    BigInputImageBlack,
+    FlatListSelect,
+    Input,
+    InputBlack,
+    InputBlackText,
+    Select,
+    SelectRow
+} from "./input"
 import { IconCamera } from "../../screens/appointment/styles";
 import notFound from '../../assets/img/iconoir_file-not-found.png'
 
-export const InputLabelBlack = ({ title,  bigInput = false, value, onChangeText }) => {
+export const InputLabelBlack = ({ title, bigInput = false, value, onChangeText }) => {
     return (
         <>
             <Label>{title}</Label>
             {bigInput ?
-                <BigInputBlack value={value}  onChangeText={(txt)=>onChangeText(txt)}/> :
-                <InputBlack value={value}  onChangeText={(txt)=>onChangeText(txt)}/>}
+                <BigInputBlack value={value} onChangeText={(txt) => onChangeText(txt)} /> :
+                <InputBlack value={value} onChangeText={(txt) => onChangeText(txt)} />}
+        </>
+    )
+}
+
+export const InputLabelBlackText = ({ title, bigInput = false, text }) => {
+    return (
+        <>
+            <Label>{title}</Label>
+            {bigInput ?
+                <BigInputBlackText >{text}</BigInputBlackText> :
+                <InputBlackText>{text}</InputBlackText>}
         </>
     )
 }
@@ -21,8 +43,8 @@ export const InputLabelImageBlack = ({ title }) => {
         <>
             <Label>{title}</Label>
             <BigInputImageBlack>
-                <Mont14500Gray> 
-                <IconCamera source={notFound} />  Nenhuma foto informada</Mont14500Gray>
+                <Mont14500Gray>
+                    <IconCamera source={notFound} />  Nenhuma foto informada</Mont14500Gray>
             </BigInputImageBlack>
         </>
     )
