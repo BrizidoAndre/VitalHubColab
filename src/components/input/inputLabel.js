@@ -50,7 +50,7 @@ export const InputLabelImageBlack = ({ title }) => {
     )
 }
 
-export const InputLabel = ({ title, placeholder, bigInput = false, value }) => {
+export const InputLabel = ({ title, placeholder, bigInput = false, value, setValue }) => {
     return (
         <>
             <Label>{title}</Label>
@@ -58,8 +58,8 @@ export const InputLabel = ({ title, placeholder, bigInput = false, value }) => {
             {bigInput ?
                 <BigInput
                     multiline={true}
-                    placeholder={placeholder} value={value} /> :
-                <Input placeholder={placeholder} value={value} />
+                    placeholder={placeholder} value={value} onChangeText={setValue}/> :
+                <Input placeholder={placeholder} value={value} onChangeText={setValue} />
             }
         </>
     )

@@ -90,10 +90,11 @@ const Home = ({ navigation }) => {
 
     const showRightCardModal = (item) => {
         if (item.situacao.situacao === 'Pendentes' && !isMedic) {
-            setModal({ doctorAppointment: true })
             setObjModalRecord(item)
+            setModal({ doctorAppointment: true })
         } else if (item.situacao.situacao === 'Realizados' && !isMedic) {
-            navigation.navigate("Appointment")
+            setObjModalRecord(item)
+            setModal({ record: true })
         } else if (item.situacao.situacao === 'Cancelados' && isMedic) {
             setModal({ record: true })
             setObjModalRecord(item)
@@ -293,8 +294,9 @@ const Home = ({ navigation }) => {
             <ShowRecord
                 hideModal={modal.record}
                 onPressCancel={() => { setModal({ record: false }) }}
-                onPressNavigate={() => { navigation.navigate("Appointment",{objModalRecord, isMedic}) }}
+                onPressNavigate={() => { navigation.navigate("Appointment",{ objModalRecord, isMedic}) }}
                 item={objModalRecord}
+                isMedic={isMedic}
             />
 
 

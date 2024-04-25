@@ -42,31 +42,43 @@ export const CancelAppointment = ({ hideModal = false, onPressCancel = null, onP
     )
 }
 
-export const ShowRecord = ({ item = null, hideModal = false, onPressCancel = null, onPressNavigate = null }) => {
+export const ShowRecord = ({ item = null, hideModal = false, onPressCancel = null, onPressNavigate = null, isMedic }) => {
 
     if (!hideModal) {
         return (<>
         </>)
     }
 
-    useEffect(()=>{
-        console.log(item)
-    },[])
-    
     return (
         <GrayBackground>
             <ModalMedRecord>
                 <ModalContainer>
-                    <ImageProfile source={item.image} />
-                    <Mont20600>{item.paciente.idNavigation.nome}</Mont20600>
-                    <RowContainer>
-                        <Sand16500>{ prepareAge(item.paciente.dataNascimento)} anos</Sand16500>
-                        <Sand16500>{item.paciente.idNavigation.email}</Sand16500>
-                    </RowContainer>
-                    <Button onPress={onPressNavigate}>
-                        <ButtonTitle>INSERIR PRONTUÁRIO</ButtonTitle>
-                    </Button>
-                    <LinkBlueSmall onPress={onPressCancel}>Cancelar</LinkBlueSmall>
+                    {isMedic ?
+                        <>
+                            <ImageProfile source={item.image} />
+                            <Mont20600>{item.paciente.idNavigation.nome}</Mont20600>
+                            <RowContainer>
+                                <Sand16500>{prepareAge(item.paciente.dataNascimento)} anos</Sand16500>
+                                <Sand16500>{item.paciente.idNavigation.email}</Sand16500>
+                            </RowContainer>
+                            <Button onPress={onPressNavigate}>
+                                <ButtonTitle>INSERIR PRONTUÁRIO</ButtonTitle>
+                            </Button>
+                            <LinkBlueSmall onPress={onPressCancel}>Cancelar</LinkBlueSmall>
+                        </> :
+                        <>
+                            <ImageProfile source={item.image} />
+                            <Mont20600>{item.medicoClinica.medico.idNavigation.nome}</Mont20600>
+                            <RowContainer>
+                                <Sand16500>{item.medicoClinica.medico.especialidade.especialidade1}</Sand16500>
+                                <Sand16500>CRM - {item.medicoClinica.medico.crm}</Sand16500>
+                            </RowContainer>
+                            <Button onPress={onPressNavigate}>
+                                <ButtonTitle>VISUALIZAR PRONTUÁRIO</ButtonTitle>
+                            </Button>
+                            <LinkBlueSmall onPress={onPressCancel}>Cancelar</LinkBlueSmall>
+                        </>}
+
 
                 </ModalContainer>
             </ModalMedRecord>
@@ -184,12 +196,12 @@ export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = nu
     }
 
     // função para preparar o tempo da consulta para mostrar de maneira correta para o usuário
-    function prepareTime(date){
+    function prepareTime(date) {
         const time = date.toString(date)
 
-        const rightText = time.substring(18,21)
-        let rightHour = parseInt(time.substring(16,18)) + 3
-        if(rightHour < 10){
+        const rightText = time.substring(18, 21)
+        let rightHour = parseInt(time.substring(16, 18)) + 3
+        if (rightHour < 10) {
             rightHour = '0' + rightHour
         }
 
@@ -227,8 +239,8 @@ export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = nu
                 receitaId: null,
                 prioridadeId: item.prioridadeId,
                 dataConsulta: item.dataConsulta,
-                descricao: "Novo médico",
-                diagnostico: "string",
+                descricao: null,
+                diagnostico: null,
             })
 
 
@@ -289,22 +301,20 @@ export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = nu
 
 
 export const CameraModal = ({ openModal, setOpenModal, cameraRef, capturePhoto, getMediaLibrary = false }) => {
-    const [latestPhoto, setLatestPhoto] = useState (null) //salva a ultima foto da galeria
+    const [latestPhoto, setLatestPhoto] = useState(null) //salva a ultima foto da galeria
 
-    async function GetLastPhoto(){
-        const assets = await MediaLibrary.getAssetsAsync({ sortBy : [[MediaLibrary.SortBy.creactionTime, false]],  first : 1 });
+    async function GetLastPhoto() {
+        const assets = await MediaLibrary.getAssetsAsync({ sortBy: [[MediaLibrary.SortBy.creactionTime, false]], first: 1 });
 
         console.log(assets)
     }
 
-    useEffect(()=> {
-        setCapturePhoto(null)
-
+    useEffect(() => {
         //verificar se mostra a parte da galeria
         if (getMediaLibrary) {
             GetLastPhoto();
         }
-    },[])
+    }, [])
 
     return (
         <TrueModal

@@ -40,15 +40,22 @@ const ShowLocation = ({ route, navigation }) => {
     }
 
     async function getClinic(){
-        const res = await api.get('/Clinica/BuscarPorId?id=' + objModalRecord.medicoClinica.clinicaId)
 
-        const data = await res.data
-
-        setFinalPosition({
-            latitude: data.endereco.latitude,
-            longitude: data.endereco.longitude
-        })
-        setAddress(data)
+        try{
+            console.log(objModalRecord.medicoClinica.id)
+            const res = await api.get('/Clinica/BuscarPorId?id=' + objModalRecord.medicoClinica.id)
+    
+            const data = await res.data
+    
+            setFinalPosition({
+                latitude: data.endereco.latitude,
+                longitude: data.endereco.longitude
+            })
+            setAddress(data)
+            
+        } catch (e) {
+            console.log(e)
+        }
     }
 
 
