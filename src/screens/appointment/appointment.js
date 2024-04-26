@@ -26,17 +26,21 @@ import { prepareAge } from "../../utils/dateFunctions"
 
 
 // VARIÁVEL NA PÁGINA PARA VERIFICAR SE O USUÁRIO É MÉDICO OU NÃO
-const Appointment = ({ navigation, route, setUriCameraCapture, UriCameraCapture }) => {
+const Appointment = ({ navigation, route }) => {
 
     // constante para verificar se o usuário é ou não médico
     const [medic, setMedic] = useState(false);
 
     // constante para referências da câmera
     const cameraRef = useRef(null)
-    // constante para a imagem ficar salva
-    const [photo, setPhoto] = useState(null)
     // Use state para o tipo da camera
     const [camera, setCamera] = useState(Camera.Constants.Type.back)
+
+
+
+    // constante para a imagem ficar salva
+    const [photo, setPhoto] = useState(null)
+
     // Use state para os modais
     const [openModal, setOpenModal] = useState(false)
     // verificação se o usuário está editando ou não os detalhes da consulta
@@ -53,6 +57,7 @@ const Appointment = ({ navigation, route, setUriCameraCapture, UriCameraCapture 
         email: '',
         crm: '',
         medicSpecialty: '',
+        examDescription: '',
     });
 
 
@@ -67,7 +72,8 @@ const Appointment = ({ navigation, route, setUriCameraCapture, UriCameraCapture 
 
             console.log(image.uri);
             setPhoto(image.uri)
-            setOpenModal(true)
+            SavePhoto()
+            setOpenModal(false)
         }
 
         if (photo) {
@@ -76,22 +82,22 @@ const Appointment = ({ navigation, route, setUriCameraCapture, UriCameraCapture 
     }
 
 
-    async function SendFormPhoto(){
+    async function SendFormPhoto() {
         await setUriCameraCapture(photo);
 
         handleClose();
     }
 
-    async function SavePhoto(){
-        if(photo){
+    async function SavePhoto() {
+        if (photo) {
             await MediaLibrary.createAssetAsync(photo)
-            .then(() => {
-                alert('Foto salva com sucesso');
-                SendFormPhoto();
-            })
-            .catch(error => {
-                alert('Erro ao salvar foto')
-            })
+                .then(() => {
+                    alert('Foto salva com sucesso');
+                    SendFormPhoto();
+                })
+                .catch(error => {
+                    alert('Erro ao salvar foto')
+                })
         }
     }
 
@@ -111,7 +117,8 @@ const Appointment = ({ navigation, route, setUriCameraCapture, UriCameraCapture 
                 medicamento: data.receita.medicamento,
                 name: objModalRecord.medicoClinica.medico.idNavigation.nome,
                 medicSpecialty: objModalRecord.medicoClinica.medico.especialidade.especialidade1,
-                crm: objModalRecord.medicoClinica.medico.crm
+                crm: objModalRecord.medicoClinica.medico.crm,
+                examDescription: data.exames[0].descricao
             })
         }
         else {
@@ -138,35 +145,42 @@ const Appointment = ({ navigation, route, setUriCameraCapture, UriCameraCapture 
         }
     }
 
-    // Use effect para a requisição das permissões
-    useEffect(() => {
-        // quando carrega a página verifica se usuário é médico
-        setMedic(isMedic);
-        loadAppointment()
-    }, [])
-
-
-
-
     async function InserirExame() {
         const formData = new FormData();
-        formData.append("ConsultaId", prontuarioUpdate.id)
-        formData.append("Arquivo", {
-            uri : UriCameraCapture,
-            name : `image.${UriCameraCapture.split('.').pop()}`,
-            type : `image/${UriCameraCapture.split('.').pop()}`
+        formData.append("ConsultaId", objModalRecord.id)
+        formData.append("Imagem", {
+            uri: photo,
+            name: `image.${photo.split('.').pop()}`,
+            type: `image/${photo.split('.').pop()}`
         })
-        
+
         await api.post('/Exame/Cadastrar', formData, {
-            headers : {
-                "Content-Type" : "multipart/form-data"
+            headers: {
+                "Content-Type": "multipart/form-data"
             }
         }).then(response => {
-            setDescricaoExame(descricaoExame + "\n" + response.data.descricao)
+            setAppointmentObj( appointmentObj.examDescription + "\n" + response.data.descricao)
+
         }).catch(error => {
             console.log(error);
         })
     }
+
+
+    // Use effect para a requisição das permissões
+    useEffect(() => {
+
+        (async () => {
+            const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
+
+            const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
+        })
+
+        // quando carrega a página verifica se usuário é médico
+        setMedic(isMedic);
+        loadAppointment();
+        InserirExame();
+    }, [photo])
 
 
 
@@ -185,7 +199,7 @@ const Appointment = ({ navigation, route, setUriCameraCapture, UriCameraCapture 
                                 <SubTitle>{prepareAge(appointmentObj.age)} anos</SubTitle>
                                 <SubTitle>{appointmentObj.email}</SubTitle>
                             </RowContainer>
-                            
+
                             {isEdit
                                 ?
                                 <>
@@ -260,8 +274,10 @@ const Appointment = ({ navigation, route, setUriCameraCapture, UriCameraCapture 
                                     title={"Preescrição Médica"}
                                     text={appointmentObj.medicamento} />
 
+                                {/* div da imagem */}
                                 <InputLabelImageBlack
-                                    title={"Exames médicos"} />
+                                    title={"Exames médicos"}
+                                    image={photo} />
 
                                 <RowFullContainer>
                                     <SmallButtonGreen onPress={() => setOpenModal(true)} >
@@ -277,7 +293,8 @@ const Appointment = ({ navigation, route, setUriCameraCapture, UriCameraCapture 
 
                                 <Line />
 
-                                <BigInputBlack />
+                                <InputLabelBlackText 
+                                text={appointmentObj.examDescription} bigInput={true} />
                             </InputContainer>
 
                             <LinkReturn
@@ -290,7 +307,8 @@ const Appointment = ({ navigation, route, setUriCameraCapture, UriCameraCapture 
                         openModal={openModal}
                         setOpenModal={setOpenModal}
                         cameraRef={cameraRef}
-                        capturePhoto={capturePhoto} />
+                        capturePhoto={capturePhoto}
+                        typeCamera={camera} />
                 </>
             }
 

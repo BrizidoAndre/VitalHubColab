@@ -302,19 +302,19 @@ export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = nu
 
 
 
-export const CameraModal = ({ openModal, setOpenModal, cameraRef, capturePhoto }) => {
+export const CameraModal = ({ openModal, setOpenModal, cameraRef, capturePhoto, typeCamera }) => {
 
     useEffect(()=>{
         (async () => {
             const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
-            
+        
             const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
         })
 
         //verificar se mostra a parte da galeria
-        if (getMediaLibrary) {
-            GetLastPhoto();
-        }
+        // if (getMediaLibrary) {
+        //     GetLastPhoto();
+        // }
     },[])
 
     const [latestPhoto, setLatestPhoto] = useState(null) //salva a ultima foto da galeria
@@ -332,7 +332,7 @@ export const CameraModal = ({ openModal, setOpenModal, cameraRef, capturePhoto }
             transparent={false}
             visible={openModal}>
             <Camera
-                type={Camera.Constants.Type.back}
+                type={typeCamera}
                 style={{ width: "100%", height: "80%", flex: 1, position: "relative" }}
                 ratio={'16:9'}
                 ref={cameraRef} />

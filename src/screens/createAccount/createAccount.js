@@ -13,42 +13,22 @@ import api from "../../service/service";
 import Profile from "../profile/profile";
 
 const CreateAccount = ({ navigation }) => {
-  const [nome, setNome] = useState('')
-  const [email, setEmail] = useState('')
-  const [senha, setSenha] = useState('')
-  const [confirmarSenha, setConfirmarSenha] = useState('')
-  const [idTipoUsuario, setIdTipoUsuario] = useState("A4FD73A0-9F0B-4462-A9CF-E3460CAC328A")
+
+  const [user, setUser] = useState({
+    nome: '',
+    email: '',
+    senha: '',
+    confirmaSenha: '',
+    idTipoUsuario: 'A4FD73A0-9F0B-4462-A9CF-E3460CAC328A'
+  })
 
     const Cadastrar = async () => {
-        if (senha !== confirmarSenha) {
-          setError("Senhas devem ser iguais");
+        if (user.senha !== user.confirmaSenha) {
+          alert("Senhas devem ser iguais");
           return;
         }
-      
-        try {
-            const response = await api.post('http://192.168.19.134:4466/api/Pacientes', {
-              email: email,
-              senha: senha,
-            })
-
-            if (!response.ok) {
-              const data = await response.json();
-              Alert.alert(data.error);
-            } else  {
-            setEmail("");
-            setSenha("");
-            setConfirmarSenha("");
-            setIdTipoUsuario("");
-            setCadastro("");
-
-            console.log(e.Alert);
-            Alert.alert("Conta criada");
-            navigation.navigate("Login");
-          }
-        } catch (e) {
-            console.log(e);
-            Alert.alert('ERROx')
-        }
+        
+        navigation.navigate('Profile', {user})
       };
 
     return (
@@ -63,27 +43,39 @@ const CreateAccount = ({ navigation }) => {
             <InputContainer>
                 <Input 
                   placeholder={"Nome"}
-                  value={nome}
-                  onChangeText={(txt) => setNome(txt)}
+                  value={user.nome}
+                  onChangeText={(txt) => setUser({
+                    ...user,
+                    nome: txt
+                  })}
                 />
                 <Input 
                   placeholder={"E-mail"}
-                  value={email}
-                  onChangeText={(txt) => setEmail(txt)}
+                  value={user.email}
+                  onChangeText={(txt) => setUser({
+                    ...user,
+                    email: txt
+                  })}
                 />
                 <Input 
                   placeholder={"Senha"}
-                  value={senha}
-                  onChangeText={(txt) => setSenha(txt)}
+                  value={user.senha}
+                  onChangeText={(txt) => setUser({
+                    ...user,
+                    senha: txt
+                  })}
                 />
                 <Input 
                   placeholder={"Confirmar senha"}
-                  value={confirmarSenha}
-                  onChangeText={(txt) => setConfirmarSenha(txt)}
+                  value={user.confirmaSenha}
+                  onChangeText={(txt) => setUser({
+                    ...user,
+                    confirmaSenha: txt
+                  })}
                 />
             </InputContainer>
 
-            <Button onPress={() => navigation.navigate('Profile')}>
+            <Button onPress={() => Cadastrar()}>
                 <ButtonTitle>CADASTRAR</ButtonTitle>
             </Button>
 

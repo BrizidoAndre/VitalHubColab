@@ -15,6 +15,7 @@ import {
 } from "./input"
 import { IconCamera } from "../../screens/appointment/styles";
 import notFound from '../../assets/img/iconoir_file-not-found.png'
+import { Image } from "react-native";
 
 export const InputLabelBlack = ({ title,  bigInput = false, value, onChangeText, name=null }) => {
     return (
@@ -38,14 +39,23 @@ export const InputLabelBlackText = ({ title, bigInput = false, text }) => {
     )
 }
 
-export const InputLabelImageBlack = ({ title }) => {
+export const InputLabelImageBlack = ({ title, image=null }) => {
     return (
         <>
             <Label>{title}</Label>
+            {image ?
+            <Image 
+                style={{width:"100%",height:170}}
+                source={{
+                    uri: image
+                }}
+            /> 
+            :
             <BigInputImageBlack>
                 <Mont14500Gray>
                     <IconCamera source={notFound} />  Nenhuma foto informada</Mont14500Gray>
             </BigInputImageBlack>
+            }
         </>
     )
 }
