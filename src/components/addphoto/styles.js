@@ -12,3 +12,9 @@ export const AddPhotoButton = styled.TouchableOpacity.attrs({
     right : 15px;
     position: absolute;
 `
+
+export const LastPhoto = styled.Image`
+    width: 64px;
+    height: 65px;
+    border-radius: 15px;
+`

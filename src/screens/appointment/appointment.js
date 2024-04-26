@@ -26,7 +26,7 @@ import { prepareAge } from "../../utils/dateFunctions"
 
 
 // VARIÁVEL NA PÁGINA PARA VERIFICAR SE O USUÁRIO É MÉDICO OU NÃO
-const Appointment = ({ navigation, route }) => {
+const Appointment = ({ navigation, route, setUriCameraCapture, UriCameraCapture }) => {
 
     // constante para verificar se o usuário é ou não médico
     const [medic, setMedic] = useState(false);
@@ -75,8 +75,24 @@ const Appointment = ({ navigation, route }) => {
         }
     }
 
-    async function savePhoto() {
 
+    async function SendFormPhoto(){
+        await setUriCameraCapture(photo);
+
+        handleClose();
+    }
+
+    async function SavePhoto(){
+        if(photo){
+            await MediaLibrary.createAssetAsync(photo)
+            .then(() => {
+                alert('Foto salva com sucesso');
+                SendFormPhoto();
+            })
+            .catch(error => {
+                alert('Erro ao salvar foto')
+            })
+        }
     }
 
 
@@ -124,16 +140,34 @@ const Appointment = ({ navigation, route }) => {
 
     // Use effect para a requisição das permissões
     useEffect(() => {
-        (async () => {
-            const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
-            const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
-
-        })()
-
         // quando carrega a página verifica se usuário é médico
         setMedic(isMedic);
         loadAppointment()
     }, [])
+
+
+
+
+    async function InserirExame() {
+        const formData = new FormData();
+        formData.append("ConsultaId", prontuarioUpdate.id)
+        formData.append("Arquivo", {
+            uri : UriCameraCapture,
+            name : `image.${UriCameraCapture.split('.').pop()}`,
+            type : `image/${UriCameraCapture.split('.').pop()}`
+        })
+        
+        await api.post('/Exame/Cadastrar', formData, {
+            headers : {
+                "Content-Type" : "multipart/form-data"
+            }
+        }).then(response => {
+            setDescricaoExame(descricaoExame + "\n" + response.data.descricao)
+        }).catch(error => {
+            console.log(error);
+        })
+    }
+
 
 
     return (
@@ -256,7 +290,7 @@ const Appointment = ({ navigation, route }) => {
                         openModal={openModal}
                         setOpenModal={setOpenModal}
                         cameraRef={cameraRef}
-                        capturePhoto={() => capturePhoto()} />
+                        capturePhoto={capturePhoto} />
                 </>
             }
 

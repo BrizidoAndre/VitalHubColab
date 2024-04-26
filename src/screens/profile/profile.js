@@ -2,7 +2,7 @@ import { Container, Container11, InputContainer, LabelInputContainer, TwoInputCo
 import { ImageModal } from "../../components/modal/modal"
 import { SubTitle, Title } from "../../components/title/title"
 import { InputLabelBlack, SmallInputLabel } from "../../components/input/inputLabel"
-import { Button, ButtonLogout, SmallButton } from "../../components/button/button"
+import { Button, ButtonLogout, SmallButton, SmallButtonGreen } from "../../components/button/button"
 import { ButtonTitle } from "../../components/button/buttonTitle"
 import { HeaderImage } from "../../components/headerImage/headerImage"
 import ScrollViewProfile from "../../components/scrollViewProfile/scrollViewProfile.js"
@@ -15,31 +15,22 @@ import api from "../../service/service.js"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { AddPhotoButton } from "../../components/addphoto/styles.js"
 import { CameraModal } from "../../components/modalActions/modalActions.js"
+import { CameraComp } from "../../components/CameraComp/CameraComp.js"
+import { Camera } from "expo-camera"
 
 const Profile = ({ navigation }) => {
 
-  // modal da câmera para abri o modal
-  const [openModal, setOpenModal] = useState(false)
+  // constante para referências da câmera
   const cameraRef = useRef(null)
-  const [photo, setPhoto] = useState(null) 
-
-  async function capturePhoto() {
-    if (cameraRef) {
-        const image = await cameraRef.current.takePictureAsync();
-
-        console.log(image.uri);
-        setPhoto(image.uri)
-        setOpenModal(true)
-    }
-
-    // if(photo){
-    //     await MediaLibrary.createAssetAsync(photo)
-    // }
-}
-
-async function savePhoto() {
-
-}
+  // constante para a imagem ficar salva
+  const [photo, setPhoto] = useState(null)
+  // Use state para o tipo da camera
+  const [camera, setCamera] = useState(Camera.Constants.Type.back)
+  // Use state para os modais
+  const [openModal, setOpenModal] = useState(false)
+   
+  const [showCamera, setShowCamera] = useState (false)
+  const [uriCameraCapture, setUriCameraCapture] = useState (null)
 
   const [userData, setUserData] = useState({
     nome: '',
@@ -79,6 +70,56 @@ async function savePhoto() {
     }
   };
 
+  useEffect(() => {
+    AlterarFotoPerfil()
+  }, [uriCameraCapture])
+
+  async function AlterarFotoPerfil() {
+    const formData = new  FormData();
+    formData.append("arquivo", {
+      uri: uriCameraCapture,
+      name: `image.${ uriCameraCapture.split(".")[1]}`,
+      type: `image/${ uriCameraCapture.split(".")[1]}`
+    })
+
+    await api.put(`/usuario/AlterarFotoPerfil?id=${Profile.user}`, formData, {
+
+    headers: {
+      "Content-Type" : "multipart/form-data"
+    }
+  
+  }).then( async response => {
+    await setProfileUpdate({
+    })
+  }).catch(error => {
+    console.log(error);
+  })
+  }
+
+  async function capturePhoto() {
+    if (cameraRef) {
+        const image = await cameraRef.current.takePictureAsync();
+
+        console.log(image.uri);
+        setPhoto(image.uri)
+        setOpenModal(true)
+    }
+}
+
+async function savePhoto() {
+    
+}
+
+// Use effect para a requisição das permissões
+useEffect(() => {
+  (async () => {
+      const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
+      const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
+
+  })
+}, [])
+
+
   return (
     <Container>
       <HeaderImage requireImage={require("../../assets/img/Rectangle425.png")} />
@@ -87,8 +128,11 @@ async function savePhoto() {
 
         {/* botao da foto */}
 
-        <AddPhotoButton onPress={() => setOpenModal(true)}>
-          <MaterialCommunityIcons name="camera-plus" size={20} color="#fbfbfb" />
+        <AddPhotoButton onPress={() => setOpenModal(true)} >
+          <MaterialCommunityIcons 
+          name="camera-plus" 
+          size={20} 
+          color="#fbfbfb" />
         </AddPhotoButton>
 
       </Container11>
@@ -143,7 +187,7 @@ async function savePhoto() {
                 openModal={openModal}
                 setOpenModal={setOpenModal}
                 cameraRef={cameraRef}
-                capturePhoto={() => capturePhoto()}
+                capturePhoto={() => capturePhoto()} 
               />
 
             </>
