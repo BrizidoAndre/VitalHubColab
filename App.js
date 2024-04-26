@@ -24,7 +24,6 @@ import RedefinePassword from './src/screens/redefinePassword/redefinePassword';
 import CreateAccount from './src/screens/createAccount/createAccount';
 import Profile from './src/screens/profile/profile';
 import Appointment from './src/screens/appointment/appointment';
-import EditAppointment from './src/screens/editAppointment/editAppointment';
 import Home from './src/screens/home/home';
 import SelectClinic from './src/screens/selectClinic/selectClinic';
 import SelectMedic from './src/screens/selectMedic/selectMedic';

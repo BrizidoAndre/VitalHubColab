@@ -7,9 +7,11 @@ import { LinkBlueSmall } from "../links/links";
 import { Label, Mont20600, Mont24600, Sand14500Gray, Sand16500, Sand16600, Title } from "../title/title";
 import { BottomModal, GrayBackground, ImageProfile, ModalCancel, ModalConfirmAppointment, ModalMedRecord, TextCenter, TrueModal } from "./styles";
 import { AppointmentButton } from "../navButton/navButton";
+import * as ImagePicker from "expo-image-picker";
 
 // import das bibliotecas
 import { Camera } from "expo-camera";
+import * as MediaLibrary from 'expo-media-library';
 import { Ionicons, Entypo } from "@expo/vector-icons";
 
 // import do axios
@@ -288,24 +290,15 @@ export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = nu
 
 
 
-export const CameraModal = ({ openModal, setOpenModal, cameraRef, capturePhoto, getMediaLibrary = false }) => {
-    const [latestPhoto, setLatestPhoto] = useState (null) //salva a ultima foto da galeria
+export const CameraModal = ({ openModal, setOpenModal, cameraRef, capturePhoto }) => {
 
-    async function GetLastPhoto(){
-        const assets = await MediaLibrary.getAssetsAsync({ sortBy : [[MediaLibrary.SortBy.creactionTime, false]],  first : 1 });
-
-        console.log(assets)
-    }
-
-    useEffect(()=> {
-        setCapturePhoto(null)
-
-        //verificar se mostra a parte da galeria
-        if (getMediaLibrary) {
-            GetLastPhoto();
-        }
+    useEffect(()=>{
+        (async () => {
+            const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
+            
+            const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
+        })
     },[])
-
     return (
         <TrueModal
             presentationStyle={"pageSheet"}
