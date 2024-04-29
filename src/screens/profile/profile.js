@@ -21,14 +21,14 @@ import { Camera } from "expo-camera"
 const Profile = ({ navigation, route }) => {
 
 
+
   // constante para referências da câmera
   const cameraRef = useRef(null)
   // constante para a imagem ficar salva
   const [photo, setPhoto] = useState(null)
   // Use state para o tipo da camera
   const [camera, setCamera] = useState(Camera.Constants.Type.back)
-  // Use state para os modais
-  const [openModal, setOpenModal] = useState(false)
+
 
 
   // state para regrar os valores do novo usuário
@@ -44,13 +44,14 @@ const Profile = ({ navigation, route }) => {
     numero: '',
     cidade: '',
     foto: '',
-    Arquivo: ''
+    Arquivo: '',
+    idTipoUsuario: ''
   })
 
   const [isNewUser, setIsNewUser] = useState(true);
 
-  // Use state para as fotos
-  const [showCamera, setShowCamera] = useState(false)
+  // Use state para as fotos e modais
+  const [openModal, setOpenModal] = useState(false)
   const [uriCameraCapture, setUriCameraCapture] = useState({
     uri: 'https://blobvitalhubg01m.blob.core.windows.net/blobvitalhubg01mcontainer/user-profile-icon-free-vector.jpg',
     data: '',
@@ -69,14 +70,16 @@ const Profile = ({ navigation, route }) => {
   const loadProfile = async () => {
     try {
       const token = await userDecodeToken();
+
+      // Se a página NÃO receber as informações do novo usuário
       if (token) {
         const res = await api.get('/Pacientes/BuscarPorId?id=' + token.id);
         const data = await res.data;
         data.dataNascimento = await data.dataNascimento.split(['T'])[0];
-        
+
         setUserData({
           ...userData,
-          name: data.idNavigation.name,
+          nome: data.idNavigation.nome,
           email: data.idNavigation.email,
           dataNascimento: data.dataNascimento,
           cpf: data.cpf,
@@ -86,13 +89,17 @@ const Profile = ({ navigation, route }) => {
         })
       }
 
+      // O que vai acontecer quando um usuário for criado
       else {
+        // Informações para cadastro do usuário
         const { user } = route.params;
         setCreateUser({
           ...user,
           nome: user.nome,
           email: user.email,
-          senha: user.senha
+          senha: user.senha,
+          idTipoUsuario: user.idTipoUsuario
+
         })
         setIsNewUser(false)
       }
@@ -109,16 +116,6 @@ const Profile = ({ navigation, route }) => {
   useEffect(() => {
     loadProfile();
   }, []);
-
-  const saveData = async () => {
-    try {
-      await api.setItem('userData', JSON.stringify(userData));
-      navigation.navigate('Home');
-    }
-    catch (error) {
-      console.log(error);
-    }
-  };
 
   useEffect(() => {
     AlterarFotoPerfil()
@@ -146,14 +143,43 @@ const Profile = ({ navigation, route }) => {
     })
   }
 
-  async function capturePhoto() {
-    if (cameraRef) {
-      const image = await cameraRef.current.takePictureAsync();
+  async function SaveProfile() {
+    const formData = new FormData();
 
-      console.log(image.uri);
-      setPhoto(image.uri)
-      setOpenModal(true)
-    }
+    // inserindo informações de cadastro no formulário
+    formData.append("Rg", createUser.rg)
+    formData.append("Cpf", createUser.cpf)
+    formData.append("DataNascimento", createUser.dataNascimento)
+    formData.append("Cep", createUser.cep)
+    formData.append("Logradouro", createUser.logradouro)
+    formData.append("Numero", createUser.numero)
+    formData.append("Cidade", createUser.cidade)
+    formData.append("Nome", createUser.nome)
+    formData.append("Email", createUser.email)
+    formData.append("Senha", createUser.senha)
+    formData.append("IdTipoUsuario", createUser.idTipoUsuario)
+
+    formData.append("Foto", "foto")
+
+    // inserindo imagem
+    formData.append("Arquivo", {
+      uri: photo,
+      name: `image.${photo.split('.').pop()}`,
+      type: `image/${photo.split('.').pop()}`
+    })
+
+    await api.post('/Pacientes', formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    }).then(response => {
+
+      alert('Deu certo')
+      navigation.navigate("Login")
+
+    }).catch(error => {
+      console.log(error);
+    })
   }
 
   // Use effect para a requisição das permissões
@@ -163,6 +189,40 @@ const Profile = ({ navigation, route }) => {
       const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
     })
   }, [])
+
+
+
+
+  async function capturePhoto() {
+    if (cameraRef) {
+      const image = await cameraRef.current.takePictureAsync();
+
+      setPhoto(image.uri)
+      setUriCameraCapture({ data: image.uri })
+
+      SavePhoto()
+      setOpenModal(false)
+    }
+
+    if (photo) {
+      await MediaLibrary.createAssetAsync(photo)
+    }
+  }
+
+  async function SavePhoto() {
+    if (photo) {
+      await MediaLibrary.createAssetAsync(photo)
+        .then(() => {
+          alert('Foto salva com sucesso');
+          SendFormPhoto();
+        })
+        .catch(error => {
+          alert('Erro ao salvar foto')
+        })
+    }
+  }
+
+
 
 
   return (
@@ -224,9 +284,11 @@ const Profile = ({ navigation, route }) => {
                     />
                   </TwoInputContainer>
                 </InputContainer>
-                <Button onPress={() => saveData(navigation.navigate('Home'))}>
+                <Button onPress={() => alert('salvando')}>
                   <ButtonTitle>SALVAR</ButtonTitle>
                 </Button>
+
+                <ButtonLogout onPress={() => removeUser()}><ButtonTitle>Logout</ButtonTitle></ButtonLogout>
 
 
               </>
@@ -237,44 +299,56 @@ const Profile = ({ navigation, route }) => {
                 <InputContainer>
                   <InputLabelBlack
                     title={"RG"}
-                    value={userData.rg}
-                    onChangeText={text => setUserData({ ...userData, email: text })}
+                    value={createUser.rg}
+                    onChangeText={text => setCreateUser({ ...createUser, rg: text })}
                     name="email"
+                    inputType="numeric"
                   />
                   <InputLabelBlack
                     title={"Data de nascimento"}
-                    value={userData.dataNascimento}
-                    onChangeText={text => setUserData({ ...userData, dataNascimento: text })}
+                    value={createUser.dataNascimento}
+                    onChangeText={text => setCreateUser({ ...createUser, dataNascimento: text })}
                     name="dataNascimento"
                   />
                   <InputLabelBlack
                     title={"CPF"}
-                    value={userData.cpf}
-                    onChangeText={text => setUserData({ ...userData, cpf: text })}
+                    value={createUser.cpf}
+                    onChangeText={text => setCreateUser({ ...createUser, cpf: text })}
                     name="cpf"
-                  />
-                  <InputLabelBlack
-                    title={"Endereço"}
-                    value={userData.endereco}
-                    onChangeText={text => setUserData({ ...userData, endereco: text })}
-                    name="endereco"
+                    inputType="numeric"
                   />
                   <TwoInputContainer>
                     <SmallInputLabel
+                      title={"Endereço"}
+                      value={createUser.endereco}
+                      onChangeText={text => setCreateUser({ ...createUser, endereco: text })}
+                      name="endereco"
+                    />
+                    <SmallInputLabel
+                      title={"Número"}
+                      value={createUser.numero}
+                      onChangeText={text => setCreateUser({ ...createUser, numero: text })}
+                      name="numero"
+                    />
+                  </TwoInputContainer>
+                  <TwoInputContainer>
+                    <SmallInputLabel
                       title={"CEP"}
-                      value={userData.cep}
-                      onChangeText={text => setUserData({ ...userData, cep: text })}
+                      value={createUser.cep}
+                      onChangeText={text => setCreateUser({ ...createUser, cep: text })}
                       name="cep"
+                      inputType="numeric"
+
                     />
                     <SmallInputLabel
                       title={"CIDADE"}
-                      value={userData.cidade}
-                      onChangeText={text => setUserData({ ...userData, cidade: text })}
+                      value={createUser.cidade}
+                      onChangeText={text => setCreateUser({ ...createUser, cidade: text })}
                       name="cidade"
                     />
                   </TwoInputContainer>
                 </InputContainer>
-                <Button onPress={() => saveData(navigation.navigate('Home'))}>
+                <Button onPress={() => SaveProfile()}>
                   <ButtonTitle>SALVAR</ButtonTitle>
                 </Button>
               </>
@@ -284,12 +358,16 @@ const Profile = ({ navigation, route }) => {
       </Container>
 
       <CameraModal
+        cameraRef={cameraRef}
         getMediaLibrary={true}
+
         openModal={openModal}
         setOpenModal={setOpenModal}
-        cameraRef={cameraRef}
-        capturePhoto={() => capturePhoto()}
+
+        capturePhoto={capturePhoto}
+        typeCamera={camera}
       />
+
     </>
   );
 };

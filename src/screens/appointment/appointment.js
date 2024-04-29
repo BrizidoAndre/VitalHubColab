@@ -84,7 +84,6 @@ const Appointment = ({ navigation, route }) => {
 
     async function SendFormPhoto() {
         await setUriCameraCapture(photo);
-
         handleClose();
     }
 

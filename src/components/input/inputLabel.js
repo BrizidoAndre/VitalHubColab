@@ -17,13 +17,13 @@ import { IconCamera } from "../../screens/appointment/styles";
 import notFound from '../../assets/img/iconoir_file-not-found.png'
 import { Image } from "react-native";
 
-export const InputLabelBlack = ({ title,  bigInput = false, value, onChangeText, name=null }) => {
+export const InputLabelBlack = ({ title,  bigInput = false, value, onChangeText, name=null, inputType='default' }) => {
     return (
         <>
             <Label>{title}</Label>
             {bigInput ?
-                <BigInputBlack value={value} onChangeText={(txt) => onChangeText(txt)} /> :
-                <InputBlack value={value} onChangeText={(txt) => onChangeText(txt)} />}
+                <BigInputBlack value={value} keyboardType={inputType} onChangeText={(txt) => onChangeText(txt)} /> :
+                <InputBlack value={value} keyboardType={inputType} onChangeText={(txt) => onChangeText(txt)} />}
         </>
     )
 }
@@ -75,11 +75,11 @@ export const InputLabel = ({ title, placeholder, bigInput = false, value, setVal
     )
 }
 
-export const SmallInputLabel = ({ title, placeholder, value, onChangeText }) => {
+export const SmallInputLabel = ({ title, placeholder, value, onChangeText, inputType='default' }) => {
     return (
         <SmallInputLabelContainer>
             <Label>{title}</Label>
-            <InputBlack placeholder={placeholder} value={value} onChangeText={(txt)=>onChangeText(txt)} />
+            <InputBlack placeholder={placeholder} keyboardType={inputType} value={value} onChangeText={(txt)=>onChangeText(txt)} />
         </SmallInputLabelContainer>
     )
 }

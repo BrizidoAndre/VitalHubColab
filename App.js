@@ -73,9 +73,6 @@ export default function App() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
 
 
-
-
-
         {/* tela Login */}
         <Stack.Screen
           // navegação

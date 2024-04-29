@@ -31,3 +31,7 @@ export const userDecodeToken = async () => {
         id: decoded.jti
     }
 }
+
+export const removeFromStorage = async () => {
+    await AsyncStorage.removeItem('token')
+}

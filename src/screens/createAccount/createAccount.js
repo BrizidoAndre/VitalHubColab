@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import api from "../../service/service";
 import Profile from "../profile/profile";
+import { removeFromStorage } from "../../utils/auth";
 
 const CreateAccount = ({ navigation }) => {
 
@@ -19,7 +20,7 @@ const CreateAccount = ({ navigation }) => {
     email: '',
     senha: '',
     confirmaSenha: '',
-    idTipoUsuario: 'A4FD73A0-9F0B-4462-A9CF-E3460CAC328A'
+    idTipoUsuario: 'A4FD73A0-9F0B-4462-A9CF-E3460CAC328A',
   })
 
     const Cadastrar = async () => {
@@ -27,6 +28,8 @@ const CreateAccount = ({ navigation }) => {
           alert("Senhas devem ser iguais");
           return;
         }
+
+        removeFromStorage()
         
         navigation.navigate('Profile', {user})
       };
