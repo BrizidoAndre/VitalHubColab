@@ -17,6 +17,7 @@ import { AddPhotoButton } from "../../components/addphoto/styles.js"
 import { CameraModal } from "../../components/modalActions/modalActions.js"
 import { CameraComp } from "../../components/CameraComp/CameraComp.js"
 import { Camera } from "expo-camera"
+import { ActivityIndicator } from "react-native"
 
 const Profile = ({ navigation, route }) => {
 
@@ -48,6 +49,9 @@ const Profile = ({ navigation, route }) => {
     idTipoUsuario: ''
   })
 
+  // useState para dealbilitar o botão
+  const [disable, setDisable] = useState(false)
+
   const [isNewUser, setIsNewUser] = useState(true);
 
   // Use state para as fotos e modais
@@ -62,7 +66,6 @@ const Profile = ({ navigation, route }) => {
     email: '',
     dataNascimento: '',
     cpf: '',
-    endereco: '',
     cep: '',
     cidade: '',
   });
@@ -79,11 +82,14 @@ const Profile = ({ navigation, route }) => {
 
         setUserData({
           ...userData,
+          id: token.id,
           nome: data.idNavigation.nome,
           email: data.idNavigation.email,
           dataNascimento: data.dataNascimento,
           cpf: data.cpf,
-          endereco: data.endereco.logradouro,
+          rg: data.rg,
+          logradouro: data.endereco.logradouro,
+          numero: data.endereco.numero.toString(),
           cep: data.endereco.cep,
           cidade: data.endereco.cidade
         })
@@ -144,6 +150,9 @@ const Profile = ({ navigation, route }) => {
   }
 
   async function SaveProfile() {
+
+    setDisable(true)
+
     const formData = new FormData();
 
     // inserindo informações de cadastro no formulário
@@ -159,14 +168,15 @@ const Profile = ({ navigation, route }) => {
     formData.append("Senha", createUser.senha)
     formData.append("IdTipoUsuario", createUser.idTipoUsuario)
 
-    formData.append("Foto", "foto")
+    if (photo) {
+      // inserindo imagem
+      formData.append("Arquivo", {
+        uri: photo,
+        name: `image.${photo.split('.').pop()}`,
+        type: `image/${photo.split('.').pop()}`
+      })
+    }
 
-    // inserindo imagem
-    formData.append("Arquivo", {
-      uri: photo,
-      name: `image.${photo.split('.').pop()}`,
-      type: `image/${photo.split('.').pop()}`
-    })
 
     await api.post('/Pacientes', formData, {
       headers: {
@@ -174,7 +184,6 @@ const Profile = ({ navigation, route }) => {
       }
     }).then(response => {
 
-      alert('Deu certo')
       navigation.navigate("Login")
 
     }).catch(error => {
@@ -189,9 +198,6 @@ const Profile = ({ navigation, route }) => {
       const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
     })
   }, [])
-
-
-
 
   async function capturePhoto() {
     if (cameraRef) {
@@ -222,7 +228,18 @@ const Profile = ({ navigation, route }) => {
     }
   }
 
+  async function EditProfile() {
+    try {
+      const res = await api.put('/Pacientes?idUsuario=' + userData.id, userData)
 
+      const data = await res.status;
+
+      console.log(data)
+
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
 
   return (
@@ -251,24 +268,29 @@ const Profile = ({ navigation, route }) => {
                 <Title>{userData.nome}</Title>
                 <SubTitle>{userData.email}</SubTitle>
                 <InputContainer>
+
                   <InputLabelBlack
                     title={"Data de nascimento"}
                     value={userData.dataNascimento}
                     onChangeText={text => setUserData({ ...userData, dataNascimento: text })}
                     name="dataNascimento"
                   />
-                  <InputLabelBlack
-                    title={"CPF"}
-                    value={userData.cpf}
-                    onChangeText={text => setUserData({ ...userData, cpf: text })}
-                    name="cpf"
-                  />
-                  <InputLabelBlack
-                    title={"Endereço"}
-                    value={userData.endereco}
-                    onChangeText={text => setUserData({ ...userData, endereco: text })}
-                    name="endereco"
-                  />
+
+                  <TwoInputContainer>
+                    <SmallInputLabel
+                      title={"Endereço"}
+                      value={userData.logradouro}
+                      onChangeText={text => setUserData({ ...userData, logradouro: text })}
+                      name="endereco"
+                    />
+                    <SmallInputLabel
+                      title={"Número"}
+                      value={userData.numero}
+                      onChangeText={text => setUserData({ ...userData, numero: text })}
+                      name="numero"
+                    />
+                  </TwoInputContainer>
+
                   <TwoInputContainer>
                     <SmallInputLabel
                       title={"CEP"}
@@ -277,14 +299,14 @@ const Profile = ({ navigation, route }) => {
                       name="cep"
                     />
                     <SmallInputLabel
-                      title={"CIDADE"}
+                      title={"Cidade"}
                       value={userData.cidade}
                       onChangeText={text => setUserData({ ...userData, cidade: text })}
                       name="cidade"
                     />
                   </TwoInputContainer>
                 </InputContainer>
-                <Button onPress={() => alert('salvando')}>
+                <Button onPress={() => EditProfile()}>
                   <ButtonTitle>SALVAR</ButtonTitle>
                 </Button>
 
@@ -348,8 +370,14 @@ const Profile = ({ navigation, route }) => {
                     />
                   </TwoInputContainer>
                 </InputContainer>
-                <Button onPress={() => SaveProfile()}>
-                  <ButtonTitle>SALVAR</ButtonTitle>
+                <Button disable={disable} onPress={() => SaveProfile()}>
+                  {
+                    !disable ?
+                      <ButtonTitle>SALVAR</ButtonTitle>
+                      :
+                      <ActivityIndicator />
+                  }
+
                 </Button>
               </>
             )}

@@ -63,6 +63,7 @@ const CreateAccount = ({ navigation }) => {
                 <Input 
                   placeholder={"Senha"}
                   value={user.senha}
+                  secureTextEntry={true}
                   onChangeText={(txt) => setUser({
                     ...user,
                     senha: txt
@@ -71,6 +72,7 @@ const CreateAccount = ({ navigation }) => {
                 <Input 
                   placeholder={"Confirmar senha"}
                   value={user.confirmaSenha}
+                  secureTextEntry={true}
                   onChangeText={(txt) => setUser({
                     ...user,
                     confirmaSenha: txt
