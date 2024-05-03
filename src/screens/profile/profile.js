@@ -151,6 +151,12 @@ const Profile = ({ navigation, route }) => {
 
   async function SaveProfile() {
 
+    if (createUser.rg.length < 9 || createUser.dataNascimento.length < 10 || createUser.cpf.length < 11 ||
+    createUser.endereco.length < 1 || createUser.numero.length < 1 || createUser.cep.length < 8 || createUser.cidade.length < 1) {
+      alert('Informações inválidas', 'Preencha todas as informações corretamente');
+      return;
+    }
+
     setDisable(true)
 
     const formData = new FormData();
@@ -342,8 +348,8 @@ const Profile = ({ navigation, route }) => {
                   <TwoInputContainer>
                     <SmallInputLabel
                       title={"Endereço"}
-                      value={createUser.endereco}
-                      onChangeText={text => setCreateUser({ ...createUser, endereco: text })}
+                      value={createUser.logradouro}
+                      onChangeText={text => setCreateUser({ ...createUser, logradouro: text })}
                       name="endereco"
                     />
                     <SmallInputLabel

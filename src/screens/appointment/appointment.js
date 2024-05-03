@@ -134,6 +134,12 @@ const Appointment = ({ navigation, route }) => {
 
     }
     async function saveAppointment() {
+
+        if (appointmentObj.descricao.length < 1 || appointmentObj.diagnostico.length < 1 || appointmentObj.medicamento.length < 1) {
+            alert('Preencha todas as informações corretamente');
+            return;
+        }
+
         try {
             const res = await api.put('/Consultas/Prontuario', appointmentObj)
 

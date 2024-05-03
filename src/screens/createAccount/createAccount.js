@@ -24,14 +24,18 @@ const CreateAccount = ({ navigation }) => {
   })
 
     const Cadastrar = async () => {
-        if (user.senha !== user.confirmaSenha) {
+      if(user.nome.length < 1 || user.email.length < 1  || user.senha.length < 1 || user.confirmaSenha.length < 1){
+        alert('Informações inválidas', 'Preencha todas as informações corretamente');
+        return;
+      }
+
+      if (user.senha !== user.confirmaSenha) {
           alert("Senhas devem ser iguais");
           return;
-        }
-
+        } 
         removeFromStorage()
         
-        navigation.navigate('Profile', {user})
+        navigation.navigate('Profile', {user});
       };
 
     return (
