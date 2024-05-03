@@ -50,9 +50,9 @@ const Appointment = ({ navigation, route }) => {
         diagnostico: "",
         name: "",
         age: "",
-        email: '',
-        crm: '',
-        medicSpecialty: '',
+        email: "",
+        crm: "",
+        medicSpecialty: "",
     });
 
 
@@ -63,7 +63,7 @@ const Appointment = ({ navigation, route }) => {
 
     async function capturePhoto() {
         if (cameraRef) {
-            const image = await cameraRef.current.takePictureAsync();
+            const image = await cameraRef.current.takePictureAsync({quality: 1});
 
             console.log(image.uri);
             setPhoto(image.uri)
