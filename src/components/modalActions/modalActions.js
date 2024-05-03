@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "../button/button";
 import { ButtonTitle } from "../button/buttonTitle";
 import { ModalContainer, RowContainer, Container, InputContainer, BottomCancelContainer, BottomRowButtonContainer } from "../container/style";
@@ -302,12 +302,13 @@ export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = nu
 
 
 
-export const CameraModal = ({ openModal, setOpenModal, cameraRef, capturePhoto, typeCamera }) => {
+export const CameraModal = ({ openModal, setOpenModal, capturePhoto, cameraRef }) => {
 
-    useEffect(()=>{
+
+    useEffect(() => {
         (async () => {
             const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
-        
+
             const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
         })
 
@@ -315,32 +316,28 @@ export const CameraModal = ({ openModal, setOpenModal, cameraRef, capturePhoto, 
         // if (getMediaLibrary) {
         //     GetLastPhoto();
         // }
-    },[])
+    }, [])
 
-    const [latestPhoto, setLatestPhoto] = useState(null) //salva a ultima foto da galeria
-
-    async function GetLastPhoto() {
-        const assets = await MediaLibrary.getAssetsAsync({ sortBy: [[MediaLibrary.SortBy.creactionTime, false]], first: 1 });
-
-        console.log(assets)
-    }
     return (
-        <TrueModal
-            presentationStyle={"pageSheet"}
-            statusBarTranslucent={true}
-            animationType="slide"
-            transparent={false}
-            visible={openModal}>
-            <Camera
-                type={typeCamera}
-                style={{ width: "100%", height: "80%", flex: 1, position: "relative" }}
-                ratio={'16:9'}
-                ref={cameraRef} />
-            <BottomRowButtonContainer>
-                <Entypo name="arrow-with-circle-left" size={48} color="white" onPress={() => setOpenModal(false)} />
-                <Entypo name="circle" size={48} color="white" onPress={() => capturePhoto()} />
-            </BottomRowButtonContainer>
+        <>
+            {
+                openModal ?
+                    <TrueModal>
+                        <Camera
+                            type={Camera.Constants.Type.back}
+                            style={{ width: "100%", height: "80%", flex: 1, position: "relative" }}
+                            ratio={'16:9'}
+                            ref={cameraRef} />
+                        <BottomRowButtonContainer>
+                            <Entypo name="arrow-with-circle-left" size={48} color="white" onPress={() => setOpenModal(false)} />
+                            <Entypo name="circle" size={48} color="white" onPress={() => capturePhoto()} />
+                        </BottomRowButtonContainer>
 
-        </TrueModal>
+                    </TrueModal>
+                    :
+                    <>
+                    </>
+            }
+        </>
     )
 }

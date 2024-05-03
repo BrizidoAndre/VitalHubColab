@@ -8,7 +8,7 @@ export const AddPhotoButton = styled.TouchableOpacity.attrs({
     background-color: #496bba;
     border: 1px solid #fbfbfb;
 
-    bottom: -20;
+    bottom: -20px;
     right : 15px;
     position: absolute;
 `
