@@ -27,7 +27,7 @@ const Profile = ({ navigation, route }) => {
   // constante para a imagem ficar salva
   const [photo, setPhoto] = useState(null)
 
-  const cameraRef = useRef(null);
+  const cameraRef = useRef(null)
 
 
 
@@ -77,6 +77,14 @@ const Profile = ({ navigation, route }) => {
       if (token) {
         const res = await api.get('/Pacientes/BuscarPorId?id=' + token.id);
         const data = await res.data;
+
+        console.log(data)
+
+        setUriCameraCapture({
+          ...uriCameraCapture,
+          data: data.idNavigation.foto
+        })
+
         data.dataNascimento = await data.dataNascimento.split(['T'])[0];
 
         setUserData({
@@ -121,7 +129,10 @@ const Profile = ({ navigation, route }) => {
   useEffect(() => {
     loadProfile();
   }, []);
-  
+
+  useEffect(() => {
+    AlterarFotoPerfil()
+  }, [uriCameraCapture])
 
   async function AlterarFotoPerfil() {
     const formData = new FormData();
@@ -187,6 +198,14 @@ const Profile = ({ navigation, route }) => {
     })
   }
 
+  // Use effect para a requisição das permissões
+  useEffect(() => {
+    (async () => {
+      const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
+
+      const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
+    })
+  }, [])
 
   async function capturePhoto() {
     if (cameraRef) {
@@ -374,6 +393,7 @@ const Profile = ({ navigation, route }) => {
       </Container>
 
       <CameraModal
+        cameraRef={cameraRef}
         getMediaLibrary={true}
 
         openModal={openModal}

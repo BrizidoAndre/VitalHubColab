@@ -106,8 +106,8 @@ const Appointment = ({ navigation, route }) => {
 
         const data = await res.data;
 
-
         if (!isMedic) {
+
             setAppointmentObj({
                 consultaId: data.id,
                 descricao: data.descricao,
@@ -116,7 +116,7 @@ const Appointment = ({ navigation, route }) => {
                 name: objModalRecord.medicoClinica.medico.idNavigation.nome,
                 medicSpecialty: objModalRecord.medicoClinica.medico.especialidade.especialidade1,
                 crm: objModalRecord.medicoClinica.medico.crm,
-                examDescription: data.exames[0].descricao
+                photo: objModalRecord.medicoClinica.medico.idNavigation.foto
             })
         }
         else {
@@ -128,6 +128,7 @@ const Appointment = ({ navigation, route }) => {
                 age: objModalRecord.paciente.dataNascimento,
                 email: objModalRecord.paciente.idNavigation.email,
                 name: objModalRecord.paciente.idNavigation.nome,
+                photo: objModalRecord.paciente.idNavigation.foto
             })
         }
 
@@ -188,7 +189,7 @@ const Appointment = ({ navigation, route }) => {
                 <>
                     <IconReturn navigation={navigation} />
 
-                    <HeaderImage requireImage={require("../../assets/img/Rectangle425.png")} />
+                    <HeaderImage requireImage={{uri: appointmentObj.photo}} />
 
                     <ScrollViewProfile>
                         <Title>{appointmentObj.name}</Title>
@@ -246,7 +247,7 @@ const Appointment = ({ navigation, route }) => {
                 <>
                     <IconReturn navigation={navigation} />
 
-                    <HeaderImage requireImage={require("../../assets/img/Rectangle425.png")} />
+                    <HeaderImage requireImage={{uri: appointmentObj.photo}} />
 
                     <ScrollViewProfile>
                         <Container>

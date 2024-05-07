@@ -57,7 +57,7 @@ export const ShowRecord = ({ item = null, hideModal = false, onPressCancel = nul
                 <ModalContainer>
                     {isMedic ?
                         <>
-                            <ImageProfile source={item.image} />
+                            <ImageProfile source={{uri: item.paciente.idNavigation.foto}} />
                             <Mont20600>{item.paciente.idNavigation.nome}</Mont20600>
                             <RowContainer>
                                 <Sand16500>{prepareAge(item.paciente.dataNascimento)} anos</Sand16500>
@@ -69,7 +69,7 @@ export const ShowRecord = ({ item = null, hideModal = false, onPressCancel = nul
                             <LinkBlueSmall onPress={onPressCancel}>Cancelar</LinkBlueSmall>
                         </> :
                         <>
-                            <ImageProfile source={item.image} />
+                            <ImageProfile source={{uri: item.medicoClinica.medico.idNavigation.foto}} />
                             <Mont20600>{item.medicoClinica.medico.idNavigation.nome}</Mont20600>
                             <RowContainer>
                                 <Sand16500>{item.medicoClinica.medico.especialidade.especialidade1}</Sand16500>
@@ -320,24 +320,29 @@ export const CameraModal = ({ openModal, setOpenModal, capturePhoto, cameraRef }
 
     return (
         <>
-            {
-                openModal ?
-                    <TrueModal>
-                        <Camera
-                            type={Camera.Constants.Type.back}
-                            style={{ width: "100%", height: "80%", flex: 1, position: "relative" }}
-                            ratio={'16:9'}
-                            ref={cameraRef} />
-                        <BottomRowButtonContainer>
-                            <Entypo name="arrow-with-circle-left" size={48} color="white" onPress={() => setOpenModal(false)} />
-                            <Entypo name="circle" size={48} color="white" onPress={() => capturePhoto()} />
-                        </BottomRowButtonContainer>
+            {openModal ?
+                <TrueModal
+                    presentationStyle={"pageSheet"}
+                    statusBarTranslucent={true}
+                    animationType="slide"
+                    transparent={false}
+                    visible={openModal}>
+                    <Camera
+                        type={Camera.Constants.Type.back}
+                        style={{ width: "100%", height: "80%", flex: 1, position: "relative" }}
+                        ratio={'16:9'}
+                        ref={cameraRef} />
+                    <BottomRowButtonContainer>
+                        <Entypo name="arrow-with-circle-left" size={48} color="white" onPress={() => setOpenModal(false)} />
+                        <Entypo name="circle" size={48} color="white" onPress={() => capturePhoto()} />
+                    </BottomRowButtonContainer>
 
-                    </TrueModal>
-                    :
-                    <>
-                    </>
+                </TrueModal>
+                :
+                <>
+                </>
             }
+
         </>
     )
 }

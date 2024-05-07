@@ -81,7 +81,7 @@ const Card = ({item, image, onPress = null, onPressCard, isMedic }) => {
 
     return (
         <CardBox onPress={onPressCard}>
-            <ImageCard source={image} />
+            <ImageCard source={!isMedic ?{uri:item.medicoClinica.medico.idNavigation.foto}:{uri:item.paciente.idNavigation.foto}} />
             <Container>
 
                 <TextCardBox>
@@ -139,7 +139,7 @@ export const MedicCard = ({ item, onPress, select }) => {
     if (select === item.id) {
         return (
             <CardBoxSelect>
-                <ImageCard source={image} />
+                <ImageCard source={{uri: item.idNavigation.foto}} />
                 <MedicCardBox>
                     <Mont16600>{item.idNavigation.nome}</Mont16600>
                     <Sand14500Gray>{item.especialidade.especialidade1}</Sand14500Gray>
@@ -151,7 +151,7 @@ export const MedicCard = ({ item, onPress, select }) => {
     else {
         return (
             <CardBox onPress={onPress}>
-                <ImageCard source={image} />
+                <ImageCard source={{uri: item.idNavigation.foto}} />
                 <MedicCardBox>
                     <Mont16600>{item.idNavigation.nome}</Mont16600>
                     <Sand14500Gray>{item.especialidade.especialidade1}</Sand14500Gray>
