@@ -7,10 +7,9 @@ import { LinkBlueSmall } from "../links/links";
 import { Label, Mont20600, Mont24600, Sand14500Gray, Sand16500, Sand16600, Title } from "../title/title";
 import { BottomModal, GrayBackground, ImageProfile, ModalCancel, ModalConfirmAppointment, ModalMedRecord, TextCenter, TrueModal } from "./styles";
 import { AppointmentButton } from "../navButton/navButton";
-import * as ImagePicker from "expo-image-picker";
 
 // import das bibliotecas
-import { Camera } from "expo-camera";
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { Ionicons, Entypo } from "@expo/vector-icons";
 
@@ -18,6 +17,7 @@ import { Ionicons, Entypo } from "@expo/vector-icons";
 import api from "../../service/service";
 import { userDecodeToken } from "../../utils/auth";
 import { prepareAge } from "../../utils/dateFunctions";
+import { ActivityIndicator } from "react-native";
 
 
 export const CancelAppointment = ({ hideModal = false, onPressCancel = null, onPress = null }) => {
@@ -57,7 +57,7 @@ export const ShowRecord = ({ item = null, hideModal = false, onPressCancel = nul
                 <ModalContainer>
                     {isMedic ?
                         <>
-                            <ImageProfile source={{uri: item.paciente.idNavigation.foto}} />
+                            <ImageProfile source={{ uri: item.paciente.idNavigation.foto }} />
                             <Mont20600>{item.paciente.idNavigation.nome}</Mont20600>
                             <RowContainer>
                                 <Sand16500>{prepareAge(item.paciente.dataNascimento)} anos</Sand16500>
@@ -69,7 +69,7 @@ export const ShowRecord = ({ item = null, hideModal = false, onPressCancel = nul
                             <LinkBlueSmall onPress={onPressCancel}>Cancelar</LinkBlueSmall>
                         </> :
                         <>
-                            <ImageProfile source={{uri: item.medicoClinica.medico.idNavigation.foto}} />
+                            <ImageProfile source={{ uri: item.medicoClinica.medico.idNavigation.foto }} />
                             <Mont20600>{item.medicoClinica.medico.idNavigation.nome}</Mont20600>
                             <RowContainer>
                                 <Sand16500>{item.medicoClinica.medico.especialidade.especialidade1}</Sand16500>
@@ -169,7 +169,7 @@ export const DoctorAppointment = ({ item = null, hideModal = false, onPressCance
         <GrayBackground>
             <ModalMedRecord>
                 <ModalContainer>
-                    <ImageProfile source={item.image} />
+                    <ImageProfile source={{ uri: item.medicoClinica.medico.idNavigation.foto }} />
                     <Mont20600>{item.medicoClinica.medico.idNavigation.nome}</Mont20600>
                     <RowContainer>
                         <Sand16500>{item.medicoClinica.medico.especialidade.especialidade1}</Sand16500>
@@ -302,38 +302,42 @@ export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = nu
 
 
 
-export const CameraModal = ({ openModal, setOpenModal, capturePhoto, cameraRef }) => {
+export const CameraModal = ({ openModal, setOpenModal, capturePhoto, cameraRef}) => {
+
+    const [facing, setFacing] = useState('back')
+    const [permission, requestPermission] = useCameraPermissions()
 
 
-    useEffect(() => {
-        (async () => {
-            const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
+    if(!permission){
+        return(<><ActivityIndicator/></>)
+    }
 
-            const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
-        })
+    if(!permission.granted){
 
-        //verificar se mostra a parte da galeria
-        // if (getMediaLibrary) {
-        //     GetLastPhoto();
-        // }
-    }, [])
+        return(
+            <View>
+                <Title>We need your permission to show de camera</Title>
+                <Button onPress={requestPermission} title="Grant permission" />
+            </View>
+        )
+    }
+
+
+    function toggleCameraFacing() {
+        setFacing(current => (current === 'back' ? 'front' : 'back'));
+      }
+
 
     return (
         <>
             {openModal ?
-                <TrueModal
-                    presentationStyle={"pageSheet"}
-                    statusBarTranslucent={true}
-                    animationType="slide"
-                    transparent={false}
-                    visible={openModal}>
-                    <Camera
-                        type={Camera.Constants.Type.back}
-                        style={{ width: "100%", height: "80%", flex: 1, position: "relative" }}
-                        ratio={'16:9'}
-                        ref={cameraRef} />
+                <TrueModal>
+                    <CameraView
+                        facing={facing}
+                        style={{ width: "100%", height: "80%", flex: 1, position: "relative" }} />
                     <BottomRowButtonContainer>
                         <Entypo name="arrow-with-circle-left" size={48} color="white" onPress={() => setOpenModal(false)} />
+                        <Entypo name="baidu" size={48} color="white" onPress={() => toggleCameraFacing()} />
                         <Entypo name="circle" size={48} color="white" onPress={() => capturePhoto()} />
                     </BottomRowButtonContainer>
 

@@ -1,5 +1,5 @@
 // importando biblioteca
-import { Camera } from "expo-camera"
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library'
 
 // Importando componentes
@@ -31,15 +31,10 @@ const Appointment = ({ navigation, route }) => {
     // constante para verificar se o usuário é ou não médico
     const [medic, setMedic] = useState(false);
 
-    // constante para referências da câmera
-    const cameraRef = useRef(null)
-    // Use state para o tipo da camera
-    const [camera, setCamera] = useState(Camera.Constants.Type.back)
-
-
 
     // constante para a imagem ficar salva
     const [photo, setPhoto] = useState(null)
+    const cameraRef = useRef(null)
 
     // Use state para os modais
     const [openModal, setOpenModal] = useState(false)
@@ -71,7 +66,6 @@ const Appointment = ({ navigation, route }) => {
 
             console.log(image.uri);
             setPhoto(image.uri)
-            SavePhoto()
             setOpenModal(false)
         }
 
@@ -86,18 +80,6 @@ const Appointment = ({ navigation, route }) => {
         handleClose();
     }
 
-    async function SavePhoto() {
-        if (photo) {
-            await MediaLibrary.createAssetAsync(photo)
-                .then(() => {
-                    alert('Foto salva com sucesso');
-                    SendFormPhoto();
-                })
-                .catch(error => {
-                    alert('Erro ao salvar foto')
-                })
-        }
-    }
 
 
     // funções do prontuário obter e alterar
@@ -168,13 +150,6 @@ const Appointment = ({ navigation, route }) => {
 
     // Use effect para a requisição das permissões
     useEffect(() => {
-
-        (async () => {
-            const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
-
-            const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
-        })
-
         // quando carrega a página verifica se usuário é médico
         setMedic(isMedic);
         loadAppointment();
@@ -305,9 +280,9 @@ const Appointment = ({ navigation, route }) => {
                     <CameraModal
                         openModal={openModal}
                         setOpenModal={setOpenModal}
-                        cameraRef={cameraRef}
                         capturePhoto={capturePhoto}
-                        typeCamera={camera} />
+                        cameraRef={cameraRef}
+                        />
                 </>
             }
 

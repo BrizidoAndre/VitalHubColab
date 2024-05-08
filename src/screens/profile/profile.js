@@ -258,7 +258,7 @@ const Profile = ({ navigation, route }) => {
 
           {/* botao da foto */}
 
-          <AddPhotoButton onPress={() => setOpenModal(!openModal)} >
+          <AddPhotoButton onPress={() => {setOpenModal(!openModal)}} >
             <MaterialCommunityIcons
               name="camera-plus"
               size={20}
@@ -395,10 +395,8 @@ const Profile = ({ navigation, route }) => {
       <CameraModal
         cameraRef={cameraRef}
         getMediaLibrary={true}
-
         openModal={openModal}
         setOpenModal={setOpenModal}
-
         capturePhoto={capturePhoto}
       />
 

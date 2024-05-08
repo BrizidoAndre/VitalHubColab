@@ -166,17 +166,14 @@ export const BottomRowButtonContainer = styled.View`
     justify-content:center;
 
     gap: 30px;
-
-
+    
     position: absolute;
-    bottom: 20px;
+    bottom: 30px;
     align-self:center;
-    ;
 `
 
 export const Container11 = styled.View`
     width: 100%;
-    heigth: 280px;
     margin-bottom: 20px;
 
     position: relative;
