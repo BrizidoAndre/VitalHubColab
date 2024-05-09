@@ -112,7 +112,7 @@ export const CameraComp = ({setUriCameraCapture, setShowCameraModal, getMediaLib
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => SelectImageGallery()}>
-                        {
+                        { 
                             latestPhoto != null ?
                             (
                                 <LastPhoto

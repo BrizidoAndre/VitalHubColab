@@ -234,6 +234,17 @@ const Profile = ({ navigation, route }) => {
     }
   }
 
+  async function SelectImageGallery(){
+    const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes : ImagePicker.MediaTypeOptions.Images,
+        quality : 1
+    });
+
+    if (!result.canceled) {
+        setPhoto( result.assets[0].uri )
+    }
+}
+
   async function EditProfile() {
     try {
       const res = await api.put('/Pacientes?idUsuario=' + userData.id, userData)
@@ -400,6 +411,8 @@ const Profile = ({ navigation, route }) => {
 
         capturePhoto={capturePhoto}
         typeCamera={camera}
+
+        SelectImageGallery={SelectImageGallery}
       />
 
     </>

@@ -18,6 +18,8 @@ import { Ionicons, Entypo } from "@expo/vector-icons";
 import api from "../../service/service";
 import { userDecodeToken } from "../../utils/auth";
 import { prepareAge } from "../../utils/dateFunctions";
+import { TouchableOpacity } from "react-native";
+import { LastPhoto } from "../addphoto/styles";
 
 
 export const CancelAppointment = ({ hideModal = false, onPressCancel = null, onPress = null }) => {
@@ -316,7 +318,7 @@ export const CameraModal = ({ openModal, setOpenModal, cameraRef, capturePhoto, 
         //     GetLastPhoto();
         // }
     },[])
-
+    
     const [latestPhoto, setLatestPhoto] = useState(null) //salva a ultima foto da galeria
 
     async function GetLastPhoto() {
@@ -340,6 +342,17 @@ export const CameraModal = ({ openModal, setOpenModal, cameraRef, capturePhoto, 
                 <Entypo name="arrow-with-circle-left" size={48} color="white" onPress={() => setOpenModal(false)} />
                 <Entypo name="circle" size={48} color="white" onPress={() => capturePhoto()} />
             </BottomRowButtonContainer>
+
+            <TouchableOpacity onPress={() => SelectImageGallery()}>
+                        { 
+                            latestPhoto != null ?
+                            (
+                                <LastPhoto
+                                source={{uri : latestPhoto}}
+                                />
+                            ) : (<></>)
+                        }
+            </TouchableOpacity>
 
         </TrueModal>
     )
