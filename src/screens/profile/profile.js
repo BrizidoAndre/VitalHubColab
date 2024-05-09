@@ -18,17 +18,16 @@ import { CameraModal } from "../../components/modalActions/modalActions.js"
 import { CameraComp } from "../../components/CameraComp/CameraComp.js"
 import { Camera } from "expo-camera"
 import { ActivityIndicator } from "react-native"
+import { NavigationHelpersContext } from "@react-navigation/native"
 
 const Profile = ({ navigation, route }) => {
 
 
 
-  // constante para referências da câmera
-  const cameraRef = useRef(null)
   // constante para a imagem ficar salva
   const [photo, setPhoto] = useState(null)
-  // Use state para o tipo da camera
-  const [camera, setCamera] = useState(Camera.Constants.Type.back)
+
+  const cameraRef = useRef(null)
 
 
 
@@ -78,6 +77,14 @@ const Profile = ({ navigation, route }) => {
       if (token) {
         const res = await api.get('/Pacientes/BuscarPorId?id=' + token.id);
         const data = await res.data;
+
+        console.log(data)
+
+        setUriCameraCapture({
+          ...uriCameraCapture,
+          data: data.idNavigation.foto
+        })
+
         data.dataNascimento = await data.dataNascimento.split(['T'])[0];
 
         setUserData({
@@ -201,6 +208,7 @@ const Profile = ({ navigation, route }) => {
   useEffect(() => {
     (async () => {
       const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
+
       const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
     })
   }, [])
@@ -226,7 +234,6 @@ const Profile = ({ navigation, route }) => {
       await MediaLibrary.createAssetAsync(photo)
         .then(() => {
           alert('Foto salva com sucesso');
-          SendFormPhoto();
         })
         .catch(error => {
           alert('Erro ao salvar foto')
@@ -251,7 +258,7 @@ const Profile = ({ navigation, route }) => {
 
       const data = await res.status;
 
-      console.log(data)
+      navigation.navigate("Home")
 
     } catch (e) {
       console.log(e)
@@ -268,7 +275,7 @@ const Profile = ({ navigation, route }) => {
 
           {/* botao da foto */}
 
-          <AddPhotoButton onPress={() => setOpenModal(!openModal)} >
+          <AddPhotoButton onPress={() => {setOpenModal(!openModal)}} >
             <MaterialCommunityIcons
               name="camera-plus"
               size={20}
@@ -405,14 +412,9 @@ const Profile = ({ navigation, route }) => {
       <CameraModal
         cameraRef={cameraRef}
         getMediaLibrary={true}
-
         openModal={openModal}
         setOpenModal={setOpenModal}
-
         capturePhoto={capturePhoto}
-        typeCamera={camera}
-
-        SelectImageGallery={SelectImageGallery}
       />
 
     </>

@@ -18,8 +18,13 @@ import { AxiosHeaders } from "axios";
 const Login = ({ navigation }) => {
 
     // states para o cadastro
+<<<<<<< HEAD
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+=======
+    const [email, setEmail] = useState('abrizidobasilio@gmail.com')
+    const [password, setPassword] = useState('Andre')
+>>>>>>> e2dc04bdc3fe32c0502c037e95790324a7d07bca
 
     // state para o botão de login
     const [loginTime, setLoginTime] = useState(false);

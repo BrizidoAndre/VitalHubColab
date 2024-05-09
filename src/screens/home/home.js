@@ -130,11 +130,18 @@ const Home = ({ navigation }) => {
     async function setIfMedic() {
         const user = await userDecodeToken()
 
-        if (user.role === 'Medico') {
-            setIsMedic(true)
-            return;
+        try{
+
+            if (user.role === 'Medico') {
+                setIsMedic(true)
+                return;
+            }
+            setIsMedic(false)
+
+        } catch (e){
+            console.log(e)
         }
-        setIsMedic(false)
+
 
     }
 
@@ -157,8 +164,6 @@ const Home = ({ navigation }) => {
 
             const data = await res.data
 
-
-            console.log(data);
 
             setListAppointment(data)
 

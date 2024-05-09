@@ -1,5 +1,5 @@
 // importando biblioteca
-import { Camera } from "expo-camera"
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library'
 
 // Importando componentes
@@ -31,15 +31,10 @@ const Appointment = ({ navigation, route }) => {
     // constante para verificar se o usuário é ou não médico
     const [medic, setMedic] = useState(false);
 
-    // constante para referências da câmera
-    const cameraRef = useRef(null)
-    // Use state para o tipo da camera
-    const [camera, setCamera] = useState(Camera.Constants.Type.back)
-
-
 
     // constante para a imagem ficar salva
     const [photo, setPhoto] = useState(null)
+    const cameraRef = useRef(null)
 
     // Use state para os modais
     const [openModal, setOpenModal] = useState(false)
@@ -54,10 +49,9 @@ const Appointment = ({ navigation, route }) => {
         diagnostico: "",
         name: "",
         age: "",
-        email: '',
-        crm: '',
-        medicSpecialty: '',
-        examDescription: '',
+        email: "",
+        crm: "",
+        medicSpecialty: "",
     });
 
 
@@ -68,11 +62,10 @@ const Appointment = ({ navigation, route }) => {
 
     async function capturePhoto() {
         if (cameraRef) {
-            const image = await cameraRef.current.takePictureAsync();
+            const image = await cameraRef.current.takePictureAsync({quality: 1});
 
             console.log(image.uri);
             setPhoto(image.uri)
-            SavePhoto()
             setOpenModal(false)
         }
 
@@ -87,18 +80,6 @@ const Appointment = ({ navigation, route }) => {
         handleClose();
     }
 
-    async function SavePhoto() {
-        if (photo) {
-            await MediaLibrary.createAssetAsync(photo)
-                .then(() => {
-                    alert('Foto salva com sucesso');
-                    SendFormPhoto();
-                })
-                .catch(error => {
-                    alert('Erro ao salvar foto')
-                })
-        }
-    }
 
 
     // funções do prontuário obter e alterar
@@ -107,8 +88,8 @@ const Appointment = ({ navigation, route }) => {
 
         const data = await res.data;
 
-
         if (!isMedic) {
+
             setAppointmentObj({
                 consultaId: data.id,
                 descricao: data.descricao,
@@ -117,7 +98,7 @@ const Appointment = ({ navigation, route }) => {
                 name: objModalRecord.medicoClinica.medico.idNavigation.nome,
                 medicSpecialty: objModalRecord.medicoClinica.medico.especialidade.especialidade1,
                 crm: objModalRecord.medicoClinica.medico.crm,
-                examDescription: data.exames[0].descricao
+                photo: objModalRecord.medicoClinica.medico.idNavigation.foto
             })
         }
         else {
@@ -129,6 +110,7 @@ const Appointment = ({ navigation, route }) => {
                 age: objModalRecord.paciente.dataNascimento,
                 email: objModalRecord.paciente.idNavigation.email,
                 name: objModalRecord.paciente.idNavigation.nome,
+                photo: objModalRecord.paciente.idNavigation.foto
             })
         }
 
@@ -174,13 +156,6 @@ const Appointment = ({ navigation, route }) => {
 
     // Use effect para a requisição das permissões
     useEffect(() => {
-
-        (async () => {
-            const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
-
-            const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
-        })
-
         // quando carrega a página verifica se usuário é médico
         setMedic(isMedic);
         loadAppointment();
@@ -195,7 +170,7 @@ const Appointment = ({ navigation, route }) => {
                 <>
                     <IconReturn navigation={navigation} />
 
-                    <HeaderImage requireImage={require("../../assets/img/Rectangle425.png")} />
+                    <HeaderImage requireImage={{uri: appointmentObj.photo}} />
 
                     <ScrollViewProfile>
                         <Title>{appointmentObj.name}</Title>
@@ -253,7 +228,7 @@ const Appointment = ({ navigation, route }) => {
                 <>
                     <IconReturn navigation={navigation} />
 
-                    <HeaderImage requireImage={require("../../assets/img/Rectangle425.png")} />
+                    <HeaderImage requireImage={{uri: appointmentObj.photo}} />
 
                     <ScrollViewProfile>
                         <Container>
@@ -311,9 +286,9 @@ const Appointment = ({ navigation, route }) => {
                     <CameraModal
                         openModal={openModal}
                         setOpenModal={setOpenModal}
-                        cameraRef={cameraRef}
                         capturePhoto={capturePhoto}
-                        typeCamera={camera} />
+                        cameraRef={cameraRef}
+                        />
                 </>
             }
 

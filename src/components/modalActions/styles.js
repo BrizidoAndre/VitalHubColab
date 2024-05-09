@@ -64,6 +64,7 @@ export const TextCenter = styled(Sand16500Black)`
 `
 
 export const TrueModal = styled.Modal`
+display: flex;
 align-items: center;
 justify-content:space-between;
 `

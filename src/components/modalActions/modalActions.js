@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "../button/button";
 import { ButtonTitle } from "../button/buttonTitle";
 import { ModalContainer, RowContainer, Container, InputContainer, BottomCancelContainer, BottomRowButtonContainer } from "../container/style";
@@ -7,10 +7,9 @@ import { LinkBlueSmall } from "../links/links";
 import { Label, Mont20600, Mont24600, Sand14500Gray, Sand16500, Sand16600, Title } from "../title/title";
 import { BottomModal, GrayBackground, ImageProfile, ModalCancel, ModalConfirmAppointment, ModalMedRecord, TextCenter, TrueModal } from "./styles";
 import { AppointmentButton } from "../navButton/navButton";
-import * as ImagePicker from "expo-image-picker";
 
 // import das bibliotecas
-import { Camera } from "expo-camera";
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { Ionicons, Entypo } from "@expo/vector-icons";
 
@@ -20,6 +19,7 @@ import { userDecodeToken } from "../../utils/auth";
 import { prepareAge } from "../../utils/dateFunctions";
 import { TouchableOpacity } from "react-native";
 import { LastPhoto } from "../addphoto/styles";
+import { ActivityIndicator } from "react-native";
 
 
 export const CancelAppointment = ({ hideModal = false, onPressCancel = null, onPress = null }) => {
@@ -59,7 +59,7 @@ export const ShowRecord = ({ item = null, hideModal = false, onPressCancel = nul
                 <ModalContainer>
                     {isMedic ?
                         <>
-                            <ImageProfile source={item.image} />
+                            <ImageProfile source={{ uri: item.paciente.idNavigation.foto }} />
                             <Mont20600>{item.paciente.idNavigation.nome}</Mont20600>
                             <RowContainer>
                                 <Sand16500>{prepareAge(item.paciente.dataNascimento)} anos</Sand16500>
@@ -71,7 +71,7 @@ export const ShowRecord = ({ item = null, hideModal = false, onPressCancel = nul
                             <LinkBlueSmall onPress={onPressCancel}>Cancelar</LinkBlueSmall>
                         </> :
                         <>
-                            <ImageProfile source={item.image} />
+                            <ImageProfile source={{ uri: item.medicoClinica.medico.idNavigation.foto }} />
                             <Mont20600>{item.medicoClinica.medico.idNavigation.nome}</Mont20600>
                             <RowContainer>
                                 <Sand16500>{item.medicoClinica.medico.especialidade.especialidade1}</Sand16500>
@@ -171,7 +171,7 @@ export const DoctorAppointment = ({ item = null, hideModal = false, onPressCance
         <GrayBackground>
             <ModalMedRecord>
                 <ModalContainer>
-                    <ImageProfile source={item.image} />
+                    <ImageProfile source={{ uri: item.medicoClinica.medico.idNavigation.foto }} />
                     <Mont20600>{item.medicoClinica.medico.idNavigation.nome}</Mont20600>
                     <RowContainer>
                         <Sand16500>{item.medicoClinica.medico.especialidade.especialidade1}</Sand16500>
@@ -304,56 +304,52 @@ export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = nu
 
 
 
-export const CameraModal = ({ openModal, setOpenModal, cameraRef, capturePhoto, typeCamera }) => {
+export const CameraModal = ({ openModal, setOpenModal, capturePhoto, cameraRef}) => {
 
-    useEffect(()=>{
-        (async () => {
-            const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
-        
-            const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
-        })
+    const [facing, setFacing] = useState('back')
+    const [permission, requestPermission] = useCameraPermissions()
 
-        //verificar se mostra a parte da galeria
-        // if (getMediaLibrary) {
-        //     GetLastPhoto();
-        // }
-    },[])
-    
-    const [latestPhoto, setLatestPhoto] = useState(null) //salva a ultima foto da galeria
 
-    async function GetLastPhoto() {
-        const assets = await MediaLibrary.getAssetsAsync({ sortBy: [[MediaLibrary.SortBy.creactionTime, false]], first: 1 });
-
-        console.log(assets)
+    if(!permission){
+        return(<><ActivityIndicator/></>)
     }
+
+    if(!permission.granted){
+
+        return(
+            <View>
+                <Title>We need your permission to show de camera</Title>
+                <Button onPress={requestPermission} title="Grant permission" />
+            </View>
+        )
+    }
+
+
+    function toggleCameraFacing() {
+        setFacing(current => (current === 'back' ? 'front' : 'back'));
+      }
+
+
     return (
-        <TrueModal
-            presentationStyle={"pageSheet"}
-            statusBarTranslucent={true}
-            animationType="slide"
-            transparent={false}
-            visible={openModal}>
-            <Camera
-                type={typeCamera}
-                style={{ width: "100%", height: "80%", flex: 1, position: "relative" }}
-                ratio={'16:9'}
-                ref={cameraRef} />
-            <BottomRowButtonContainer>
-                <Entypo name="arrow-with-circle-left" size={48} color="white" onPress={() => setOpenModal(false)} />
-                <Entypo name="circle" size={48} color="white" onPress={() => capturePhoto()} />
-            </BottomRowButtonContainer>
+        <>
+            {openModal ?
+                <TrueModal>
+                    <CameraView
+                        ref={cameraRef}
+                        facing={facing}
+                        style={{ width: "100%", height: "80%", flex: 1, position: "relative" }} />
+                    <BottomRowButtonContainer>
+                        <Entypo name="arrow-with-circle-left" size={48} color="white" onPress={() => setOpenModal(false)} />
+                        <Entypo name="baidu" size={48} color="white" onPress={() => toggleCameraFacing()} />
+                        <Entypo name="circle" size={48} color="white" onPress={() => capturePhoto()} />
+                    </BottomRowButtonContainer>
 
-            <TouchableOpacity onPress={() => SelectImageGallery()}>
-                        { 
-                            latestPhoto != null ?
-                            (
-                                <LastPhoto
-                                source={{uri : latestPhoto}}
-                                />
-                            ) : (<></>)
-                        }
-            </TouchableOpacity>
+                </TrueModal>
+                :
+                <>
+                </>
+            }
 
-        </TrueModal>
+        </>
     )
 }
