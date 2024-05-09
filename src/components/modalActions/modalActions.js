@@ -290,7 +290,7 @@ export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = nu
 
                     <Button onPress={() => {
                         cadastrarConsulta()
-                        navigation.navigate("Home")
+                        navigation.replace("Home")
                     }} >
                         <ButtonTitle>CONFIRMAR</ButtonTitle>
                     </Button>
@@ -337,7 +337,8 @@ export const CameraModal = ({ openModal, setOpenModal, capturePhoto, cameraRef})
                     <CameraView
                         ref={cameraRef}
                         facing={facing}
-                        style={{ width: "100%", height: "80%", flex: 1, position: "relative" }} />
+                        style={{ width: "100%", height: "80%", flex: 1, position: "relative" }} 
+                        />
                     <BottomRowButtonContainer>
                         <Entypo name="arrow-with-circle-left" size={48} color="white" onPress={() => setOpenModal(false)} />
                         <Entypo name="baidu" size={48} color="white" onPress={() => toggleCameraFacing()} />

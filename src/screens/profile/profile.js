@@ -126,37 +126,28 @@ const Profile = ({ navigation, route }) => {
     navigation.navigate('Login')
   }
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
-
-  useEffect(() => {
-    AlterarFotoPerfil()
-  }, [uriCameraCapture])
 
   async function AlterarFotoPerfil() {
+
     const formData = new FormData();
-    formData.append("arquivo", {
+    formData.append("Arquivo", {
       uri: uriCameraCapture.data,
       name: `image.${uriCameraCapture.data.split(".")[1]}`,
       type: `image/${uriCameraCapture.data.split(".")[1]}`
     })
 
-    await api.put(`/usuario/AlterarFotoPerfil?id=${Profile.user}`, formData, {
-
+    await api.put(`/Usuario/AlterarFotoPerfil?id=${userData.id}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data"
       }
-
     }).then(async response => {
-      await setProfileUpdate({
-      })
+  
     }).catch(error => {
       console.log(error);
     })
   }
 
-  async function SaveProfile() {
+  function redefineButton(){
 
     if (createUser.rg.length < 9 || createUser.dataNascimento.length < 10 || createUser.cpf.length < 11 ||
     createUser.endereco.length < 1 || createUser.numero.length < 1 || createUser.cep.length < 8 || createUser.cidade.length < 1) {
@@ -166,6 +157,14 @@ const Profile = ({ navigation, route }) => {
 
     setDisable(true)
 
+    setTimeout(()=>{
+      setDisable(!disable)
+    },5000)
+  }
+
+  async function SaveProfile() {
+
+    redefineButton()
     const formData = new FormData();
 
     // inserindo informações de cadastro no formulário
@@ -264,6 +263,16 @@ const Profile = ({ navigation, route }) => {
       console.log(e)
     }
   }
+
+
+  
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  useEffect(() => {
+    AlterarFotoPerfil()
+  }, [uriCameraCapture])
 
 
   return (

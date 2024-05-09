@@ -42,7 +42,7 @@ const SelectMedic = ({ route, navigation }) => {
 
     function nextPage(){
         if(selected){
-            navigation.navigate("SelectData", {newContinueAppointment} )
+            navigation.replace("SelectData", {newContinueAppointment} )
             setSelected()
         }
         else{

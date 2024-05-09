@@ -69,7 +69,7 @@ const SelectClinic = ({ route, navigation }) => {
     function nextPage() {
 
         if (selected) {
-            navigation.navigate("SelectMedic", { newAppointment })
+            navigation.replace("SelectMedic", { newAppointment })
             setSelected()
         }
         else {
