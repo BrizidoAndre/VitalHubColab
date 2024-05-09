@@ -1,5 +1,4 @@
 // importando biblioteca
-import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library'
 
 // Importando componentes
@@ -62,9 +61,8 @@ const Appointment = ({ navigation, route }) => {
 
     async function capturePhoto() {
         if (cameraRef) {
-            const image = await cameraRef.current.takePictureAsync({quality: 1});
+            const image = await cameraRef.current.takePictureAsync({ quality: 1 });
 
-            console.log(image.uri);
             setPhoto(image.uri)
             setOpenModal(false)
         }
@@ -72,12 +70,6 @@ const Appointment = ({ navigation, route }) => {
         if (photo) {
             await MediaLibrary.createAssetAsync(photo)
         }
-    }
-
-
-    async function SendFormPhoto() {
-        await setUriCameraCapture(photo);
-        handleClose();
     }
 
 
@@ -98,8 +90,10 @@ const Appointment = ({ navigation, route }) => {
                 name: objModalRecord.medicoClinica.medico.idNavigation.nome,
                 medicSpecialty: objModalRecord.medicoClinica.medico.especialidade.especialidade1,
                 crm: objModalRecord.medicoClinica.medico.crm,
-                photo: objModalRecord.medicoClinica.medico.idNavigation.foto
+                photo: objModalRecord.medicoClinica.medico.idNavigation.foto,
             })
+
+
         }
         else {
             setAppointmentObj({
@@ -140,7 +134,8 @@ const Appointment = ({ navigation, route }) => {
                 "Content-Type": "multipart/form-data"
             }
         }).then(response => {
-            setAppointmentObj( appointmentObj.examDescription + "\n" + response.data.descricao)
+            console.log(response.data)
+            setAppointmentObj({...appointmentObj, examDescription: response.data.descricao})
 
         }).catch(error => {
             console.log(error);
@@ -150,12 +145,15 @@ const Appointment = ({ navigation, route }) => {
 
     // Use effect para a requisição das permissões
     useEffect(() => {
-        // quando carrega a página verifica se usuário é médico
-        setMedic(isMedic);
-        loadAppointment();
         InserirExame();
     }, [photo])
 
+    useEffect(() => {
+        // quando carrega a página verifica se usuário é médico
+        setMedic(isMedic);
+        // carregando Appointment
+        loadAppointment();
+    }, [])
 
 
     return (
@@ -164,7 +162,7 @@ const Appointment = ({ navigation, route }) => {
                 <>
                     <IconReturn navigation={navigation} />
 
-                    <HeaderImage requireImage={{uri: appointmentObj.photo}} />
+                    <HeaderImage requireImage={{ uri: appointmentObj.photo }} />
 
                     <ScrollViewProfile>
                         <Title>{appointmentObj.name}</Title>
@@ -222,7 +220,7 @@ const Appointment = ({ navigation, route }) => {
                 <>
                     <IconReturn navigation={navigation} />
 
-                    <HeaderImage requireImage={{uri: appointmentObj.photo}} />
+                    <HeaderImage requireImage={{ uri: appointmentObj.photo }} />
 
                     <ScrollViewProfile>
                         <Container>
@@ -267,8 +265,8 @@ const Appointment = ({ navigation, route }) => {
 
                                 <Line />
 
-                                <InputLabelBlackText 
-                                text={appointmentObj.examDescription} bigInput={true} />
+                                <InputLabelBlackText
+                                    text={appointmentObj.examDescription} bigInput={true} />
                             </InputContainer>
 
                             <LinkReturn
@@ -282,7 +280,7 @@ const Appointment = ({ navigation, route }) => {
                         setOpenModal={setOpenModal}
                         capturePhoto={capturePhoto}
                         cameraRef={cameraRef}
-                        />
+                    />
                 </>
             }
 

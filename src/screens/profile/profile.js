@@ -126,40 +126,39 @@ const Profile = ({ navigation, route }) => {
     navigation.navigate('Login')
   }
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
-
-  useEffect(() => {
-    AlterarFotoPerfil()
-  }, [uriCameraCapture])
 
   async function AlterarFotoPerfil() {
+
     const formData = new FormData();
-    formData.append("arquivo", {
+    formData.append("Arquivo", {
       uri: uriCameraCapture.data,
       name: `image.${uriCameraCapture.data.split(".")[1]}`,
       type: `image/${uriCameraCapture.data.split(".")[1]}`
     })
 
-    await api.put(`/usuario/AlterarFotoPerfil?id=${Profile.user}`, formData, {
-
+    await api.put(`/Usuario/AlterarFotoPerfil?id=${userData.id}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data"
       }
-
     }).then(async response => {
-      await setProfileUpdate({
-      })
+  
     }).catch(error => {
       console.log(error);
     })
   }
 
-  async function SaveProfile() {
+  function redefineButton(){
 
     setDisable(true)
 
+    setTimeout(()=>{
+      setDisable(!disable)
+    },5000)
+  }
+
+  async function SaveProfile() {
+
+    redefineButton()
     const formData = new FormData();
 
     // inserindo informações de cadastro no formulário
@@ -247,6 +246,16 @@ const Profile = ({ navigation, route }) => {
       console.log(e)
     }
   }
+
+
+  
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  useEffect(() => {
+    AlterarFotoPerfil()
+  }, [uriCameraCapture])
 
 
   return (

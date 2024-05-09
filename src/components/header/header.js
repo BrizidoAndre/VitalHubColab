@@ -16,10 +16,8 @@ const Header = ({ navigation}) => {
 
     async function profileLoad(){
         const token = await userDecodeToken()
-
         setItem(token)
         
-
         const res = await api.get('/Usuario/BuscarPorId?id=' + token.id)
 
         const data = await res.data;

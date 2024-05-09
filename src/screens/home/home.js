@@ -188,7 +188,6 @@ const Home = ({ navigation }) => {
                 resetModal()
                 Alert("Erro","Algum erro inesperado aconteceu!!!")
             }
-
             
         } catch (error) {
             console.log(error);
@@ -276,8 +275,6 @@ const Home = ({ navigation }) => {
                         buttonTitle={'Cancelados'} />
                 </RowContainer>
             </HomeContainer>
-
-
 
             <FlatlistContainer
                 data={listAppointment.filter(filterByStatus)}
