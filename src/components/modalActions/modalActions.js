@@ -333,6 +333,7 @@ export const CameraModal = ({ openModal, setOpenModal, capturePhoto, cameraRef})
             {openModal ?
                 <TrueModal>
                     <CameraView
+                        ref={cameraRef}
                         facing={facing}
                         style={{ width: "100%", height: "80%", flex: 1, position: "relative" }} />
                     <BottomRowButtonContainer>
