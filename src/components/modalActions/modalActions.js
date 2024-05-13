@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../button/button";
 import { ButtonTitle } from "../button/buttonTitle";
-import { ModalContainer, RowContainer, Container, InputContainer, BottomCancelContainer, BottomRowButtonContainer } from "../container/style";
+import { ModalContainer, RowContainer, Container, InputContainer, BottomCancelContainer, BottomRowButtonContainer, CameraPermissionContainer, LoadingContainer, StatusContainer } from "../container/style";
 import { InputLabel } from "../input/inputLabel";
 import { LinkBlueSmall } from "../links/links";
 import { Label, Mont20600, Mont24600, Sand14500Gray, Sand16500, Sand16600, Title } from "../title/title";
@@ -17,7 +17,7 @@ import { Ionicons, Entypo } from "@expo/vector-icons";
 import api from "../../service/service";
 import { userDecodeToken } from "../../utils/auth";
 import { prepareAge } from "../../utils/dateFunctions";
-import { TouchableOpacity } from "react-native";
+import { StatusBar, TouchableOpacity, View } from "react-native";
 import { LastPhoto } from "../addphoto/styles";
 import { ActivityIndicator } from "react-native";
 
@@ -290,7 +290,7 @@ export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = nu
 
                     <Button onPress={() => {
                         cadastrarConsulta()
-                        navigation.replace("Home")
+                        navigation.replace("Main")
                     }} >
                         <ButtonTitle>CONFIRMAR</ButtonTitle>
                     </Button>
@@ -303,54 +303,62 @@ export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = nu
 }
 
 
+export const LoadingModal = ({ showLoad }) => {
+    return (showLoad ?
 
-export const CameraModal = ({ openModal, setOpenModal, capturePhoto, cameraRef}) => {
+        <LoadingContainer>
+            <ActivityIndicator color={'#49B3BA'} />
+        </LoadingContainer>
+        :
+        <>
+        </>
+    )
+}
+
+
+
+export const CameraModal = ({ openModal, setOpenModal, capturePhoto, cameraRef }) => {
 
     const [facing, setFacing] = useState('back')
     const [permission, requestPermission] = useCameraPermissions()
 
 
-    if(!permission){
-        return(<><ActivityIndicator/></>)
+    if (!permission) {
+        return (<><ActivityIndicator /></>)
     }
 
-    if(!permission.granted){
+    if (!permission.granted) {
 
-        return(
-            <View>
-                <Title>We need your permission to show de camera</Title>
-                <Button onPress={requestPermission} title="Grant permission" />
-            </View>
+        return (
+            <CameraPermissionContainer>
+                <Title>We need your permission to show the camera</Title>
+                <Entypo name="lock-open" size={48} color="black" onPress={() => requestPermission()} />
+            </CameraPermissionContainer>
         )
     }
 
 
     function toggleCameraFacing() {
         setFacing(current => (current === 'back' ? 'front' : 'back'));
-      }
+    }
 
 
     return (
-        <>
-            {openModal ?
-                <TrueModal>
-                    <CameraView
-                        ref={cameraRef}
-                        facing={facing}
-                        style={{ width: "100%", height: "80%", flex: 1, position: "relative" }} 
-                        />
-                    <BottomRowButtonContainer>
-                        <Entypo name="arrow-with-circle-left" size={48} color="white" onPress={() => setOpenModal(false)} />
-                        <Entypo name="baidu" size={48} color="white" onPress={() => toggleCameraFacing()} />
-                        <Entypo name="circle" size={48} color="white" onPress={() => capturePhoto()} />
-                    </BottomRowButtonContainer>
+        <TrueModal
+            animationType="slide"
+            transparent={false}
+            visible={openModal}>
+            <CameraView
+                ref={cameraRef}
+                facing={facing}
+                style={{ width: "100%", height: "80%", flex: 1, position: "relative" }}
+            />
+            <BottomRowButtonContainer>
+                <Entypo name="arrow-bold-left" size={48} color="white" onPress={() => setOpenModal(false)} />
+                <Entypo name="circle" size={48} color="white" onPress={() => capturePhoto()} />
+                <Entypo name="cycle" size={48} color="white" onPress={() => toggleCameraFacing()} />
+            </BottomRowButtonContainer>
 
-                </TrueModal>
-                :
-                <>
-                </>
-            }
-
-        </>
+        </TrueModal>
     )
 }

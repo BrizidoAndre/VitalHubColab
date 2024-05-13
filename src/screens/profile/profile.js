@@ -14,7 +14,7 @@ import api from "../../service/service.js"
 
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { AddPhotoButton } from "../../components/addphoto/styles.js"
-import { CameraModal } from "../../components/modalActions/modalActions.js"
+import { CameraModal, LoadingModal } from "../../components/modalActions/modalActions.js"
 import { CameraComp } from "../../components/CameraComp/CameraComp.js"
 import { Camera } from "expo-camera"
 import { ActivityIndicator } from "react-native"
@@ -48,6 +48,9 @@ const Profile = ({ navigation, route }) => {
     idTipoUsuario: ''
   })
 
+  // state para armazenar as informações do token do usuário
+  const [token, setToken] = useState({});
+
   // useState para dealbilitar o botão
   const [disable, setDisable] = useState(false)
 
@@ -55,6 +58,7 @@ const Profile = ({ navigation, route }) => {
 
   // Use state para as fotos e modais
   const [openModal, setOpenModal] = useState(false)
+  const [loadModal, setLoadModal] = useState(false)
   const [uriCameraCapture, setUriCameraCapture] = useState({
     uri: 'https://blobvitalhubg01m.blob.core.windows.net/blobvitalhubg01mcontainer/user-profile-icon-free-vector.jpg',
     data: '',
@@ -71,35 +75,70 @@ const Profile = ({ navigation, route }) => {
 
   const loadProfile = async () => {
     try {
+
+      setLoadModal(true)
+
       const token = await userDecodeToken();
+
+      setToken(token)
 
       // Se a página NÃO receber as informações do novo usuário
       if (token) {
-        const res = await api.get('/Pacientes/BuscarPorId?id=' + token.id);
-        const data = await res.data;
 
-        console.log(data)
+        // Se o usuário for um médico
+        if (token.role === 'Medico') {
+          const res = await api.get('/Medicos/BuscarPorId?id=' + token.id);
+          const data = await res.data;
 
-        setUriCameraCapture({
-          ...uriCameraCapture,
-          data: data.idNavigation.foto
-        })
+          console.log(data)
 
-        data.dataNascimento = await data.dataNascimento.split(['T'])[0];
+          setUriCameraCapture({
+            ...uriCameraCapture,
+            data: data.idNavigation.foto
+          })
 
-        setUserData({
-          ...userData,
-          id: token.id,
-          nome: data.idNavigation.nome,
-          email: data.idNavigation.email,
-          dataNascimento: data.dataNascimento,
-          cpf: data.cpf,
-          rg: data.rg,
-          logradouro: data.endereco.logradouro,
-          numero: data.endereco.numero.toString(),
-          cep: data.endereco.cep,
-          cidade: data.endereco.cidade
-        })
+          setUserData({
+            ...userData,
+            id: data.id,
+            email: data.idNavigation.email,
+            nome: data.idNavigation.nome,
+            crm: data.crm,
+            especialidade: data.especialidade.especialidade1,
+            especialidadeId: data.especialidade.id,
+            logradouro: data.endereco.logradouro,
+            numero: data.endereco.numero.toString(),
+            cep: data.endereco.cep,
+            cidade: data.endereco.cidade
+          })
+
+        }
+        // Se o usuário for um paciente
+        else {
+
+          const res = await api.get('/Pacientes/BuscarPorId?id=' + token.id);
+          const data = await res.data;
+
+          setUriCameraCapture({
+            ...uriCameraCapture,
+            data: data.idNavigation.foto
+          })
+
+          data.dataNascimento = await data.dataNascimento.split(['T'])[0];
+
+          setUserData({
+            ...userData,
+            id: token.id,
+            nome: data.idNavigation.nome,
+            email: data.idNavigation.email,
+            dataNascimento: data.dataNascimento,
+            cpf: data.cpf,
+            rg: data.rg,
+            logradouro: data.endereco.logradouro,
+            numero: data.endereco.numero.toString(),
+            cep: data.endereco.cep,
+            cidade: data.endereco.cidade
+          })
+        }
       }
 
       // O que vai acontecer quando um usuário for criado
@@ -112,10 +151,11 @@ const Profile = ({ navigation, route }) => {
           email: user.email,
           senha: user.senha,
           idTipoUsuario: user.idTipoUsuario
-
         })
         setIsNewUser(false)
       }
+
+      setLoadModal(false)
     } catch (e) {
       console.log(e);
     }
@@ -141,25 +181,25 @@ const Profile = ({ navigation, route }) => {
         "Content-Type": "multipart/form-data"
       }
     }).then(async response => {
-  
+
     }).catch(error => {
       console.log(error);
     })
   }
 
-  function redefineButton(){
+  function redefineButton() {
 
     if (createUser.rg.length < 9 || createUser.dataNascimento.length < 10 || createUser.cpf.length < 11 ||
-    createUser.endereco.length < 1 || createUser.numero.length < 1 || createUser.cep.length < 8 || createUser.cidade.length < 1) {
+      createUser.endereco.length < 1 || createUser.numero.length < 1 || createUser.cep.length < 8 || createUser.cidade.length < 1) {
       alert('Informações inválidas', 'Preencha todas as informações corretamente');
       return;
     }
 
     setDisable(true)
 
-    setTimeout(()=>{
+    setTimeout(() => {
       setDisable(!disable)
-    },5000)
+    }, 5000)
   }
 
   async function SaveProfile() {
@@ -203,15 +243,6 @@ const Profile = ({ navigation, route }) => {
     })
   }
 
-  // Use effect para a requisição das permissões
-  useEffect(() => {
-    (async () => {
-      const { status: cameraStatus } = await Camera.requestCameraPermissionsAsync();
-
-      const { status: mediaStatus } = await MediaLibrary.requestPermissionsAsync();
-    })
-  }, [])
-
   async function capturePhoto() {
     if (cameraRef) {
       const image = await cameraRef.current.takePictureAsync();
@@ -240,17 +271,6 @@ const Profile = ({ navigation, route }) => {
     }
   }
 
-  async function SelectImageGallery(){
-    const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes : ImagePicker.MediaTypeOptions.Images,
-        quality : 1
-    });
-
-    if (!result.canceled) {
-        setPhoto( result.assets[0].uri )
-    }
-}
-
   async function EditProfile() {
     try {
       const res = await api.put('/Pacientes?idUsuario=' + userData.id, userData)
@@ -265,7 +285,7 @@ const Profile = ({ navigation, route }) => {
   }
 
 
-  
+
   useEffect(() => {
     loadProfile();
   }, []);
@@ -284,7 +304,7 @@ const Profile = ({ navigation, route }) => {
 
           {/* botao da foto */}
 
-          <AddPhotoButton onPress={() => {setOpenModal(!openModal)}} >
+          <AddPhotoButton onPress={() => { setOpenModal(!openModal) }} >
             <MaterialCommunityIcons
               name="camera-plus"
               size={20}
@@ -296,48 +316,93 @@ const Profile = ({ navigation, route }) => {
 
         <ScrollViewProfile>
           <Container>
+            {/* está sendo cadastrado um novo usuário ? */}
             {isNewUser ? (
               <>
                 <Title>{userData.nome}</Title>
                 <SubTitle>{userData.email}</SubTitle>
                 <InputContainer>
 
-                  <InputLabelBlack
-                    title={"Data de nascimento"}
-                    value={userData.dataNascimento}
-                    onChangeText={text => setUserData({ ...userData, dataNascimento: text })}
-                    name="dataNascimento"
-                  />
+                  {
+                    // ! Se o usuário for um médico
+                    token.role === 'Medico' ?
+                      <>
+                        <TwoInputContainer>
+                          <SmallInputLabel
+                            title={"Endereço"}
+                            value={userData.logradouro}
+                            onChangeText={text => setUserData({ ...userData, logradouro: text })}
+                            name="endereco"
+                          />
+                          <SmallInputLabel
+                            title={"Número"}
+                            value={userData.numero}
+                            onChangeText={text => setUserData({ ...userData, numero: text })}
+                            name="numero"
+                          />
+                        </TwoInputContainer>
 
-                  <TwoInputContainer>
-                    <SmallInputLabel
-                      title={"Endereço"}
-                      value={userData.logradouro}
-                      onChangeText={text => setUserData({ ...userData, logradouro: text })}
-                      name="endereco"
-                    />
-                    <SmallInputLabel
-                      title={"Número"}
-                      value={userData.numero}
-                      onChangeText={text => setUserData({ ...userData, numero: text })}
-                      name="numero"
-                    />
-                  </TwoInputContainer>
+                        <TwoInputContainer>
+                          <SmallInputLabel
+                            title={"CEP"}
+                            value={userData.cep}
+                            onChangeText={text => setUserData({ ...userData, cep: text })}
+                            name="cep"
+                          />
+                          <SmallInputLabel
+                            title={"Cidade"}
+                            value={userData.cidade}
+                            onChangeText={text => setUserData({ ...userData, cidade: text })}
+                            name="cidade"
+                          />
+                        </TwoInputContainer>
 
-                  <TwoInputContainer>
-                    <SmallInputLabel
-                      title={"CEP"}
-                      value={userData.cep}
-                      onChangeText={text => setUserData({ ...userData, cep: text })}
-                      name="cep"
-                    />
-                    <SmallInputLabel
-                      title={"Cidade"}
-                      value={userData.cidade}
-                      onChangeText={text => setUserData({ ...userData, cidade: text })}
-                      name="cidade"
-                    />
-                  </TwoInputContainer>
+                      </>
+
+                      :
+
+                      //  ! Se o usuário for um paciente
+                      <>
+
+                        <InputLabelBlack
+                          title={"Data de nascimento"}
+                          value={userData.dataNascimento}
+                          onChangeText={text => setUserData({ ...userData, dataNascimento: text })}
+                          name="dataNascimento"
+                        />
+
+                        <TwoInputContainer>
+                          <SmallInputLabel
+                            title={"Endereço"}
+                            value={userData.logradouro}
+                            onChangeText={text => setUserData({ ...userData, logradouro: text })}
+                            name="endereco"
+                          />
+                          <SmallInputLabel
+                            title={"Número"}
+                            value={userData.numero}
+                            onChangeText={text => setUserData({ ...userData, numero: text })}
+                            name="numero"
+                          />
+                        </TwoInputContainer>
+
+                        <TwoInputContainer>
+                          <SmallInputLabel
+                            title={"CEP"}
+                            value={userData.cep}
+                            onChangeText={text => setUserData({ ...userData, cep: text })}
+                            name="cep"
+                          />
+                          <SmallInputLabel
+                            title={"Cidade"}
+                            value={userData.cidade}
+                            onChangeText={text => setUserData({ ...userData, cidade: text })}
+                            name="cidade"
+                          />
+                        </TwoInputContainer>
+
+                      </>
+                  }
                 </InputContainer>
                 <Button onPress={() => EditProfile()}>
                   <ButtonTitle>SALVAR</ButtonTitle>
@@ -425,6 +490,8 @@ const Profile = ({ navigation, route }) => {
         setOpenModal={setOpenModal}
         capturePhoto={capturePhoto}
       />
+
+      <LoadingModal showLoad={loadModal} />
 
     </>
   );

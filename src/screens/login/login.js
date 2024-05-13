@@ -13,13 +13,12 @@ import { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import api from "../../service/service";
-import { AxiosHeaders } from "axios";
 
 const Login = ({ navigation }) => {
 
     // states para o cadastro
-    const [email, setEmail] = useState('abrizidobasilio@gmail.com')
-    const [password, setPassword] = useState('Andre')
+    const [email, setEmail] = useState('medico@email.com')
+    const [password, setPassword] = useState('Medicosenha')
 
     // state para o botão de login
     const [loginTime, setLoginTime] = useState(false);

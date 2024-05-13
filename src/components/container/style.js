@@ -121,8 +121,37 @@ export const ModalContainer = styled.View`
     display: flex;
     justify-content: space-around;
     align-items:center;
-
 `
+
+
+export const CameraPermissionContainer = styled.View`
+    display: flex;
+
+    justify-content: center;
+    align-items:center;
+    gap: 20px;
+
+    height: 100%;
+    z-index: 1;
+    background-color: white;
+`
+
+export const LoadingContainer = styled.View`
+    z-index: 1;
+    height:10%;
+    width: 20%;
+    background-color: rgba(200,200,200,.8);
+    border-radius: 20px;
+    
+    position: absolute;
+    top: 45%;   
+    left:40%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
 
 export const CalendarContainer = styled.View`
     display: flex;
