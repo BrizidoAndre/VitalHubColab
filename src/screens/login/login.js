@@ -17,8 +17,8 @@ import api from "../../service/service";
 const Login = ({ navigation }) => {
 
     // states para o cadastro
-    const [email, setEmail] = useState('medico@email.com')
-    const [password, setPassword] = useState('Medicosenha')
+    const [email, setEmail] = useState('abrizidobasilio@gmail.com')
+    const [password, setPassword] = useState('Andre')
 
     // state para o botão de login
     const [loginTime, setLoginTime] = useState(false);

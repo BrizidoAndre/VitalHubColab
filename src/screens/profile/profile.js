@@ -1,7 +1,7 @@
 import { Container, Container11, InputContainer, LabelInputContainer, TwoInputContainer } from "../../components/container/style"
 import { ImageModal } from "../../components/modal/modal"
 import { SubTitle, Title } from "../../components/title/title"
-import { InputLabelBlack, SmallInputLabel } from "../../components/input/inputLabel"
+import { InputLabelBlack, InputLabelBlackText, SmallInputLabel, SmallInputLabelText } from "../../components/input/inputLabel"
 import { Button, ButtonLogout, SmallButton, SmallButtonGreen } from "../../components/button/button"
 import { ButtonTitle } from "../../components/button/buttonTitle"
 import { HeaderImage } from "../../components/headerImage/headerImage"
@@ -273,6 +273,7 @@ const Profile = ({ navigation, route }) => {
 
   async function EditProfile() {
     try {
+
       const res = await api.put('/Pacientes?idUsuario=' + userData.id, userData)
 
       const data = await res.status;
@@ -327,34 +328,30 @@ const Profile = ({ navigation, route }) => {
                     // ! Se o usuário for um médico
                     token.role === 'Medico' ?
                       <>
-                        <TwoInputContainer>
-                          <SmallInputLabel
+                        <InputLabelBlackText text={userData.especialidade} title={"Especialidade"}/>
+                        <InputLabelBlackText text={userData.crm} title={"CRM"}/>
+                        
+                        <InputLabelBlackText
                             title={"Endereço"}
-                            value={userData.logradouro}
-                            onChangeText={text => setUserData({ ...userData, logradouro: text })}
-                            name="endereco"
+                            text={userData.logradouro}
                           />
-                          <SmallInputLabel
+                          
+                          <InputLabelBlackText
+                            title={"Cidade"}
+                            text={userData.cidade}
+                          />
+                        <TwoInputContainer>
+                          <SmallInputLabelText
                             title={"Número"}
-                            value={userData.numero}
-                            onChangeText={text => setUserData({ ...userData, numero: text })}
-                            name="numero"
+                            text={userData.numero}
+                          />
+                          <SmallInputLabelText
+                            title={"CEP"}
+                            text={userData.cep}
                           />
                         </TwoInputContainer>
 
                         <TwoInputContainer>
-                          <SmallInputLabel
-                            title={"CEP"}
-                            value={userData.cep}
-                            onChangeText={text => setUserData({ ...userData, cep: text })}
-                            name="cep"
-                          />
-                          <SmallInputLabel
-                            title={"Cidade"}
-                            value={userData.cidade}
-                            onChangeText={text => setUserData({ ...userData, cidade: text })}
-                            name="cidade"
-                          />
                         </TwoInputContainer>
 
                       </>
@@ -404,9 +401,16 @@ const Profile = ({ navigation, route }) => {
                       </>
                   }
                 </InputContainer>
+
+                {
+                  token.role === 'Medico' ?
+                    <>
+                    </>
+                  :
                 <Button onPress={() => EditProfile()}>
-                  <ButtonTitle>SALVAR</ButtonTitle>
-                </Button>
+                <ButtonTitle>SALVAR</ButtonTitle>
+              </Button>
+                }
 
                 <ButtonLogout onPress={() => removeUser()}><ButtonTitle>Logout</ButtonTitle></ButtonLogout>
 

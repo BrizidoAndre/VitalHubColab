@@ -84,6 +84,15 @@ export const SmallInputLabel = ({ title, placeholder, value, onChangeText, input
     )
 }
 
+export const SmallInputLabelText = ({ title, text }) => {
+    return (
+        <SmallInputLabelContainer>
+            <Label>{title}</Label>
+            <InputBlackText>{text}</InputBlackText>
+        </SmallInputLabelContainer>
+    )
+}
+
 export const SelectLabel = ({ title, placeholder, item, hideSelect, setHideSelect, onPress }) => {
     return (
         <>

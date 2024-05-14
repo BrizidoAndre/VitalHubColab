@@ -18,22 +18,51 @@ const SelectClinic = ({ route, navigation }) => {
     const [newAppointment, setNewAppointment] = useState({
     })
 
-    const { appointmentLevel } = route.params
+    const { appointmentLevel, localizacao } = route.params
 
     const [listClinics, setListClinics] = useState([])
 
 
     async function loadClinics() {
         try {
-            const res = await api.get('/Clinica/ListarTodas')
 
-            const data = await res.data
+            const res = await api.get('/Clinica/BuscarPorCidade?cidade=' + encodeURI(localizacao))
+            const data = await res.data;
 
-            setListClinics(data)
+
+            return data;
         } catch (error) {
             console.log('Erro');
             console.log(error);
         }
+    }
+
+    async function loadAllClinics() {
+        try {
+
+            const res = await api.get('/Clinica/ListarTodas')
+
+            const data = await res.data
+
+            return data
+        } catch (error) {
+            console.log('Erro');
+            console.log(error);
+        }
+    }
+
+    async function checkClinics() {
+        let clinicas = await loadClinics();
+
+
+        if (clinicas.length > 0) {
+            setListClinics(clinicas)
+            return;
+        }
+
+
+        Alert.alert('Busca inválida', 'Nenhuma clínica presente na cidade buscada. Retornando todas as clinicas.')
+        setListClinics(await loadAllClinics())
     }
 
     function correctLevel() {
@@ -67,7 +96,6 @@ const SelectClinic = ({ route, navigation }) => {
 
 
     function nextPage() {
-
         if (selected) {
             navigation.replace("SelectMedic", { newAppointment })
             setSelected()
@@ -79,7 +107,7 @@ const SelectClinic = ({ route, navigation }) => {
     }
 
     useEffect(() => {
-        loadClinics()
+        checkClinics()
         correctLevel()
     }, [])
 

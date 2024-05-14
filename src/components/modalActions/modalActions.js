@@ -95,6 +95,7 @@ export const CreateAppointment = ({ hideModal, onPressCancel, navigation }) => {
 
 
     const [appointmentLevel, setAppointmentLevel] = useState('Rotina')
+    const [localizacao, setLocalizacao] = useState();
 
 
     if (!hideModal) {
@@ -114,14 +115,16 @@ export const CreateAppointment = ({ hideModal, onPressCancel, navigation }) => {
 
                         <InputLabel
                             title={'Informe a localização desejada'}
-                            placeholder={"Ex: São Paulo"} />
+                            placeholder={"Ex: São Paulo"} 
+                            value={localizacao}
+                            setValue={setLocalizacao}/>
                     </InputContainer>
 
                     <BottomCancelContainer>
                         <Button onPress={() => navigation.navigate('SelectClinic', {
-                            appointmentLevel
+                            appointmentLevel,
+                            localizacao
                         }
-
                         )}
                         ><ButtonTitle>CONTINUAR</ButtonTitle></Button>
                         <LinkBlueSmall onPress={onPressCancel}>Cancelar</LinkBlueSmall>
@@ -215,6 +218,7 @@ export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = nu
 
     async function loadMedicClinic() {
         try {
+            console.log("Id do médico: " +  item.medicoId)
 
             const res = await api.get('/Consultas/BuscarMedicoClinica?idMedico=' + item.medicoId + '&idClinica=' + item.clinicaId)
 
@@ -258,8 +262,6 @@ export const ConfirmAppointment = ({ item, setItem, hideModal, setHideModal = nu
         if (hideModal) {
             loadMedicClinic()
         }
-
-        console.log(item.dataConsulta);
     }, [hideModal])
 
 

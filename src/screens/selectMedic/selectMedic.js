@@ -28,7 +28,7 @@ const SelectMedic = ({ route, navigation }) => {
     async function loadMedics() {
         try {
             // instanciando a chamada de api
-            const response = await api.get('/Medicos')
+            const response = await api.get('/Medicos/BuscarPorIdClinica?id=' + newAppointment.clinicaId)
 
             const list = response.data
 
@@ -53,6 +53,7 @@ const SelectMedic = ({ route, navigation }) => {
     useEffect(() => {
         loadMedics()
         setNewAppointment(newAppointment)
+        console.log(newAppointment.clinicaId)
     },[])
 
     return (
@@ -67,9 +68,10 @@ const SelectMedic = ({ route, navigation }) => {
                         select={selected}
                         onPress={() => {
                             setSelected(item.id)
+                            console.log(item.idNavigation.id)
                             setNewAppointment({
                                 ...newContinueAppointment,
-                                medicoId:item.id,
+                                medicoId:item.idNavigation.id,
                                 medico:item
                             })
                         }}
