@@ -23,6 +23,15 @@ export const ModalCancel = styled.View`
     background-color: white;
 `
 
+export const PersonalModalContainer = styled.View`
+    width: 90%;
+    height: 20%;
+    border-radius:10px;
+    padding: 16px;
+
+    background-color: white;
+`
+
 export const ModalMedRecord = styled.View`
     width: 90%;
     height:55%;

@@ -8,6 +8,7 @@ import { ClinicCard } from "../../components/card/card"
 import { useEffect, useState } from "react"
 import api from "../../service/service"
 import { Alert } from "react-native"
+import { PersonalModal } from "../../components/modalActions/modalActions"
 
 
 const SelectClinic = ({ route, navigation }) => {
@@ -21,6 +22,12 @@ const SelectClinic = ({ route, navigation }) => {
     const { appointmentLevel, localizacao } = route.params
 
     const [listClinics, setListClinics] = useState([])
+
+    const [hideModal, setHideModal] = useState(false);
+    const [modal, setModal] = useState({
+        title:'',
+        subtitle:''
+    })
 
 
     async function loadClinics() {
@@ -61,7 +68,12 @@ const SelectClinic = ({ route, navigation }) => {
         }
 
 
-        Alert.alert('Busca inválida', 'Nenhuma clínica presente na cidade buscada. Retornando todas as clinicas.')
+        setModal({
+            title:'Busca inválida',
+            subtitle: 'Nenhuma clínica presente na cidade buscada. Retornando todas as clinicas.'
+        })
+        
+        setHideModal(true)
         setListClinics(await loadAllClinics())
     }
 
@@ -101,10 +113,16 @@ const SelectClinic = ({ route, navigation }) => {
             setSelected()
         }
         else {
-            Alert.alert("Erro ao passar de página", 'Nenhuma clinica foi selecionada')
+            setModal({
+                title:"Erro ao passar de página",
+                subtitle: 'Nenhuma clinica foi selecionada'
+            })
+           setHideModal(true)
         }
 
     }
+
+
 
     useEffect(() => {
         checkClinics()
@@ -113,35 +131,39 @@ const SelectClinic = ({ route, navigation }) => {
 
 
     return (
-        <WithoutHeader>
-            <Title>Selecionar clínica</Title>
+        <>
+            <WithoutHeader>
+                <Title>Selecionar clínica</Title>
 
-            <FlatlistClinicCard
-                data={listClinics}
-                renderItem={({ item }) =>
-                    <ClinicCard
-                        item={item}
-                        onPress={() => {
-                            setSelected(item.id)
-                            setNewAppointment({
-                                ...newAppointment,
-                                clinicaId: item.id,
-                                clinica: item
-                            })
-                        }}
-                        select={selected}
-                        grade={4.9}
-                        time={'Seg-Sex'} />}
+                <FlatlistClinicCard
+                    data={listClinics}
+                    renderItem={({ item }) =>
+                        <ClinicCard
+                            item={item}
+                            onPress={() => {
+                                setSelected(item.id)
+                                setNewAppointment({
+                                    ...newAppointment,
+                                    clinicaId: item.id,
+                                    clinica: item
+                                })
+                            }}
+                            select={selected}
+                            grade={4.9}
+                            time={'Seg-Sex'} />}
+                />
+
+                <Button onPress={() => nextPage()}><ButtonTitle>CONTINUAR</ButtonTitle></Button>
+                <LinkBlueSmall onPress={() => navigation.goBack()}>Cancelar</LinkBlueSmall>
+            </WithoutHeader >
+
+            <PersonalModal
+                hideModal={hideModal}
+                onPressCancel={() => { setHideModal(false) }}
+                title={modal.title}
+                subTitle={modal.subtitle}
             />
-
-
-
-
-
-
-            <Button onPress={() => nextPage()}><ButtonTitle>CONTINUAR</ButtonTitle></Button>
-            <LinkBlueSmall onPress={() => navigation.goBack()}>Cancelar</LinkBlueSmall>
-        </WithoutHeader >
+        </>
     )
 }
 

@@ -4,8 +4,8 @@ import { ButtonTitle } from "../button/buttonTitle";
 import { ModalContainer, RowContainer, Container, InputContainer, BottomCancelContainer, BottomRowButtonContainer, CameraPermissionContainer, LoadingContainer, StatusContainer } from "../container/style";
 import { InputLabel } from "../input/inputLabel";
 import { LinkBlueSmall } from "../links/links";
-import { Label, Mont20600, Mont24600, Sand14500Gray, Sand16500, Sand16600, Title } from "../title/title";
-import { BottomModal, GrayBackground, ImageProfile, ModalCancel, ModalConfirmAppointment, ModalMedRecord, TextCenter, TrueModal } from "./styles";
+import { Label, Mont20600, Mont24600, Sand14500Gray, Sand16500, Sand16600, SubTitle, Title } from "../title/title";
+import { BottomModal, GrayBackground, ImageProfile, ModalCancel, ModalConfirmAppointment, ModalMedRecord, PersonalModalContainer, TextCenter, TrueModal } from "./styles";
 import { AppointmentButton } from "../navButton/navButton";
 
 // import das bibliotecas
@@ -21,6 +21,25 @@ import { StatusBar, TouchableOpacity, View } from "react-native";
 import { LastPhoto } from "../addphoto/styles";
 import { ActivityIndicator } from "react-native";
 
+export const PersonalModal = ({ hideModal = false, onPressCancel = null, cancelText = "Cancelar", title, subTitle }) => {
+
+
+    if (!hideModal) {
+        return (<>
+        </>)
+    }
+    return (
+        <GrayBackground>
+            <PersonalModalContainer>
+                <ModalContainer>
+                    <Title>{title}</Title>
+                    <SubTitle>{subTitle}</SubTitle>
+                    <LinkBlueSmall onPress={onPressCancel}>{cancelText}</LinkBlueSmall>
+                </ModalContainer>
+            </PersonalModalContainer>
+        </GrayBackground>
+    )
+}
 
 export const CancelAppointment = ({ hideModal = false, onPressCancel = null, onPress = null }) => {
 
@@ -35,6 +54,29 @@ export const CancelAppointment = ({ hideModal = false, onPressCancel = null, onP
                 <ModalContainer>
                     <Mont20600>Cancelar consulta</Mont20600>
                     <Sand16500>Ao cancelar essa consulta, abrirá uma possível disponibilidade no seu horário, deseja mesmo cancelar essa consulta?</Sand16500>
+                    <Button onPress={onPress}>
+                        <ButtonTitle>CONFIRMAR</ButtonTitle>
+                    </Button>
+                    <LinkBlueSmall onPress={onPressCancel}>Cancelar</LinkBlueSmall>
+
+                </ModalContainer>
+            </ModalCancel>
+        </GrayBackground>
+    )
+}
+
+export const DoneAppointment = ({ hideModal = false, onPressCancel = null, onPress = null }) => {
+
+    if (!hideModal) {
+        return (<>
+        </>)
+    }
+    return (
+        <GrayBackground>
+            <ModalCancel>
+                <ModalContainer>
+                    <Mont20600>Consulta pendente</Mont20600>
+                    <SubTitle>Ao pressionar o botão, essa consulta aparecerá como realizada. A consulta foi efetuada?</SubTitle>
                     <Button onPress={onPress}>
                         <ButtonTitle>CONFIRMAR</ButtonTitle>
                     </Button>
@@ -333,7 +375,8 @@ export const CameraModal = ({ openModal, setOpenModal, capturePhoto, cameraRef }
 
         return (
             <CameraPermissionContainer>
-                <Title>We need your permission to show the camera</Title>
+                <Title>Nós precisamos da sua permissão para usar a câmera</Title>
+                <SubTitle>Clique no ícone para requisitar a permissão</SubTitle>
                 <Entypo name="lock-open" size={48} color="black" onPress={() => requestPermission()} />
             </CameraPermissionContainer>
         )

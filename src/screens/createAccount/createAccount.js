@@ -23,74 +23,83 @@ const CreateAccount = ({ navigation }) => {
     idTipoUsuario: 'A4FD73A0-9F0B-4462-A9CF-E3460CAC328A',
   })
 
-    const Cadastrar = async () => {
-      if(user.nome.length < 1 || user.email.length < 1  || user.senha.length < 1 || user.confirmaSenha.length < 1){
-        alert('Informações inválidas', 'Preencha todas as informações corretamente');
-        return;
-      }
+  const [submitted, setSubmitted] = useState(false)
 
-      if (user.senha !== user.confirmaSenha) {
-          alert("Senhas devem ser iguais");
-          return;
-        } 
-        removeFromStorage()
-        
-        navigation.navigate('Profile', {user});
-      };
+  const Cadastrar = async () => {
+    if (user.nome.length < 1 || user.email.length < 1 || user.senha.length < 1 || user.confirmaSenha.length < 1) {
+      alert('Informações inválidas', 'Preencha todas as informações corretamente');
+      return;
+    }
 
-    return (
-        <Container>
+    if (user.senha !== user.confirmaSenha) {
+      alert("Senhas devem ser iguais");
+      return;
+    }
+    removeFromStorage()
 
-            <Logo source={require("../../assets/img/VitalHubLogo.png")} />
+    navigation.navigate('Profile', { user });
+  };
 
-            <Title>Criar conta</Title>
 
-            <SubTitle>Insira seu endereço de e-mail e senha para realizar seu cadastro.</SubTitle>
+  const verifyValue = (value, setValue) => {
+    if(submitted){
+      
+    }
+  }
 
-            <InputContainer>
-                <Input 
-                  placeholder={"Nome"}
-                  value={user.nome}
-                  onChangeText={(txt) => setUser({
-                    ...user,
-                    nome: txt
-                  })}
-                />
-                <Input 
-                  placeholder={"E-mail"}
-                  value={user.email}
-                  onChangeText={(txt) => setUser({
-                    ...user,
-                    email: txt
-                  })}
-                />
-                <Input 
-                  placeholder={"Senha"}
-                  value={user.senha}
-                  secureTextEntry={true}
-                  onChangeText={(txt) => setUser({
-                    ...user,
-                    senha: txt
-                  })}
-                />
-                <Input 
-                  placeholder={"Confirmar senha"}
-                  value={user.confirmaSenha}
-                  secureTextEntry={true}
-                  onChangeText={(txt) => setUser({
-                    ...user,
-                    confirmaSenha: txt
-                  })}
-                />
-            </InputContainer>
+  return (
+    <Container>
 
-            <Button onPress={() => Cadastrar()}>
-                <ButtonTitle>CADASTRAR</ButtonTitle>
-            </Button>
+      <Logo source={require("../../assets/img/VitalHubLogo.png")} />
 
-            <LinkBlueSmall onPress={() => {navigation.navigate(Login)}}>Cancelar</LinkBlueSmall>
-        </Container>
-    )
+      <Title>Criar conta</Title>
+
+      <SubTitle>Insira seu endereço de e-mail e senha para realizar seu cadastro.</SubTitle>
+
+      <InputContainer>
+        <Input
+          placeholder={"Nome"}
+          value={user.nome}
+          onChangeText={(txt) => setUser({
+            ...user,
+            nome: txt
+          })}
+        ></Input>
+        <Input
+          placeholder={"E-mail"}
+          value={user.email}
+          onChangeText={(txt) => setUser({
+            ...user,
+            email: txt
+          })}
+        />
+        <Input
+          placeholder={"Senha"}
+          value={user.senha}
+          secureTextEntry={true}
+          onChangeText={(txt) => setUser({
+            ...user,
+            senha: txt
+          })}
+        />
+        <Input
+          placeholder={"Confirmar senha"}
+          value={user.confirmaSenha}
+          secureTextEntry={true}
+          onChangeText={(txt) => setUser({
+            ...user,
+            confirmaSenha: txt
+          })}
+        />
+      </InputContainer>
+
+      <Button onPress={() => Cadastrar()}>
+        <ButtonTitle>CADASTRAR</ButtonTitle>
+      </Button>
+
+      <LinkBlueSmall onPress={() => { navigation.navigate(Login) }}>Cancelar</LinkBlueSmall>
+    </Container>
+  )
 }
 
 export default CreateAccount;

@@ -2,15 +2,15 @@
 import image from "../../assets/img/Rectangle425.png"
 
 // Import do react
-import { useEffect, useReducer, useState } from "react"
+import { useEffect, useState } from "react"
 import { CalendarContainer, FlatlistContainer, HomeContainer, InputContainer, RowContainer } from "../../components/container/style"
 import { NavButtonComponent } from "../../components/navButton/navButton"
 import { Alert, ScrollView } from "react-native"
 import Header from "../../components/header/header"
 import Card from "../../components/card/card"
-import { CancelAppointment, CreateAppointment, DoctorAppointment, ShowRecord } from "../../components/modalActions/modalActions"
+import { CancelAppointment, CreateAppointment, DoctorAppointment, DoneAppointment, ShowRecord } from "../../components/modalActions/modalActions"
 import Appointment from "../appointment/appointment"
-import { Mont20600 } from "../../components/title/title"
+import { Mont20600, Title } from "../../components/title/title"
 import { ProduceDate } from "../../components/calendar/calendar"
 import { getToday } from "../../../Utils"
 import Stethoscope from "../../components/stethoscope/stethoscope"
@@ -51,17 +51,22 @@ const Home = ({ navigation }) => {
         cancel: false,
         record: false,
         setAppointment: false,
-        doctorAppointment: false
+        doctorAppointment: false,
+        done:false
     })
     // Use state para o modal do prontuário
     const [objModalRecord, setObjModalRecord] = useState({})
 
     // state para a data que está sendo selecionada para o usuário
     // eu estou setando a data como hoje no useEffect
-    const [dateSelected, setDateSelected] = useState(parseInt(new Date().toLocaleDateString('default',{day:'numeric'}))) 
+    const [dateSelected, setDateSelected] = useState(parseInt(new Date().toLocaleDateString('default', { day: 'numeric' })))
 
     // useState das consultas a serem usadas pelos modais
     const [itemForModal, setItemForModal] = useState()
+
+
+    // useState para recarregar as informações no flatlist
+    const [refreshing, setRefreshing] = useState(false)
 
 
     // função de filtragem dos dados 
@@ -79,6 +84,7 @@ const Home = ({ navigation }) => {
 
     const showRightModal = (item) => {
         if (item.situacao.situacao === 'Pendentes') {
+            alert('estou sendo executado')
             setModal({ cancel: true })
             setItemForModal(item.id)
         }
@@ -88,7 +94,7 @@ const Home = ({ navigation }) => {
         }
     }
 
-    const showRightCardModal = (item) => {
+    const showRightCardPress = (item) => {
         if (item.situacao.situacao === 'Pendentes' && !isMedic) {
             setObjModalRecord(item)
             setModal({ doctorAppointment: true })
@@ -96,12 +102,16 @@ const Home = ({ navigation }) => {
             setObjModalRecord(item)
             setModal({ record: true })
         } else if (item.situacao.situacao === 'Cancelados' && isMedic) {
-            setModal({ record: true })
             setObjModalRecord(item)
-        }
+            setModal({ record: true })
+        }  else if (item.situacao.situacao === 'Pendentes' && isMedic) {
+            setObjModalRecord(item)
+            setModal({ done: true })
+            setItemForModal(item.id)
+        } 
     }
 
-    function resetModal(){
+    function resetModal() {
         setModal({})
         setItemForModal('')
     }
@@ -114,7 +124,7 @@ const Home = ({ navigation }) => {
         }
     }
 
-    
+
     //? As funções a partir daqui serão voltadas para o consumo da api 
     // função para criar a notificação de cancelar
     async function notificationCancel() {
@@ -127,10 +137,20 @@ const Home = ({ navigation }) => {
         })
     }
 
+    async function notificationDone(){
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: "Consulta realizada",
+                body: 'Sua consulta foi efetuada neste instante',
+            },
+            trigger: null
+        })
+    }
+
     async function setIfMedic() {
         const user = await userDecodeToken()
 
-        try{
+        try {
 
             if (user.role === 'Medico') {
                 setIsMedic(true)
@@ -138,7 +158,7 @@ const Home = ({ navigation }) => {
             }
             setIsMedic(false)
 
-        } catch (e){
+        } catch (e) {
             console.log(e)
         }
 
@@ -147,26 +167,28 @@ const Home = ({ navigation }) => {
 
     async function listarConsultas() {
         try {
+            setRefreshing(true)
 
             const user = await userDecodeToken()
 
             let dateNow = new Date()
             const date = {
-                year: dateNow.toLocaleDateString('default',{year:'numeric'}),
-                month: dateNow.toLocaleDateString('default',{month:"numeric"}),
+                year: dateNow.toLocaleDateString('default', { year: 'numeric' }),
+                month: dateNow.toLocaleDateString('default', { month: "numeric" }),
             }
 
             // constante para definir a data de hoje usando a seleção de data da home
             const dateString = date.year + '-' + date.month + '-' + dateSelected
 
 
-            const res = await api.get( (user.role === 'Medico' ? '/Medicos' : '/Pacientes') +'/BuscarPorData?data=' + dateString + '&id=' + user.id)
+            const res = await api.get((user.role === 'Medico' ? '/Medicos' : '/Pacientes') + '/BuscarPorData?data=' + dateString + '&id=' + user.id)
 
             const data = await res.data
 
 
             setListAppointment(data)
 
+            setRefreshing(false)
         } catch (error) {
             console.log('Erro na api');
             console.log(error)
@@ -174,27 +196,47 @@ const Home = ({ navigation }) => {
     }
 
     // função para mudar uma consulta para cancelado
-    async function changeAppointmentToCancel(){
+    async function changeAppointmentToCancel() {
         try {
 
             const res = await api.put('/Consultas/Status?idConsulta=' + itemForModal + '&status=Cancelados')
 
-            if(res.status === 200){
+            if (res.status === 200) {
                 notificationCancel();
                 resetModal()
                 listarConsultas()
             }
-            else{
+            else {
                 resetModal()
-                Alert("Erro","Algum erro inesperado aconteceu!!!")
+                Alert("Erro", "Algum erro inesperado aconteceu!!!")
             }
-            
+
         } catch (error) {
             console.log(error);
         }
     }
 
-    
+    // função para mudar uma consulta para realizado
+    async function changeAppointmentToDone() {
+        try {
+            const res = await api.put('/Consultas/Status?idConsulta=' + itemForModal + '&status=Realizados')
+
+            if (res.status === 200) {
+                notificationDone();
+                resetModal()
+                listarConsultas()
+            }
+            else {
+                resetModal()
+                Alert("Erro", "Algum erro inesperado aconteceu!!!")
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
 
     useEffect(() => {
         verifyStatus()
@@ -283,20 +325,29 @@ const Home = ({ navigation }) => {
                         item={item}
                         image={image}
                         onPress={() => showRightModal(item)}
-                        onPressCard={() => showRightCardModal(item)} 
-                        isMedic={isMedic}/>} 
-                        />
+                        onPressCard={() => showRightCardPress(item)}
+                        isMedic={isMedic} />}
+                refreshing={refreshing}
+                onRefresh={listarConsultas}
+                ListEmptyComponent={<Title>Nenhuma consulta!</Title>}
+            />
 
             <CancelAppointment
                 hideModal={modal.cancel}
                 onPressCancel={() => resetModal()}
-                onPress={() => {  changeAppointmentToCancel() }}
+                onPress={() => { changeAppointmentToCancel() }}
+            />
+
+            <DoneAppointment
+                hideModal={modal.done}
+                onPressCancel={()=> resetModal()}
+                onPress={() => { changeAppointmentToDone()}}
             />
 
             <ShowRecord
                 hideModal={modal.record}
                 onPressCancel={() => { setModal({ record: false }) }}
-                onPressNavigate={() => { navigation.navigate("Appointment",{ objModalRecord, isMedic}) }}
+                onPressNavigate={() => { navigation.navigate("Appointment", { objModalRecord, isMedic }) }}
                 item={objModalRecord}
                 isMedic={isMedic}
             />

@@ -17,24 +17,24 @@ import { IconCamera } from "../../screens/appointment/styles";
 import notFound from '../../assets/img/iconoir_file-not-found.png'
 import { Image } from "react-native";
 
-export const InputLabelBlack = ({ title,  bigInput = false, value, onChangeText, name=null, inputType='default' }) => {
+export const InputLabelBlack = ({ title,  bigInput = false, value, onChangeText, name=null, inputType='default', onPress = null }) => {
     return (
         <>
             <Label>{title}</Label>
             {bigInput ?
-                <BigInputBlack value={value} keyboardType={inputType} onChangeText={(txt) => onChangeText(txt)} /> :
-                <InputBlack value={value} keyboardType={inputType} onChangeText={(txt) => onChangeText(txt)} />}
+                <BigInputBlack onPress={onPress}  showSoftInputOnFocus={onPress===null ? true : false}  value={value} keyboardType={inputType} onChangeText={(txt) => onChangeText(txt)} /> :
+                <InputBlack onPress={onPress} showSoftInputOnFocus={onPress===null ? true : false} value={value} keyboardType={inputType} onChangeText={(txt) => onChangeText(txt)} />}
         </>
     )
 }
 
-export const InputLabelBlackText = ({ title, bigInput = false, text }) => {
+export const InputLabelBlackText = ({ title, bigInput = false, text, onPress=null }) => {
     return (
         <>
             <Label>{title}</Label>
             {bigInput ?
-                <BigInputBlackText >{text}</BigInputBlackText> :
-                <InputBlackText>{text}</InputBlackText>}
+                <BigInputBlackText onPress={onPress}>{text}</BigInputBlackText> :
+                <InputBlackText onPress={onPress}>{text}</InputBlackText>}
         </>
     )
 }
@@ -75,11 +75,11 @@ export const InputLabel = ({ title, placeholder, bigInput = false, value, setVal
     )
 }
 
-export const SmallInputLabel = ({ title, placeholder, value, onChangeText, inputType='default' }) => {
+export const SmallInputLabelBlack = ({ title, placeholder, value, onChangeText, readOnly=false, inputType='default' }) => {
     return (
         <SmallInputLabelContainer>
             <Label>{title}</Label>
-            <InputBlack placeholder={placeholder} keyboardType={inputType} value={value} onChangeText={(txt)=>onChangeText(txt)} />
+            <InputBlack placeholder={placeholder} keyboardType={inputType} value={value} onChangeText={(txt)=>onChangeText(txt)} readOnly={readOnly} />
         </SmallInputLabelContainer>
     )
 }

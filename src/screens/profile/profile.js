@@ -1,13 +1,12 @@
 import { Container, Container11, InputContainer, LabelInputContainer, TwoInputContainer } from "../../components/container/style"
 import { ImageModal } from "../../components/modal/modal"
 import { SubTitle, Title } from "../../components/title/title"
-import { InputLabelBlack, InputLabelBlackText, SmallInputLabel, SmallInputLabelText } from "../../components/input/inputLabel"
+import { InputLabelBlack, InputLabelBlackText, SmallInputLabelBlack, SmallInputLabelText } from "../../components/input/inputLabel"
 import { Button, ButtonLogout, SmallButton, SmallButtonGreen } from "../../components/button/button"
 import { ButtonTitle } from "../../components/button/buttonTitle"
 import { HeaderImage } from "../../components/headerImage/headerImage"
 import ScrollViewProfile from "../../components/scrollViewProfile/scrollViewProfile.js"
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { jwtDecode } from "jwt-decode"
 import { userDecodeToken } from "../../utils/auth.js"
 import { useEffect, useRef, useState } from "react"
 import api from "../../service/service.js"
@@ -15,18 +14,12 @@ import api from "../../service/service.js"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { AddPhotoButton } from "../../components/addphoto/styles.js"
 import { CameraModal, LoadingModal } from "../../components/modalActions/modalActions.js"
-import { CameraComp } from "../../components/CameraComp/CameraComp.js"
-import { Camera } from "expo-camera"
-import { ActivityIndicator } from "react-native"
-import { NavigationHelpersContext } from "@react-navigation/native"
+import { ActivityIndicator, TextInput } from "react-native"
+import DatePicker from "../../components/datePicker/datePicker.js"
 
 const Profile = ({ navigation, route }) => {
-
-
-
   // constante para a imagem ficar salva
   const [photo, setPhoto] = useState(null)
-
   const cameraRef = useRef(null)
 
 
@@ -49,7 +42,9 @@ const Profile = ({ navigation, route }) => {
   })
 
   // state para armazenar as informações do token do usuário
-  const [token, setToken] = useState({});
+  const [token, setToken] = useState({
+    role: 'qualquer pra não dar erro'
+  });
 
   // useState para dealbilitar o botão
   const [disable, setDisable] = useState(false)
@@ -73,23 +68,24 @@ const Profile = ({ navigation, route }) => {
     cidade: '',
   });
 
+  const [datePickerVisible, setDatePickerVisible] = useState(false)
+
   const loadProfile = async () => {
     try {
 
       setLoadModal(true)
 
-      const token = await userDecodeToken();
-
-      setToken(token)
+      const tokenUser = await userDecodeToken();
 
       // Se a página NÃO receber as informações do novo usuário
-      if (token) {
-
-        // Se o usuário for um médico
-        if (token.role === 'Medico') {
-          const res = await api.get('/Medicos/BuscarPorId?id=' + token.id);
+      if (tokenUser) {
+        setToken(tokenUser)
+        //? Se o usuário for um médico
+        if (tokenUser.role === 'Medico') {
+          const res = await api.get('/Medicos/BuscarPorId?id=' + tokenUser.id);
           const data = await res.data;
 
+          console.log('Informações do médico')
           console.log(data)
 
           setUriCameraCapture({
@@ -112,10 +108,10 @@ const Profile = ({ navigation, route }) => {
           })
 
         }
-        // Se o usuário for um paciente
+        //? Se o usuário for um paciente
         else {
 
-          const res = await api.get('/Pacientes/BuscarPorId?id=' + token.id);
+          const res = await api.get('/Pacientes/BuscarPorId?id=' + tokenUser.id);
           const data = await res.data;
 
           setUriCameraCapture({
@@ -127,7 +123,7 @@ const Profile = ({ navigation, route }) => {
 
           setUserData({
             ...userData,
-            id: token.id,
+            id: tokenUser.id,
             nome: data.idNavigation.nome,
             email: data.idNavigation.email,
             dataNascimento: data.dataNascimento,
@@ -328,18 +324,18 @@ const Profile = ({ navigation, route }) => {
                     // ! Se o usuário for um médico
                     token.role === 'Medico' ?
                       <>
-                        <InputLabelBlackText text={userData.especialidade} title={"Especialidade"}/>
-                        <InputLabelBlackText text={userData.crm} title={"CRM"}/>
-                        
+                        <InputLabelBlackText text={userData.especialidade} title={"Especialidade"} />
+                        <InputLabelBlackText text={userData.crm} title={"CRM"} />
+
                         <InputLabelBlackText
-                            title={"Endereço"}
-                            text={userData.logradouro}
-                          />
-                          
-                          <InputLabelBlackText
-                            title={"Cidade"}
-                            text={userData.cidade}
-                          />
+                          title={"Endereço"}
+                          text={userData.logradouro}
+                        />
+
+                        <InputLabelBlackText
+                          title={"Cidade"}
+                          text={userData.cidade}
+                        />
                         <TwoInputContainer>
                           <SmallInputLabelText
                             title={"Número"}
@@ -361,40 +357,36 @@ const Profile = ({ navigation, route }) => {
                       //  ! Se o usuário for um paciente
                       <>
 
-                        <InputLabelBlack
+                        <InputLabelBlackText
                           title={"Data de nascimento"}
-                          value={userData.dataNascimento}
-                          onChangeText={text => setUserData({ ...userData, dataNascimento: text })}
-                          name="dataNascimento"
+                          text={userData.dataNascimento}
+                          onPress={() => { setDatePickerVisible(true) }}
                         />
 
                         <TwoInputContainer>
-                          <SmallInputLabel
+                          <SmallInputLabelBlack
                             title={"Endereço"}
                             value={userData.logradouro}
                             onChangeText={text => setUserData({ ...userData, logradouro: text })}
-                            name="endereco"
                           />
-                          <SmallInputLabel
+                          <SmallInputLabelBlack
                             title={"Número"}
                             value={userData.numero}
+                            inputType="numeric"
                             onChangeText={text => setUserData({ ...userData, numero: text })}
-                            name="numero"
                           />
                         </TwoInputContainer>
 
                         <TwoInputContainer>
-                          <SmallInputLabel
+                          <SmallInputLabelBlack
                             title={"CEP"}
                             value={userData.cep}
                             onChangeText={text => setUserData({ ...userData, cep: text })}
-                            name="cep"
                           />
-                          <SmallInputLabel
+                          <SmallInputLabelBlack
                             title={"Cidade"}
                             value={userData.cidade}
                             onChangeText={text => setUserData({ ...userData, cidade: text })}
-                            name="cidade"
                           />
                         </TwoInputContainer>
 
@@ -406,10 +398,10 @@ const Profile = ({ navigation, route }) => {
                   token.role === 'Medico' ?
                     <>
                     </>
-                  :
-                <Button onPress={() => EditProfile()}>
-                <ButtonTitle>SALVAR</ButtonTitle>
-              </Button>
+                    :
+                    <Button onPress={() => EditProfile()}>
+                      <ButtonTitle>SALVAR</ButtonTitle>
+                    </Button>
                 }
 
                 <ButtonLogout onPress={() => removeUser()}><ButtonTitle>Logout</ButtonTitle></ButtonLogout>
@@ -425,46 +417,40 @@ const Profile = ({ navigation, route }) => {
                     title={"RG"}
                     value={createUser.rg}
                     onChangeText={text => setCreateUser({ ...createUser, rg: text })}
-                    name="email"
                     inputType="numeric"
                   />
-                  <InputLabelBlack
+                  <InputLabelBlackText
                     title={"Data de nascimento"}
-                    value={createUser.dataNascimento}
-                    onChangeText={text => setCreateUser({ ...createUser, dataNascimento: text })}
-                    name="dataNascimento"
+                    text={createUser.dataNascimento}
+                    onPress={() => { setDatePickerVisible(true) }}
                   />
                   <InputLabelBlack
                     title={"CPF"}
                     value={createUser.cpf}
                     onChangeText={text => setCreateUser({ ...createUser, cpf: text })}
-                    name="cpf"
                     inputType="numeric"
                   />
                   <TwoInputContainer>
-                    <SmallInputLabel
+                    <SmallInputLabelBlack
                       title={"Endereço"}
                       value={createUser.logradouro}
                       onChangeText={text => setCreateUser({ ...createUser, logradouro: text })}
-                      name="endereco"
                     />
-                    <SmallInputLabel
+                    <SmallInputLabelBlack
                       title={"Número"}
                       value={createUser.numero}
                       onChangeText={text => setCreateUser({ ...createUser, numero: text })}
-                      name="numero"
                     />
                   </TwoInputContainer>
                   <TwoInputContainer>
-                    <SmallInputLabel
+                    <SmallInputLabelBlack
                       title={"CEP"}
                       value={createUser.cep}
                       onChangeText={text => setCreateUser({ ...createUser, cep: text })}
-                      name="cep"
                       inputType="numeric"
 
                     />
-                    <SmallInputLabel
+                    <SmallInputLabelBlack
                       title={"CIDADE"}
                       value={createUser.cidade}
                       onChangeText={text => setCreateUser({ ...createUser, cidade: text })}
@@ -496,6 +482,13 @@ const Profile = ({ navigation, route }) => {
       />
 
       <LoadingModal showLoad={loadModal} />
+
+      <DatePicker
+        isDatePickerVisible={datePickerVisible}
+        setDatePickerVisibility={setDatePickerVisible}
+        setUserData={setUserData}
+        userData={userData}
+      />
 
     </>
   );

@@ -10,6 +10,7 @@ import image from '../../assets/img/Rectangle425.png'
 import { useEffect, useState } from "react"
 import api from "../../service/service"
 import { Alert } from "react-native"
+import { PersonalModal } from "../../components/modalActions/modalActions"
 
 // importando axios para consumo da api
 
@@ -19,8 +20,14 @@ const SelectMedic = ({ route, navigation }) => {
 
     const [newContinueAppointment, setNewAppointment] = useState({})
 
+    const [hideModal, setHideModal] = useState(false);
+    const [modal, setModal] = useState({
+        title: '',
+        subtitle: ''
+    })
+
     const { newAppointment } = route.params
-    
+
     // use state para armazenar a lista de médicos
     const [medicosLista, setMedicosLista] = useState([])
 
@@ -40,13 +47,17 @@ const SelectMedic = ({ route, navigation }) => {
     }
 
 
-    function nextPage(){
-        if(selected){
-            navigation.replace("SelectData", {newContinueAppointment} )
+    function nextPage() {
+        if (selected) {
+            navigation.replace("SelectData", { newContinueAppointment })
             setSelected()
         }
-        else{
-            Alert.alert("Erro ao cadastrar consulta", "Você ainda não selecionou um médico para sua consulta!")
+        else {
+            setModal({
+                title:"Erro ao cadastrar consulta",
+                subtitle: "Você ainda não selecionou um médico para sua consulta!"
+            })
+            setHideModal(true)
         }
     }
 
@@ -54,35 +65,43 @@ const SelectMedic = ({ route, navigation }) => {
         loadMedics()
         setNewAppointment(newAppointment)
         console.log(newAppointment.clinicaId)
-    },[])
+    }, [])
 
     return (
-        <WithoutHeader>
-            <Title>Selecionar Médico</Title>
+        <>
+            <WithoutHeader>
+                <Title>Selecionar Médico</Title>
 
-            <FlatlistClinicCard
-                data={medicosLista}
-                keyExtractor={(item) => item.id}
-                renderItem={({item}) =>
-                    <MedicCard
-                        select={selected}
-                        onPress={() => {
-                            setSelected(item.id)
-                            console.log(item.idNavigation.id)
-                            setNewAppointment({
-                                ...newContinueAppointment,
-                                medicoId:item.idNavigation.id,
-                                medico:item
-                            })
-                        }}
-                        item={item}
-                    />}
+                <FlatlistClinicCard
+                    data={medicosLista}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) =>
+                        <MedicCard
+                            select={selected}
+                            onPress={() => {
+                                setSelected(item.id)
+                                console.log(item.idNavigation.id)
+                                setNewAppointment({
+                                    ...newContinueAppointment,
+                                    medicoId: item.idNavigation.id,
+                                    medico: item
+                                })
+                            }}
+                            item={item}
+                        />}
+                />
+
+
+                <Button onPress={() => nextPage()}><ButtonTitle>CONTINUAR</ButtonTitle></Button>
+                <LinkBlueSmall onPress={() => navigation.goBack()}>Cancelar</LinkBlueSmall>
+            </WithoutHeader >
+            <PersonalModal
+                title={modal.title}
+                subTitle={modal.subtitle}
+                hideModal={hideModal}
+                onPressCancel={()=>{setHideModal(false)}}
             />
-
-
-            <Button onPress={() => nextPage()}><ButtonTitle>CONTINUAR</ButtonTitle></Button>
-            <LinkBlueSmall onPress={() => navigation.goBack()}>Cancelar</LinkBlueSmall>
-        </WithoutHeader >
+        </>
     )
 }
 
